@@ -27,7 +27,6 @@ export default class FixAccountScreen extends Component {
       TextInput_Name: ' ',
       TextInput_NickName: ' ',
       TextInput_Number: 'Chưa cập nhật',
-      TextInput_Email: 'Chưa cập nhật',
       TextInput_Gender: 'Chưa cập nhật',
       TextInput_Address: 'Chưa cập nhật',
     };
@@ -65,8 +64,8 @@ export default class FixAccountScreen extends Component {
                         <Image
                           source={require('./icons8-camera-50.png')}
                           style={{
-                            width: 110,
-                            height: 110,
+                            width: 120,
+                            height: 120,
                             borderRadius: 20,
                           }}
                         />
@@ -122,24 +121,10 @@ export default class FixAccountScreen extends Component {
                         this.setState({TextInput_Number: data})
                       }
                     />
-                    <Text style={styles.testTitle}>Email: </Text>
-                    <TextInput
-                      style={styles.inputText}
-                      ref={input => {
-                        this.fourthTextInput = input;
-                      }}
-                      onSubmitEditing={() => {
-                        this.fifthTextInput.focus();
-                      }}
-                      blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Email: data})
-                      }
-                    />
                     <Text style={styles.testTitle}>Giới tính: </Text>
                     <TextInput
                       ref={input => {
-                        this.fifthTextInput = input;
+                        this.fourthTextInput = input;
                       }}
                       style={styles.inputText}
                       onSubmitEditing={() => {
@@ -209,6 +194,7 @@ export default class FixAccountScreen extends Component {
                         EmailOJB: this.state.TextInput_Email,
                         GenderOJB: this.state.TextInput_Gender,
                         AddressOJB: this.state.TextInput_Address,
+                        ImageOJB: this.state.image,
                       })
                     }>
                     <Text style={styles.ButtonText2}>Cập nhật</Text>
@@ -360,7 +346,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     width: '90%',
-    height: 30,
+    height: 40,
     fontSize: 15,
     borderColor: 'darkgrey',
     paddingStart: 10,

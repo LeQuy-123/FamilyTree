@@ -63,10 +63,6 @@ class AccountScreen extends Component {
               <Text style={styles.input}>
                 {this.props.route.params?.GenderOJB}
               </Text>
-              <Text style={styles.baseText}> Email: </Text>
-              <Text style={styles.input}>
-                {this.props.route.params?.EmailOJB}
-              </Text>
               <Text style={styles.baseText}> Ngày sinh: </Text>
               <Text style={styles.input}>
                 {this.props.route.params?.DateOJB}
