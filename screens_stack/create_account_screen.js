@@ -10,9 +10,93 @@ import {
   Keyboard,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 
 export default class Create extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      message: 'Nothing here',
+      email: '',
+      username: '',
+      password: '',
+      baseUrl: 'https://familytree1.herokuapp.com/api/auth/register',
+    };
+  }
+  //kiểm tra email
+  validate = text => {
+    console.log(text);
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(text) === false) {
+      console.log('Email is Not Correct');
+      this.setState({email: text});
+      return false;
+    } else {
+      this.setState({email: text});
+      console.log('Email is Correct');
+      return true;
+    }
+  };
+  onClickListener = viewId => {
+    // Alert.alert(this.state.Usrname+" "+this.state.email+" "+this.state.password , "View_id "+viewId);
+    if (this.state.username) {
+      if (this.validate(this.state.email.trim())) {
+        if (this.state.password && this.state.password.length > 6) {
+          this._postData();
+        } else {
+          Alert.alert('Vui lòng nhập mật khẩu, dài hơn 6 kí tự');
+        }
+      } else {
+        Alert.alert('Vui lòng nhập email hợp lệ');
+      }
+    } else {
+      Alert.alert('Vui lòng nhập tên người dùng');
+    }
+  };
+  _postData = async () => {
+    var url = this.state.baseUrl;
+    try {
+      await fetch(url, {
+        method: 'POST',
+        //mode: 'no-cors',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: this.state.email.trim().toLowerCase(),
+          username: this.state.username.trim(),
+          password: this.state.password.trim(),
+        }),
+      })
+        .then(response => response.json())
+        .then(json => {
+          this.setState({message: json.message});
+          Alert.alert(
+            'Thông báo',
+            this.state.message,
+            [
+              {
+                text: 'OK',
+                style: 'cancel',
+              },
+              {
+                text: 'Get back to login',
+                onPress: () =>
+                  this.props.navigation.navigate('Login', {
+                    emailOJB: this.state.email,
+                    passwordOJB2: this.state.password,
+                  }),
+              },
+            ],
+            {cancelable: false},
+          );
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   render() {
     return (
       <ScrollView>
@@ -52,10 +136,10 @@ export default class Create extends Component {
                     editable
                     //placeholder="Email address"
                     autoCorrect={false}
+                    onChangeText={email => this.setState({email})}
                   />
                   <Text style={styleslogin.text}>Tên: </Text>
                   <TextInput
-                    textContentType="emailAddress"
                     style={styleslogin.input_text}
                     onSubmitEditing={() => {
                       this.thirdTextInput.focus();
@@ -67,6 +151,7 @@ export default class Create extends Component {
                     editable
                     //placeholder="Email address"
                     autoCorrect={false}
+                    onChangeText={username => this.setState({username})}
                   />
                   <Text style={styleslogin.text}>Mật khẩu:</Text>
                   <TextInput
@@ -79,10 +164,13 @@ export default class Create extends Component {
                     editable
                     blurOnSubmit={false}
                     autoCorrect={false}
+                    onChangeText={password => this.setState({password})}
                   />
                 </View>
                 <View style={styleslogin.button_group}>
-                  <TouchableOpacity style={styleslogin.buttonContainer}>
+                  <TouchableOpacity
+                    onPress={() => this.onClickListener()}
+                    style={styleslogin.buttonContainer}>
                     <Text style={styleslogin.text_in_button}> XÁC NHẬN </Text>
                   </TouchableOpacity>
                 </View>

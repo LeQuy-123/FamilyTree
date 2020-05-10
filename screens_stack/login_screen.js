@@ -11,11 +11,65 @@ import {
   Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import Create from './create_account_screen';
 
 class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      message: 'Nothing here',
+      email: '',
+      password: '',
+      baseUrl: 'https://familytree1.herokuapp.com/api/auth/login',
+      accessToken: '',
+      refreshToken: '',
+    };
+  }
+  _postData = async () => {
+    var url = this.state.baseUrl;
+    try {
+      await fetch(url, {
+        method: 'POST',
+        //mode: 'no-cors',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: this.state.email.trim().toLowerCase(),
+          password: this.state.password.trim(),
+        }),
+      })
+        .then(response => response.json())
+        .then(json => {
+          this.setState({message: json.message});
+          Alert.alert(
+            'Thông báo',
+            this.state.message,
+            [
+              {
+                text: 'OK',
+                style: 'cancel',
+              },
+              {
+                text: 'Get back to login',
+                onPress: () =>
+                  this.props.navigation.navigate('Login', {
+                    emailOJB: this.state.email,
+                    passwordOJB2: this.state.password,
+                  }),
+              },
+            ],
+            {cancelable: false},
+          );
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   render() {
     return (
       <ScrollView>
@@ -60,7 +114,9 @@ class Login extends Component {
                       blurOnSubmit={false}
                       //placeholder="Email address"
                       autoCorrect={false}
-                    />
+                      onChangeText={email => this.setState({email})}>
+                      {this.props.route.params?.emailOJB}
+                    </TextInput>
                     <Text style={styleslogin.text}>Mật khẩu: </Text>
                     <TextInput
                       secureTextEntry={true}
@@ -73,10 +129,14 @@ class Login extends Component {
                       blurOnSubmit={false}
                       //placeholder="Password"
                       autoCorrect={false}
-                    />
+                      onChangeText={password => this.setState({password})}>
+                      {this.props.route.params?.passwordOJB2}
+                    </TextInput>
                   </View>
                   <View style={styleslogin.button_group}>
-                    <TouchableOpacity style={styleslogin.buttonContainer}>
+                    <TouchableOpacity
+                      style={styleslogin.buttonContainer}
+                      onPress={() => this._postData()}>
                       <Text style={styleslogin.text_in_button}>
                         {' '}
                         ĐĂNG NHẬP{' '}
