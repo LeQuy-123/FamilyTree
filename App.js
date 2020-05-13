@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
-import * as React from 'react';
+import React, {Component} from 'react';
+import {AsyncStorage} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,8 +13,8 @@ import {GenealogyScreen} from './screens_stack/genealogy_screens/export_genealog
 import {NewsScreen} from './screens_stack/news_screens/export_news_screen';
 import Login from './screens_stack/login_screen';
 import Loading from './screens_stack/loading_screen';
+const UserContext = React.createContext({});
 
-//tao bottom bat
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -93,22 +94,32 @@ function MyTabs() {
   );
 }
 
-export default function App() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [userToken, setUserToken] = React.useState(null);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }, []);
-
-  if (isLoading) {
-    return <Loading />;
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      refreshToken: '',
+      accessToken: '',
+    };
   }
-  return (
-    <NavigationContainer>
-      {userToken ? <MyTabs /> : <Login />}
-    </NavigationContainer>
-  );
+  async getToken() {
+    try {
+      let userData = await AsyncStorage.getItem('userData1');
+      let data = JSON.parse(userData);
+      this.setState({accessToken: data});
+      console.log(data);
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+  }
+  componentDidMount() {
+    this.getToken();
+  }
+  render() {
+    return (
+      <NavigationContainer>
+        {this.state.accessToken !== null ? <MyTabs /> : <Login />}
+      </NavigationContainer>
+    );
+  }
 }

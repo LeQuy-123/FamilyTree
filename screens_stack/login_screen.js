@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  AsyncStorage,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import Create from './create_account_screen';
@@ -24,8 +25,8 @@ class Login extends Component {
       email: '',
       password: '',
       baseUrl: 'https://familytree1.herokuapp.com/api/auth/login',
-      accessToken: '',
       refreshToken: '',
+      accessToken: '',
     };
   }
   _postData = async () => {
@@ -45,22 +46,19 @@ class Login extends Component {
       })
         .then(response => response.json())
         .then(json => {
-          this.setState({message: json.message});
+          this.setState({
+            message: json.message,
+            accessToken: json.accessToken,
+            refreshToken: json.refreshToken,
+          });
+          this.storeToken(JSON.stringify(this.state.accessToken));
           Alert.alert(
-            'Thông báo',
+            'Đăng nhập thất bại',
             this.state.message,
             [
               {
                 text: 'OK',
                 style: 'cancel',
-              },
-              {
-                text: 'Get back to login',
-                onPress: () =>
-                  this.props.navigation.navigate('Login', {
-                    emailOJB: this.state.email,
-                    passwordOJB2: this.state.password,
-                  }),
               },
             ],
             {cancelable: false},
@@ -70,6 +68,25 @@ class Login extends Component {
       console.error(error);
     }
   };
+  async storeToken(user) {
+    try {
+      await AsyncStorage.setItem('userData', JSON.stringify(user));
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+  }
+  // async getToken() {
+  //   try {
+  //     let userData = await AsyncStorage.getItem('userData');
+  //     let data = JSON.parse(userData);
+  //     //console.log(data);
+  //   } catch (error) {
+  //     console.log('Something went wrong', error);
+  //   }
+  // }
+  // componentDidMount() {
+  //   this.getToken();
+  // }
   render() {
     return (
       <ScrollView>
@@ -159,7 +176,7 @@ class Login extends Component {
   }
 }
 const accountStack = createStackNavigator();
-function App() {
+function LoginStack() {
   return (
     <accountStack.Navigator screenOptions={{headerShown: false}}>
       <accountStack.Screen
@@ -292,4 +309,4 @@ const styleslogin = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-export default App;
+export default LoginStack;
