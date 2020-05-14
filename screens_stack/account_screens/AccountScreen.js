@@ -1,7 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import FixAccountScreen from './FixAccountScreen';
 import {
   View,
   Text,
@@ -86,23 +84,6 @@ class AccountScreen extends Component {
     );
   }
 }
-const accountStack = createStackNavigator();
-function App() {
-  return (
-    <accountStack.Navigator screenOptions={{headerShown: false}}>
-      <accountStack.Screen
-        name="Account"
-        component={AccountScreen}
-        options={{title: 'Account'}}
-      />
-      <accountStack.Screen
-        name="FixAccountScreen"
-        component={FixAccountScreen}
-        options={{title: 'Fix Account'}}
-      />
-    </accountStack.Navigator>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -186,4 +167,4 @@ const styles = StyleSheet.create({
     paddingStart: 20,
   },
 });
-export default App;
+export default AccountScreen;

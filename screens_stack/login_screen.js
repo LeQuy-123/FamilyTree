@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
 import {
   StyleSheet,
   Text,
@@ -15,26 +14,45 @@ import {
   AsyncStorage,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import Create from './create_account_screen';
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: 'Nothing here',
+      message: '',
       email: '',
       password: '',
       baseUrl: 'https://familytree1.herokuapp.com/api/auth/login',
       refreshToken: '',
-      accessToken: '',
+      accessToken: null,
     };
   }
+  //kiểm tra email
+  validate = text => {
+    console.log(text);
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(text) === false) {
+      console.log('Email is Not Correct');
+      this.setState({email: text});
+      return false;
+    } else {
+      this.setState({email: text});
+      console.log('Email is Correct');
+      return true;
+    }
+  };
+  checkMail = text => {
+    if (this.validate(this.state.email.trim())) {
+      this._postData();
+    } else {
+      Alert.alert('Vui lòng nhập email hợp lệ');
+    }
+  };
   _postData = async () => {
     var url = this.state.baseUrl;
     try {
       await fetch(url, {
         method: 'POST',
-        //mode: 'no-cors',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -51,18 +69,46 @@ class Login extends Component {
             accessToken: json.accessToken,
             refreshToken: json.refreshToken,
           });
-          this.storeToken(JSON.stringify(this.state.accessToken));
-          Alert.alert(
-            'Đăng nhập thất bại',
-            this.state.message,
-            [
-              {
-                text: 'OK',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
+          this.storeToken(this.state.accessToken);
+          if (this.state.message !== undefined) {
+            console.log(this.state.message);
+            Alert.alert(
+              'Đăng nhập thất bại',
+              this.state.message,
+              [
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                },
+              ],
+              {cancelable: false},
+            );
+          } else if (this.state.email === '' || this.state.password === '') {
+            Alert.alert(
+              'Vui lòng nhập đầy đủ email và mật khẩu',
+              this.state.message,
+              [
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                },
+              ],
+              {cancelable: false},
+            );
+          } else if (this.state.accessToken) {
+            Alert.alert(
+              'Đăng nhập thành công',
+              this.state.accessToken,
+              [
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                  onPress: () => this.props.navigation.navigate('App'),
+                },
+              ],
+              {cancelable: false},
+            );
+          }
         });
     } catch (error) {
       console.error(error);
@@ -75,18 +121,9 @@ class Login extends Component {
       console.log('Something went wrong', error);
     }
   }
-  // async getToken() {
-  //   try {
-  //     let userData = await AsyncStorage.getItem('userData');
-  //     let data = JSON.parse(userData);
-  //     //console.log(data);
-  //   } catch (error) {
-  //     console.log('Something went wrong', error);
-  //   }
-  // }
-  // componentDidMount() {
-  //   this.getToken();
-  // }
+  clearAsyncStorage = async () => {
+    AsyncStorage.clear();
+  };
   render() {
     return (
       <ScrollView>
@@ -153,14 +190,16 @@ class Login extends Component {
                   <View style={styleslogin.button_group}>
                     <TouchableOpacity
                       style={styleslogin.buttonContainer}
-                      onPress={() => this._postData()}>
+                      onPress={() => this.checkMail(this.state.email)}>
                       <Text style={styleslogin.text_in_button}>
                         {' '}
                         ĐĂNG NHẬP{' '}
                       </Text>
                     </TouchableOpacity>
                     <Text>---Hoặc bạn có thể---</Text>
-                    <TouchableOpacity style={styleslogin.buttonContainer}>
+                    <TouchableOpacity
+                      style={styleslogin.buttonContainer}
+                      onPress={() => this.clearAsyncStorage()}>
                       <Text style={styleslogin.text_in_button}>
                         Đăng nhập bằng Google
                       </Text>
@@ -175,23 +214,7 @@ class Login extends Component {
     );
   }
 }
-const accountStack = createStackNavigator();
-function LoginStack() {
-  return (
-    <accountStack.Navigator screenOptions={{headerShown: false}}>
-      <accountStack.Screen
-        name="Login"
-        component={Login}
-        options={{title: 'Login'}}
-      />
-      <accountStack.Screen
-        name="Create"
-        component={Create}
-        options={{title: 'Create'}}
-      />
-    </accountStack.Navigator>
-  );
-}
+
 const styleslogin = StyleSheet.create({
   container: {
     flex: 1,
@@ -309,4 +332,4 @@ const styleslogin = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-export default LoginStack;
+export default Login;
