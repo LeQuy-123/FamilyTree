@@ -7,8 +7,52 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  AsyncStorage,
 } from 'react-native';
 class AccountScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      refreshToken: '',
+    };
+  }
+  clearAsyncStorage = async () => {
+    AsyncStorage.clear();
+  };
+  LogOut() {
+    this.clearAsyncStorage();
+    this._Logout();
+    this.props.navigation.navigate('Login');
+  }
+  async getToken() {
+    try {
+      let userData = await AsyncStorage.getItem('tokenRefresh');
+      this.setState({refreshToken: userData});
+      console.log(userData);
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+  }
+  componentDidMount() {
+    this.getToken();
+  }
+  _Logout = async () => {
+    var url = 'https://familytree1.herokuapp.com/api/auth/logout';
+    try {
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: this.state.refreshToken,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   render() {
     return (
       <ScrollView style={{paddingVertical: 0}}>
@@ -70,14 +114,16 @@ class AccountScreen extends Component {
                 {this.props.route.params?.AddressOJB}
               </Text>
             </View>
-            <Text
-              style={{
-                color: 'white',
-                fontSize: 20,
-                bottom: 15,
-              }}>
-              Đăng xuất
-            </Text>
+            <TouchableOpacity onPress={() => this.LogOut()}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 20,
+                  bottom: 15,
+                }}>
+                Đăng xuất
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

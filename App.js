@@ -21,10 +21,9 @@ export default class App extends Component {
   }
   async getToken() {
     try {
-      let userData = await AsyncStorage.getItem('userData');
-      let data = JSON.parse(userData);
-      this.setState({accessToken: data});
-      console.log(data);
+      let userData = await AsyncStorage.getItem('userToken');
+      this.setState({accessToken: userData});
+      console.log(userData);
     } catch (error) {
       console.log('Something went wrong', error);
     }

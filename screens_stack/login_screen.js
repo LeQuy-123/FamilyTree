@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   StyleSheet,
@@ -69,7 +70,7 @@ class Login extends Component {
             accessToken: json.accessToken,
             refreshToken: json.refreshToken,
           });
-          this.storeToken(this.state.accessToken);
+          this.storeToken(this.state.accessToken, this.state.refreshToken);
           if (this.state.message !== undefined) {
             console.log(this.state.message);
             Alert.alert(
@@ -98,7 +99,7 @@ class Login extends Component {
           } else if (this.state.accessToken) {
             Alert.alert(
               'Đăng nhập thành công',
-              this.state.accessToken,
+              this.state.message,
               [
                 {
                   text: 'OK',
@@ -114,16 +115,59 @@ class Login extends Component {
       console.error(error);
     }
   };
-  async storeToken(user) {
+  checkMailReset = text => {
+    if (this.validate(this.state.email.trim())) {
+      this._resetPassword();
+    } else {
+      Alert.alert('Vui lòng điền email mà bạn nhớ vào mục email và thử lại');
+    }
+  };
+  _resetPassword = async () => {
+    var url = 'https://familytree1.herokuapp.com/api/auth/recover';
     try {
-      await AsyncStorage.setItem('userData', JSON.stringify(user));
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: this.state.email.trim().toLowerCase(),
+        }),
+      })
+        .then(response => response.json())
+        .then(json => {
+          this.setState({
+            message: json.message,
+          });
+          this.storeToken(this.state.accessToken, this.state.refreshToken);
+          if (this.state.message !== undefined) {
+            console.log(this.state.message);
+            Alert.alert(
+              'Thông báo',
+              this.state.message,
+              [
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                },
+              ],
+              {cancelable: false},
+            );
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  async storeToken(userToken, tokenRefresh) {
+    try {
+      await AsyncStorage.setItem('userToken', userToken);
+      await AsyncStorage.setItem('tokenRefresh', tokenRefresh);
     } catch (error) {
       console.log('Something went wrong', error);
     }
   }
-  clearAsyncStorage = async () => {
-    AsyncStorage.clear();
-  };
   render() {
     return (
       <ScrollView>
@@ -186,6 +230,17 @@ class Login extends Component {
                       onChangeText={password => this.setState({password})}>
                       {this.props.route.params?.passwordOJB2}
                     </TextInput>
+                    <TouchableOpacity
+                      onPress={() => this.checkMailReset(this.state.email)}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#00B2BF',
+                          top: -20,
+                        }}>
+                        Quên mật khẩu{' '}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                   <View style={styleslogin.button_group}>
                     <TouchableOpacity
@@ -260,7 +315,8 @@ const styleslogin = StyleSheet.create({
     fontFamily: 'serif',
   },
   input_text: {
-    padding: 10,
+    paddingBottom: -3,
+    paddingStart: 10,
     fontSize: 18,
     height: 40,
     borderBottomWidth: 1,
@@ -268,11 +324,11 @@ const styleslogin = StyleSheet.create({
   },
   button_group: {
     width: '100%',
-    flex: 6,
+    flex: 7,
     alignItems: 'center',
     justifyContent: 'space-between',
     //backgroundColor: 'blue',
-    paddingTop: 150,
+    paddingTop: 175,
   },
   buttonContainer: {
     width: '100%',
