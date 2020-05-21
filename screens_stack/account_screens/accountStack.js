@@ -18,11 +18,6 @@ export default function AccountStack() {
         component={FixAccountScreen}
         options={{title: 'Fix Account'}}
       />
-      <accountStack.Screen
-        name="Login"
-        component={LoginStack}
-        options={{title: 'Login'}}
-      />
     </accountStack.Navigator>
   );
 }

@@ -193,7 +193,7 @@ class Login extends Component {
                 </View>
                 <View style={styleslogin.header2}>
                   <Text style={styleslogin.header_text2_1}>
-                    Chào mừng quay trở lại
+                    Chào mừng trở lại!
                   </Text>
                   <Text style={styleslogin.header_text2_2}>
                     Đăng nhập để tiếp tục
@@ -234,11 +234,12 @@ class Login extends Component {
                       onPress={() => this.checkMailReset(this.state.email)}>
                       <Text
                         style={{
-                          fontSize: 15,
+                          alignSelf: 'flex-end',
+                          fontSize: 13,
                           color: '#00B2BF',
-                          top: 10,
+                          top: 5,
                         }}>
-                        Quên mật khẩu{' '}
+                        Quên mật khẩu ?{' '}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -251,11 +252,11 @@ class Login extends Component {
                         ĐĂNG NHẬP{' '}
                       </Text>
                     </TouchableOpacity>
-                    <Text>---Hoặc bạn có thể---</Text>
+                    <Text>- - - Hoặc bạn có thể - - -</Text>
                     <TouchableOpacity
-                      style={styleslogin.buttonContainer}
+                      style={styleslogin.buttonContainerGoogle}
                       onPress={() => this.clearAsyncStorage()}>
-                      <Text style={styleslogin.text_in_button}>
+                      <Text style={styleslogin.text_in_buttonGoogle}>
                         Đăng nhập bằng Google
                       </Text>
                     </TouchableOpacity>
@@ -298,19 +299,20 @@ const styleslogin = StyleSheet.create({
     flex: 6,
     backgroundColor: 'white',
     borderRadius: 36,
-    bottom: 40,
+    bottom: 30,
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 40,
   },
   text_container: {
-    flex: 4,
+    height: '50%',
     width: '100%',
     //paddingBottom: 30,
+    top: -20,
     //backgroundColor: 'green',
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
     paddingTop: 20,
     fontFamily: 'serif',
   },
@@ -324,15 +326,15 @@ const styleslogin = StyleSheet.create({
   },
   button_group: {
     width: '100%',
-    flex: 7,
+    height: '50%',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     //backgroundColor: 'blue',
-    paddingTop: 175,
+    bottom: -20,
   },
   buttonContainer: {
     width: '100%',
-    height: 40,
+    height: 35,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
@@ -349,9 +351,30 @@ const styleslogin = StyleSheet.create({
   text_in_button: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     opacity: 0.8,
-    fontFamily: 'serif',
+  },
+  buttonContainerGoogle: {
+    width: '100%',
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 1,
+      height: 12,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5.0,
+    elevation: 10,
+  },
+  text_in_buttonGoogle: {
+    color: '#00B2BF',
+    //fontWeight: 'bold',
+    fontSize: 15,
+    opacity: 0.8,
   },
   header_text2_1: {
     fontSize: 25,
@@ -362,7 +385,7 @@ const styleslogin = StyleSheet.create({
     fontWeight: 'bold',
   },
   header_text2_2: {
-    fontSize: 15,
+    fontSize: 13,
     paddingTop: 5,
     paddingStart: 30,
     fontFamily: 'serif',
@@ -379,10 +402,9 @@ const styleslogin = StyleSheet.create({
     fontWeight: 'bold',
   },
   header_text1_2: {
-    paddingTop: 30,
+    paddingTop: 20,
     paddingEnd: 10,
     fontSize: 15,
-    flex: 1.5,
     fontFamily: 'serif',
     color: 'white',
     fontWeight: 'bold',
