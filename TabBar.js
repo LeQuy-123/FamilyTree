@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AccountStack from './screens_stack/account_screens/accountStack';
+import AccountScreen from './screens_stack/account_screens/AccountScreen';
 import {EventScreen} from './screens_stack/events_screens/export_events_screen';
 import {FamilyScreen} from './screens_stack/family_screens/export_family_screen';
 import {GenealogyScreen} from './screens_stack/genealogy_screens/export_genealogy_screen';

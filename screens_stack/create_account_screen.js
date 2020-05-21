@@ -119,7 +119,7 @@ export default class Create extends Component {
               <View style={styleslogin.header2}>
                 <Text style={styleslogin.header_text2_1}>
                   {' '}
-                  Chào mừng quay trở lại{' '}
+                  Chào mừng trở lại!{' '}
                 </Text>
                 <Text style={styleslogin.header_text2_2}>Tạo tài khoản:</Text>
               </View>
@@ -275,8 +275,7 @@ const styleslogin = StyleSheet.create({
     fontWeight: 'bold',
   },
   header_text2_2: {
-    fontSize: 15,
-    paddingTop: 5,
+    fontSize: 13,
     paddingStart: 30,
     fontFamily: 'serif',
     color: 'white',
@@ -286,13 +285,13 @@ const styleslogin = StyleSheet.create({
     fontSize: 30,
     flex: 6,
     paddingTop: 50,
-    paddingStart: 10,
+    paddingStart: 50,
     fontFamily: 'serif',
     color: '#FFD555',
     fontWeight: 'bold',
   },
   header_text1_2: {
-    paddingTop: 30,
+    paddingTop: 20,
     paddingEnd: 10,
     fontSize: 15,
     flex: 1.5,

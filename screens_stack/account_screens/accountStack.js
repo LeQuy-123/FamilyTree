@@ -2,7 +2,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 import * as React from 'react';
 import AccountScreen from './AccountScreen';
 import FixAccountScreen from './FixAccountScreen';
-import LoginStack from '../loginStack';
 
 const accountStack = createStackNavigator();
 export default function AccountStack() {
@@ -14,7 +13,7 @@ export default function AccountStack() {
         options={{title: 'Account'}}
       />
       <accountStack.Screen
-        name="FixAccountScreen"
+        name="FixAccount"
         component={FixAccountScreen}
         options={{title: 'Fix Account'}}
       />

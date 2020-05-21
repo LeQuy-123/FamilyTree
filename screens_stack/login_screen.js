@@ -252,7 +252,9 @@ class Login extends Component {
                         ĐĂNG NHẬP{' '}
                       </Text>
                     </TouchableOpacity>
-                    <Text>- - - Hoặc bạn có thể - - -</Text>
+                    <Text style={{opacity: 0.4, fontSize: 13}}>
+                      - - - Hoặc bạn có thể - - -
+                    </Text>
                     <TouchableOpacity
                       style={styleslogin.buttonContainerGoogle}
                       onPress={() => this.clearAsyncStorage()}>
@@ -396,7 +398,7 @@ const styleslogin = StyleSheet.create({
     fontSize: 30,
     flex: 6,
     paddingTop: 50,
-    paddingStart: 10,
+    paddingStart: 50,
     fontFamily: 'serif',
     color: '#FFD555',
     fontWeight: 'bold',

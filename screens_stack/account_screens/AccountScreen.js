@@ -69,9 +69,7 @@ class AccountScreen extends Component {
               }}>
               <Text style={styles.title}>TÀI KHOẢN</Text>
               <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('FixAccountScreen')
-                }>
+                onPress={() => this.props.navigation.navigate('FixAccount')}>
                 <Image
                   style={{
                     height: 40,
@@ -200,8 +198,8 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
   baseText: {
-    fontFamily: 'Times New Roman',
-    fontSize: 18,
+    fontFamily: 'serif',
+    fontSize: 17,
   },
   infoText: {
     fontFamily: 'serif',
