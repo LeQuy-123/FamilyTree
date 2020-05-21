@@ -236,7 +236,7 @@ class Login extends Component {
                         style={{
                           fontSize: 15,
                           color: '#00B2BF',
-                          top: -20,
+                          top: 10,
                         }}>
                         Quên mật khẩu{' '}
                       </Text>

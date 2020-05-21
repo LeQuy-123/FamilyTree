@@ -62,7 +62,7 @@ export default class FixAccountScreen extends Component {
                       onPress={this.onClickAddImages}>
                       {this.state.image === '' && (
                         <Image
-                          source={require('./icons8-camera-50.png')}
+                          source={require('./avatar_default.png')}
                           style={{
                             width: 120,
                             height: 120,
@@ -74,9 +74,9 @@ export default class FixAccountScreen extends Component {
                         <Image
                           source={{uri: this.state.image}}
                           style={{
-                            width: 100,
-                            height: 100,
-                            borderRadius: 50,
+                            width: 130,
+                            height: 130,
+                            borderRadius: 65,
                           }}
                         />
                       )}
@@ -137,32 +137,29 @@ export default class FixAccountScreen extends Component {
                     />
                     <Text style={styles.testTitle}>Ngày sinh: </Text>
                     <DatePicker
-                      style={{
-                        width: '90%',
-                        borderRadius: 30,
-                      }}
+                      style={{width: 266, borderRadius: 50}}
                       date={this.state.date}
                       mode="date"
-                      locale="ja"
                       placeholder="select date"
                       format="YYYY-MM-DD"
-                      minDate="01-01-1900"
-                      maxDate="01-01-2100"
+                      minDate="1900-05-01"
+                      maxDate="2100-06-01"
                       confirmBtnText="Confirm"
                       cancelBtnText="Cancel"
                       customStyles={{
-                        dateInput: {
-                          height: 30,
-                          backgroundColor: '#F4F4F4',
-                          borderWidth: 1,
-                          borderRadius: 10,
-                          borderColor: '#707070',
+                        dateIcon: {
+                          position: 'absolute',
+                          left: 0,
+                          top: 4,
+                          marginLeft: 0,
                         },
+                        dateInput: {
+                          marginLeft: 36,
+                        },
+                        // ... You can check the source to find the other keys.
                       }}
                       onDateChange={date => {
-                        this.props.onDateChange &&
-                          this.props.onDateChange(date);
-                        this.setState({date});
+                        this.setState({date: date});
                       }}
                     />
                     <Text style={styles.testTitle}>Địa chỉ: </Text>
@@ -191,7 +188,6 @@ export default class FixAccountScreen extends Component {
                         NameOJB2: this.state.TextInput_NickName,
                         DateOJB: this.state.date,
                         NumberOJB: this.state.TextInput_Number,
-                        EmailOJB: this.state.TextInput_Email,
                         GenderOJB: this.state.TextInput_Gender,
                         AddressOJB: this.state.TextInput_Address,
                         ImageOJB: this.state.image,

@@ -14,6 +14,7 @@ class AccountScreen extends Component {
     super(props);
     this.state = {
       refreshToken: '',
+      image: '',
     };
   }
   clearAsyncStorage = async () => {
@@ -28,7 +29,6 @@ class AccountScreen extends Component {
     try {
       let userData = await AsyncStorage.getItem('tokenRefresh');
       this.setState({refreshToken: userData});
-      console.log(userData);
     } catch (error) {
       console.log('Something went wrong', error);
     }
@@ -40,7 +40,7 @@ class AccountScreen extends Component {
     var url = 'https://familytree1.herokuapp.com/api/auth/logout';
     try {
       await fetch(url, {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -53,6 +53,7 @@ class AccountScreen extends Component {
       console.error(error);
     }
   };
+
   render() {
     return (
       <ScrollView style={{paddingVertical: 0}}>
@@ -81,10 +82,17 @@ class AccountScreen extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.infocontainer}>
-              <Image
-                style={styles.images}
-                source={require('./avatar_default.png')}
-              />
+              {this.props.route.params?.ImageOJB ? (
+                <Image
+                  style={styles.images}
+                  source={{uri: this.props.route.params?.ImageOJB}}
+                />
+              ) : (
+                <Image
+                  style={styles.images}
+                  source={require('./avatar_default.png')}
+                />
+              )}
               <View style={styles.info}>
                 <Text style={styles.infoText}>
                   Tên: {this.props.route.params?.NameOJB}
