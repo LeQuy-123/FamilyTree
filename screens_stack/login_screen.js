@@ -70,7 +70,11 @@ class Login extends Component {
             accessToken: json.accessToken,
             refreshToken: json.refreshToken,
           });
-          this.storeToken(this.state.accessToken, this.state.refreshToken);
+          this.storeToken(
+            this.state.accessToken,
+            this.state.refreshToken,
+            this.state.email.trim().toLowerCase(),
+          );
           if (this.state.message !== undefined) {
             console.log(this.state.message);
             Alert.alert(
@@ -160,10 +164,11 @@ class Login extends Component {
       console.error(error);
     }
   };
-  async storeToken(userToken, tokenRefresh) {
+  async storeToken(userToken, tokenRefresh, email) {
     try {
       await AsyncStorage.setItem('userToken', userToken);
       await AsyncStorage.setItem('tokenRefresh', tokenRefresh);
+      await AsyncStorage.setItem('email', email);
     } catch (error) {
       console.log('Something went wrong', error);
     }

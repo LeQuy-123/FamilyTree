@@ -13,7 +13,7 @@ export default function AccountStack() {
         options={{title: 'Account'}}
       />
       <accountStack.Screen
-        name="FixAccount"
+        name="Fix"
         component={FixAccountScreen}
         options={{title: 'Fix Account'}}
       />

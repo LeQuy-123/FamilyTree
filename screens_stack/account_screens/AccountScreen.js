@@ -15,6 +15,14 @@ class AccountScreen extends Component {
     this.state = {
       refreshToken: '',
       image: '',
+      baseUrl: 'https://familytree1.herokuapp.com/api/user/show',
+      accessToken: '',
+      date: '',
+      Name: ' ',
+      NickName: ' ',
+      Number: 'Chưa cập nhật',
+      Gender: 'Chưa cập nhật',
+      Address: 'Chưa cập nhật',
     };
   }
   clearAsyncStorage = async () => {
@@ -28,7 +36,11 @@ class AccountScreen extends Component {
   async getToken() {
     try {
       let userData = await AsyncStorage.getItem('tokenRefresh');
-      this.setState({refreshToken: userData});
+      let accessToken = await AsyncStorage.getItem('userToken');
+      this.setState({refreshToken: userData, accessToken: accessToken});
+      if (this.state.accessToken !== null) {
+        this._getData(accessToken);
+      }
     } catch (error) {
       console.log('Something went wrong', error);
     }
@@ -53,7 +65,36 @@ class AccountScreen extends Component {
       console.error(error);
     }
   };
+  _getData = async token => {
+    var url = this.state.baseUrl;
+    console.log('access token:' + token);
 
+    try {
+      await fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token,
+        },
+      })
+        .then(response => response.json())
+        .then(json => {
+          console.log('tên:' + json.user.username);
+          this.setState({
+            date: json.user.datebirth,
+            Name: json.user.username,
+            NickName: json.user.nickname,
+            Number: json.user.numphone,
+            Gender: json.user.sex,
+            Address: json.user.address,
+          });
+          console.log('tên:' + this.state.Name);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   render() {
     return (
       <ScrollView style={{paddingVertical: 0}}>
@@ -69,7 +110,7 @@ class AccountScreen extends Component {
               }}>
               <Text style={styles.title}>TÀI KHOẢN</Text>
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('FixAccount')}>
+                onPress={() => this.props.navigation.navigate('Fix')}>
                 <Image
                   style={{
                     height: 40,
@@ -92,33 +133,21 @@ class AccountScreen extends Component {
                 />
               )}
               <View style={styles.info}>
-                <Text style={styles.infoText}>
-                  Tên: {this.props.route.params?.NameOJB}
-                </Text>
-                <Text style={styles.infoText}>
-                  Họ: {this.props.route.params?.NameOJB2}
-                </Text>
+                <Text style={styles.infoText}>Tên: {this.state.Name}</Text>
+                <Text style={styles.infoText}>Họ: {this.state.NickName}</Text>
               </View>
             </View>
           </View>
           <View style={styles.inputcontainer}>
             <View style={styles.inputs}>
               <Text style={styles.baseText}> Số điện thoại: </Text>
-              <Text style={styles.input}>
-                {this.props.route.params?.NumberOJB}
-              </Text>
+              <Text style={styles.input}>{this.state.Number}</Text>
               <Text style={styles.baseText}> Giới tính: </Text>
-              <Text style={styles.input}>
-                {this.props.route.params?.GenderOJB}
-              </Text>
+              <Text style={styles.input}>{this.state.Gender}</Text>
               <Text style={styles.baseText}> Ngày sinh: </Text>
-              <Text style={styles.input}>
-                {this.props.route.params?.DateOJB}
-              </Text>
+              <Text style={styles.input}>{this.state.date}</Text>
               <Text style={styles.baseText}> Địa chỉ: </Text>
-              <Text style={styles.input}>
-                {this.props.route.params?.AddressOJB}
-              </Text>
+              <Text style={styles.input}>{this.state.Address}</Text>
             </View>
             <TouchableOpacity onPress={() => this.LogOut()}>
               <Text
@@ -203,12 +232,13 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontFamily: 'serif',
-    fontSize: 18,
-    width: '95%',
+    fontSize: 16,
+    width: '100%',
     height: 25,
     backgroundColor: '#AEECEF',
     borderRadius: 15,
     paddingStart: 10,
+    left: 5,
   },
   input: {
     borderBottomColor: 'black',

@@ -10,10 +10,12 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
+  Alert,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {AsyncStorage} from 'react-native';
 
 import DatePicker from 'react-native-datepicker';
 
@@ -29,7 +31,60 @@ export default class FixAccountScreen extends Component {
       TextInput_Number: 'Chưa cập nhật',
       TextInput_Gender: 'Chưa cập nhật',
       TextInput_Address: 'Chưa cập nhật',
+      baseUrl: 'https://familytree1.herokuapp.com/api/user/update',
+      accessToken: null,
     };
+  }
+  async getToken() {
+    try {
+      let userData = await AsyncStorage.getItem('userToken');
+      this.setState({accessToken: userData});
+      console.log(userData);
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+  }
+  _postData = async () => {
+    // console.log('access token:' + this.state.accessToken);
+    var url = this.state.baseUrl;
+    try {
+      await fetch(url, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.state.accessToken,
+        },
+        body: JSON.stringify({
+          nickname: this.state.TextInput_NickName,
+          numphone: this.state.TextInput_Number,
+          sex: this.state.TextInput_Gender,
+          datebirth: this.state.date,
+          address: this.state.TextInput_Address,
+        }),
+      })
+        .then(response => response.json())
+        .then(json => {
+          console.log(json.message);
+          Alert.alert(
+            json.message,
+            'Vui lòng reload app để cập nhật thông tin',
+            [
+              {
+                text: 'Xác nhận',
+                style: 'cancel',
+                onPress: () => this.props.navigation.navigate('Account'),
+              },
+            ],
+            {cancelable: false},
+          );
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  componentDidMount() {
+    this.getToken();
   }
   render() {
     return (
@@ -182,17 +237,7 @@ export default class FixAccountScreen extends Component {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.Button2}
-                    onPress={() =>
-                      this.props.navigation.navigate('Account', {
-                        NameOJB: this.state.TextInput_Name,
-                        NameOJB2: this.state.TextInput_NickName,
-                        DateOJB: this.state.date,
-                        NumberOJB: this.state.TextInput_Number,
-                        GenderOJB: this.state.TextInput_Gender,
-                        AddressOJB: this.state.TextInput_Address,
-                        ImageOJB: this.state.image,
-                      })
-                    }>
+                    onPress={() => this._postData()}>
                     <Text style={styles.ButtonText2}>Cập nhật</Text>
                   </TouchableOpacity>
                 </View>

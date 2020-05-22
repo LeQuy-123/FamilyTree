@@ -15,6 +15,7 @@ export default function MyTabs() {
     <Tab.Navigator
       labeled="true"
       initialRouteName="Event"
+      // eslint-disable-next-line react-native/no-inline-styles
       barStyle={{height: 50}}>
       <Tab.Screen
         name="Event"
