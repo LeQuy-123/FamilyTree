@@ -20,9 +20,9 @@ class AccountScreen extends Component {
       date: '',
       Name: ' ',
       NickName: ' ',
-      Number: 'Chưa cập nhật',
-      Gender: 'Chưa cập nhật',
-      Address: 'Chưa cập nhật',
+      Number: '',
+      Gender: '',
+      Address: '',
     };
   }
   clearAsyncStorage = async () => {
@@ -31,6 +31,17 @@ class AccountScreen extends Component {
   LogOut() {
     this.clearAsyncStorage();
     this._Logout();
+    this.setState({
+      refreshToken: '',
+      image: '',
+      accessToken: '',
+      date: '',
+      Name: ' ',
+      NickName: ' ',
+      Number: '',
+      Gender: '',
+      Address: '',
+    });
     this.props.navigation.navigate('Login');
   }
   async getToken() {
@@ -133,20 +144,20 @@ class AccountScreen extends Component {
                 />
               )}
               <View style={styles.info}>
-                <Text style={styles.infoText}>Tên: {this.state.Name}</Text>
-                <Text style={styles.infoText}>Họ: {this.state.NickName}</Text>
+                <Text style={styles.infoText}>{this.state.Name}</Text>
+                <Text style={styles.infoText}>{this.state.NickName}</Text>
               </View>
             </View>
           </View>
           <View style={styles.inputcontainer}>
             <View style={styles.inputs}>
-              <Text style={styles.baseText}> Số điện thoại: </Text>
+              <Text style={styles.baseText}> Số điện thoại </Text>
               <Text style={styles.input}>{this.state.Number}</Text>
-              <Text style={styles.baseText}> Giới tính: </Text>
+              <Text style={styles.baseText}> Giới tính </Text>
               <Text style={styles.input}>{this.state.Gender}</Text>
-              <Text style={styles.baseText}> Ngày sinh: </Text>
+              <Text style={styles.baseText}> Ngày sinh </Text>
               <Text style={styles.input}>{this.state.date}</Text>
-              <Text style={styles.baseText}> Địa chỉ: </Text>
+              <Text style={styles.baseText}> Địa chỉ </Text>
               <Text style={styles.input}>{this.state.Address}</Text>
             </View>
             <TouchableOpacity onPress={() => this.LogOut()}>
@@ -168,7 +179,7 @@ class AccountScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: 700,
+    height: 800,
     backgroundColor: '#00B2BF',
   },
   inputcontainer: {
@@ -232,9 +243,9 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontFamily: 'serif',
-    fontSize: 16,
+    fontSize: 18,
     width: '100%',
-    height: 25,
+    height: 28,
     backgroundColor: '#AEECEF',
     borderRadius: 15,
     paddingStart: 10,

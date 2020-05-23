@@ -101,18 +101,7 @@ class Login extends Component {
               {cancelable: false},
             );
           } else if (this.state.accessToken) {
-            Alert.alert(
-              'Đăng nhập thành công',
-              this.state.message,
-              [
-                {
-                  text: 'OK',
-                  style: 'cancel',
-                  onPress: () => this.props.navigation.navigate('App'),
-                },
-              ],
-              {cancelable: false},
-            );
+            this.props.navigation.navigate('App');
           }
         });
     } catch (error) {
@@ -173,107 +162,117 @@ class Login extends Component {
       console.log('Something went wrong', error);
     }
   }
+  async checkToken() {
+    try {
+      let userData = await AsyncStorage.getItem('userToken');
+      this.setState({accessToken: userData});
+      console.log('token for check: ' + userData);
+      if (userData !== null) {
+        this.props.navigation.navigate('App');
+      }
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+  }
+  componentWillMount() {
+    this.checkToken();
+  }
   render() {
     return (
-      <ScrollView>
-        <SafeAreaView style={styleslogin.container}>
-          <StatusBar barStyle="light-content" />
-          <KeyboardAvoidingView
-            keyboardVerticalOffset={-500}
-            behavior="padding"
-            style={styleslogin.container}>
-            <TouchableWithoutFeedback
-              style={styleslogin.container}
-              onPress={Keyboard.dismiss}>
-              <View style={styleslogin.background} blurOnSubmit={false}>
-                <View style={styleslogin.header1}>
-                  <Text style={styleslogin.header_text1_1}> Gia Phả </Text>
-                  <TouchableOpacity>
-                    <Text style={styleslogin.header_text1_2}> Đăng nhập </Text>
-                  </TouchableOpacity>
+      <SafeAreaView style={styleslogin.container}>
+        <StatusBar barStyle="light-content" />
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={-500}
+          behavior="padding"
+          style={styleslogin.container}>
+          <TouchableWithoutFeedback
+            style={styleslogin.container}
+            onPress={Keyboard.dismiss}>
+            <View style={styleslogin.background} blurOnSubmit={false}>
+              <View style={styleslogin.header1}>
+                <Text style={styleslogin.header_text1_1}> Gia Phả </Text>
+                <TouchableOpacity>
+                  <Text style={styleslogin.header_text1_2}> Đăng nhập </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate('Create')}>
+                  <Text style={styleslogin.header_text1_2}> Đăng kí </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styleslogin.header2}>
+                <Text style={styleslogin.header_text2_1}>
+                  Chào mừng trở lại!
+                </Text>
+                <Text style={styleslogin.header_text2_2}>
+                  Đăng nhập để tiếp tục
+                </Text>
+              </View>
+              <View style={styleslogin.body}>
+                <View style={styleslogin.text_container}>
+                  <Text style={styleslogin.text}>Email: </Text>
+                  <TextInput
+                    textContentType="emailAddress"
+                    style={styleslogin.input_text}
+                    onSubmitEditing={() => {
+                      this.secondTextInput.focus();
+                    }}
+                    editable
+                    blurOnSubmit={false}
+                    //placeholder="Email address"
+                    autoCorrect={false}
+                    onChangeText={email => this.setState({email})}>
+                    {this.props.route.params?.emailOJB}
+                  </TextInput>
+                  <Text style={styleslogin.text}>Mật khẩu: </Text>
+                  <TextInput
+                    secureTextEntry={true}
+                    textContentType="password"
+                    style={styleslogin.input_text}
+                    ref={input => {
+                      this.secondTextInput = input;
+                    }}
+                    editable
+                    blurOnSubmit={false}
+                    //placeholder="Password"
+                    autoCorrect={false}
+                    onChangeText={password => this.setState({password})}>
+                    {this.props.route.params?.passwordOJB2}
+                  </TextInput>
                   <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('Create')}>
-                    <Text style={styleslogin.header_text1_2}> Đăng kí </Text>
+                    onPress={() => this.checkMailReset(this.state.email)}>
+                    <Text
+                      style={{
+                        alignSelf: 'flex-end',
+                        fontSize: 13,
+                        color: '#00B2BF',
+                        top: 5,
+                      }}>
+                      Quên mật khẩu ?{' '}
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                <View style={styleslogin.header2}>
-                  <Text style={styleslogin.header_text2_1}>
-                    Chào mừng trở lại!
+                <View style={styleslogin.button_group}>
+                  <TouchableOpacity
+                    style={styleslogin.buttonContainer}
+                    onPress={() => this.checkMail(this.state.email)}>
+                    <Text style={styleslogin.text_in_button}> ĐĂNG NHẬP </Text>
+                  </TouchableOpacity>
+                  <Text style={{opacity: 0.4, fontSize: 13}}>
+                    - - - Hoặc bạn có thể - - -
                   </Text>
-                  <Text style={styleslogin.header_text2_2}>
-                    Đăng nhập để tiếp tục
-                  </Text>
-                </View>
-                <View style={styleslogin.body}>
-                  <View style={styleslogin.text_container}>
-                    <Text style={styleslogin.text}>Email: </Text>
-                    <TextInput
-                      textContentType="emailAddress"
-                      style={styleslogin.input_text}
-                      onSubmitEditing={() => {
-                        this.secondTextInput.focus();
-                      }}
-                      editable
-                      blurOnSubmit={false}
-                      //placeholder="Email address"
-                      autoCorrect={false}
-                      onChangeText={email => this.setState({email})}>
-                      {this.props.route.params?.emailOJB}
-                    </TextInput>
-                    <Text style={styleslogin.text}>Mật khẩu: </Text>
-                    <TextInput
-                      secureTextEntry={true}
-                      textContentType="password"
-                      style={styleslogin.input_text}
-                      ref={input => {
-                        this.secondTextInput = input;
-                      }}
-                      editable
-                      blurOnSubmit={false}
-                      //placeholder="Password"
-                      autoCorrect={false}
-                      onChangeText={password => this.setState({password})}>
-                      {this.props.route.params?.passwordOJB2}
-                    </TextInput>
-                    <TouchableOpacity
-                      onPress={() => this.checkMailReset(this.state.email)}>
-                      <Text
-                        style={{
-                          alignSelf: 'flex-end',
-                          fontSize: 13,
-                          color: '#00B2BF',
-                          top: 5,
-                        }}>
-                        Quên mật khẩu ?{' '}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styleslogin.button_group}>
-                    <TouchableOpacity
-                      style={styleslogin.buttonContainer}
-                      onPress={() => this.checkMail(this.state.email)}>
-                      <Text style={styleslogin.text_in_button}>
-                        {' '}
-                        ĐĂNG NHẬP{' '}
-                      </Text>
-                    </TouchableOpacity>
-                    <Text style={{opacity: 0.4, fontSize: 13}}>
-                      - - - Hoặc bạn có thể - - -
+                  <TouchableOpacity
+                    style={styleslogin.buttonContainerGoogle}
+                    onPress={() => this.clearAsyncStorage()}>
+                    <Text style={styleslogin.text_in_buttonGoogle}>
+                      Đăng nhập bằng Google
                     </Text>
-                    <TouchableOpacity
-                      style={styleslogin.buttonContainerGoogle}
-                      onPress={() => this.clearAsyncStorage()}>
-                      <Text style={styleslogin.text_in_buttonGoogle}>
-                        Đăng nhập bằng Google
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                  </TouchableOpacity>
                 </View>
               </View>
-            </TouchableWithoutFeedback>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      </ScrollView>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 }
@@ -285,7 +284,7 @@ const styleslogin = StyleSheet.create({
     justifyContent: 'center',
   },
   background: {
-    height: 680,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,

@@ -28,7 +28,7 @@ export default class App extends Component {
     }
   }
   componentDidMount() {
-    this.getToken();
+    //  this.getToken();
     setTimeout(() => {
       //  this._retrieveData();
       this.setState({isLoading: false});
@@ -38,10 +38,6 @@ export default class App extends Component {
     if (this.state.isLoading) {
       return <Loading />;
     }
-    return (
-      <NavigationContainer>
-        {this.state.accessToken ? <MyTabs /> : <LoginStack />}
-      </NavigationContainer>
-    );
+    return <NavigationContainer>{<LoginStack />}</NavigationContainer>;
   }
 }

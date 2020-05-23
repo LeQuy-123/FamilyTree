@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    height: 700,
+    height: 800,
     backgroundColor: '#FBBD00',
     alignItems: 'center',
     justifyContent: 'space-around',
