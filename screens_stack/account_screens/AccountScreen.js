@@ -9,6 +9,7 @@ import {
   ScrollView,
   AsyncStorage,
 } from 'react-native';
+import _RefreshToken from '../../components/refresh_Token';
 class AccountScreen extends Component {
   constructor(props) {
     super(props);
@@ -31,25 +32,16 @@ class AccountScreen extends Component {
   LogOut() {
     this.clearAsyncStorage();
     this._Logout();
-    this.setState({
-      refreshToken: '',
-      image: '',
-      accessToken: '',
-      date: '',
-      Name: ' ',
-      NickName: ' ',
-      Number: '',
-      Gender: '',
-      Address: '',
-    });
     this.props.navigation.navigate('Login');
   }
   async getToken() {
     try {
-      let userData = await AsyncStorage.getItem('tokenRefresh');
+      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
       let accessToken = await AsyncStorage.getItem('userToken');
-      this.setState({refreshToken: userData, accessToken: accessToken});
+      let email = await AsyncStorage.getItem('email');
+      this.setState({refreshToken: refreshToken, accessToken: accessToken});
       if (this.state.accessToken !== null) {
+        _RefreshToken(email, refreshToken);
         this._getData(accessToken);
       }
     } catch (error) {
@@ -78,8 +70,7 @@ class AccountScreen extends Component {
   };
   _getData = async token => {
     var url = this.state.baseUrl;
-    console.log('access token:' + token);
-
+    // console.log('access token:' + token);
     try {
       await fetch(url, {
         method: 'GET',
@@ -91,7 +82,6 @@ class AccountScreen extends Component {
       })
         .then(response => response.json())
         .then(json => {
-          console.log('tên:' + json.user.username);
           this.setState({
             date: json.user.datebirth,
             Name: json.user.username,
@@ -99,8 +89,10 @@ class AccountScreen extends Component {
             Number: json.user.numphone,
             Gender: json.user.sex,
             Address: json.user.address,
+            image: json.user.profileImage,
           });
           console.log('tên:' + this.state.Name);
+          console.log('ảnh: ' + this.state.image);
         });
     } catch (error) {
       console.error(error);
@@ -132,10 +124,14 @@ class AccountScreen extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.infocontainer}>
-              {this.props.route.params?.ImageOJB ? (
+              {this.state.image ? (
                 <Image
                   style={styles.images}
-                  source={{uri: this.props.route.params?.ImageOJB}}
+                  source={{
+                    uri:
+                      'https://familytree1.herokuapp.com/api/normal/image/' +
+                      this.state.image,
+                  }}
                 />
               ) : (
                 <Image

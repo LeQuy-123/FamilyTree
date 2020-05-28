@@ -16,6 +16,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
+import _RefreshToken from '../../components/refresh_Token';
 
 import DatePicker from 'react-native-datepicker';
 
@@ -24,8 +25,10 @@ export default class FixAccountScreen extends Component {
     super(props);
     //set value in state for initial date
     this.state = {
+      myEmail: '',
       date: '',
       image: '',
+      imageType: '',
       TextInput_Name: ' ',
       TextInput_NickName: ' ',
       TextInput_Number: 'Chưa cập nhật',
@@ -33,19 +36,77 @@ export default class FixAccountScreen extends Component {
       TextInput_Address: 'Chưa cập nhật',
       baseUrl: 'https://familytree1.herokuapp.com/api/user/update',
       accessToken: null,
+      myRefreshToken: '',
     };
   }
+  onClickAddImages = () => {
+    const Buttons = ['Chup anh', 'Chon anh tu thu vien', 'Thoat'];
+    nativeBase.ActionSheet.show(
+      {
+        options: Buttons,
+        cancelButtonIndex: 2,
+        title: 'Tai avatar moi',
+      },
+      buttonIndex => {
+        switch (buttonIndex) {
+          case 0:
+            this.takePhotoFromCamera();
+            break;
+          case 1:
+            this.chosePhotoFromLibrary();
+            break;
+          default:
+            break;
+        }
+      },
+    );
+  };
+
+  chosePhotoFromLibrary = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        image: image.path,
+        imageType: image.mime,
+      });
+      this._postImage(this.state.accessToken, image);
+      console.log(image.path);
+    });
+  };
+  takePhotoFromCamera = () => {
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        image: image.path,
+        imageType: image.mime,
+      });
+      this._postImage(this.state.accessToken, image);
+      console.log(image.path);
+    });
+  };
   async getToken() {
     try {
       let userData = await AsyncStorage.getItem('userToken');
-      this.setState({accessToken: userData});
+      let email = await AsyncStorage.getItem('email');
+      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+      this.setState({
+        accessToken: userData,
+        myEmail: email,
+        myRefreshToken: refreshToken,
+      });
       console.log(userData);
     } catch (error) {
       console.log('Something went wrong', error);
     }
   }
   _postData = async () => {
-    // console.log('access token:' + this.state.accessToken);
+    _RefreshToken(this.state.myEmail, this.state.myRefreshToken);
     var url = this.state.baseUrl;
     try {
       await fetch(url, {
@@ -82,6 +143,30 @@ export default class FixAccountScreen extends Component {
     } catch (error) {
       console.error(error);
     }
+  };
+  _postImage = async (token, image) => {
+    // eslint-disable-next-line no-undef
+    var myHeaders = new Headers();
+    myHeaders.append('Authorization', 'Bearer ' + token);
+    const photo = {
+      uri: image.path,
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    };
+    var formData = new FormData();
+    formData.append('file', photo);
+
+    var requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      formData,
+      redirect: 'follow',
+    };
+
+    fetch('https://familytree1.herokuapp.com/api/user/update', requestOptions)
+      .then(response => response.json())
+      .then(result => console.log(result.user.profileImage))
+      .catch(error => console.log('error', error));
   };
   componentDidMount() {
     this.getToken();
@@ -248,49 +333,6 @@ export default class FixAccountScreen extends Component {
       </nativeBase.Root>
     );
   }
-  onClickAddImages = () => {
-    const Buttons = ['Chup anh', 'Chon anh tu thu vien', 'Thoat'];
-    nativeBase.ActionSheet.show(
-      {
-        options: Buttons,
-        cancelButtonIndex: 2,
-        title: 'Tai avatar moi',
-      },
-      buttonIndex => {
-        switch (buttonIndex) {
-          case 0:
-            this.takePhotoFromCamera();
-            break;
-          case 1:
-            this.chosePhotoFromLibrary();
-            break;
-          default:
-            break;
-        }
-      },
-    );
-  };
-
-  chosePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      this.setState({image: image.path});
-      // console.log(image);
-    });
-  };
-  takePhotoFromCamera = () => {
-    ImagePicker.openCamera({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      this.setState({image: image.path});
-      //console.log(image);
-    });
-  };
 }
 
 const styles = StyleSheet.create({

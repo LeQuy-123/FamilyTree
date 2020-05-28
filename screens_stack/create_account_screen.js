@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   StyleSheet,
@@ -9,8 +10,8 @@ import {
   SafeAreaView,
   Keyboard,
   TouchableOpacity,
-  ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 
 export default class Create extends Component {
@@ -106,25 +107,35 @@ export default class Create extends Component {
           onPress={Keyboard.dismiss}>
           <View style={styleslogin.background} blurOnSubmit={false}>
             <View style={styleslogin.header1}>
+              <Image
+                style={{
+                  height: 120,
+                  width: 120,
+                  top: 5,
+                  left: 15,
+                }}
+                source={{
+                  uri:
+                    'https://mellullaby.herokuapp.com/api/normal/image/amadeus-1589026468500-genealogy-logo.png',
+                }}
+              />
               <Text style={styleslogin.header_text1_1}> Gia Phả </Text>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Login')}>
                 <Text style={styleslogin.header_text1_2}> Đăng nhập </Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={styleslogin.header_text1_2}> Đăng kí </Text>
-              </TouchableOpacity>
+              <Text style={styleslogin.header_text1_2Main}> Đăng kí </Text>
             </View>
             <View style={styleslogin.header2}>
               <Text style={styleslogin.header_text2_1}>
                 {' '}
                 Chào mừng trở lại!{' '}
               </Text>
-              <Text style={styleslogin.header_text2_2}>Tạo tài khoản:</Text>
+              <Text style={styleslogin.header_text2_2}>Tạo tài khoản </Text>
             </View>
             <View style={styleslogin.body}>
               <View style={styleslogin.text_container}>
-                <Text style={styleslogin.text}>Email: </Text>
+                <Text style={styleslogin.text}>Email </Text>
                 <TextInput
                   textContentType="emailAddress"
                   style={styleslogin.input_text}
@@ -137,7 +148,7 @@ export default class Create extends Component {
                   autoCorrect={false}
                   onChangeText={email => this.setState({email})}
                 />
-                <Text style={styleslogin.text}>Tên: </Text>
+                <Text style={styleslogin.text}>Tên </Text>
                 <TextInput
                   style={styleslogin.input_text}
                   onSubmitEditing={() => {
@@ -152,7 +163,7 @@ export default class Create extends Component {
                   autoCorrect={false}
                   onChangeText={username => this.setState({username})}
                 />
-                <Text style={styleslogin.text}>Mật khẩu:</Text>
+                <Text style={styleslogin.text}>Mật khẩu </Text>
                 <TextInput
                   ref={input => {
                     this.thirdTextInput = input;
@@ -197,7 +208,7 @@ const styleslogin = StyleSheet.create({
     width: '100%',
     flex: 1.9,
     flexDirection: 'row',
-    //backgroundColor: 'red',
+    justifyContent: 'space-around',
   },
   header2: {
     width: '100%',
@@ -281,20 +292,29 @@ const styleslogin = StyleSheet.create({
   },
   header_text1_1: {
     fontSize: 30,
-    flex: 6,
-    paddingTop: 50,
-    paddingStart: 50,
+    paddingTop: 60,
+    left: 30,
     fontFamily: 'serif',
     color: '#FFD555',
     fontWeight: 'bold',
+    //backgroundColor: 'white',
   },
   header_text1_2: {
     paddingTop: 20,
-    paddingEnd: 10,
-    fontSize: 15,
-    flex: 1.5,
+    paddingEnd: 20,
+    fontSize: 13,
     fontFamily: 'serif',
     color: 'white',
     fontWeight: 'bold',
+    borderBottomColor: 'white',
+  },
+  header_text1_2Main: {
+    paddingTop: 20,
+    paddingEnd: 20,
+    fontSize: 13,
+    fontFamily: 'serif',
+    color: 'white',
+    fontWeight: 'bold',
+    opacity: 0.5,
   },
 });
