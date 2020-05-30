@@ -1,9 +1,50 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 
-import {StyleSheet, View, SafeAreaView, Text, Image} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  Text,
+  Image,
+  AsyncStorage,
+} from 'react-native';
+import _RefreshToken from '../components/refresh_Token';
 
 export default class Loading extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      refreshToken: '',
+      accessToken: null,
+    };
+  }
+  async getToken() {
+    try {
+      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+      let userEmail = await AsyncStorage.getItem('email');
+      let accessToken = await AsyncStorage.getItem('accessToken');
+      console.log('access token : ' + accessToken);
+      console.log('email: ' + userEmail);
+      console.log('refresh toke: ' + refreshToken);
+
+      this.setState({
+        refreshToken: refreshToken,
+        email: userEmail,
+        accessToken: accessToken,
+      });
+      if (refreshToken) {
+        _RefreshToken(this.state.email, this.state.refreshToken);
+      }
+      this.props.navigation.navigate('Login');
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+  }
+  componentDidMount() {
+    this.getToken();
+  }
   render() {
     return (
       <SafeAreaView style={styleslogin.container}>

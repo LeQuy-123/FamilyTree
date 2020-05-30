@@ -3,8 +3,7 @@ import * as React from 'react';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AccountStack from './screens_stack/account_screens/accountStack';
-import AccountScreen from './screens_stack/account_screens/AccountScreen';
-import {EventScreen} from './screens_stack/events_screens/export_events_screen';
+import EventStack from './screens_stack/events_screens/eventStack';
 import {FamilyScreen} from './screens_stack/family_screens/export_family_screen';
 import {GenealogyScreen} from './screens_stack/genealogy_screens/export_genealogy_screen';
 import {NewsScreen} from './screens_stack/news_screens/export_news_screen';
@@ -19,7 +18,7 @@ export default function MyTabs() {
       barStyle={{height: 50}}>
       <Tab.Screen
         name="Event"
-        component={EventScreen}
+        component={EventStack}
         options={{
           tabBarLabel: 'Event',
           tabBarIcon: ({color, size}) => (

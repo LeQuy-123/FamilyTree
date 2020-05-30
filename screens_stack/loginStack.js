@@ -3,12 +3,17 @@ import * as React from 'react';
 import Create from './create_account_screen';
 import Login from './login_screen';
 import MyTabs from '../TabBar';
-// import loading_screen from './loading_screen';
+import Loading from './loading_screen';
 
 const accountStack = createStackNavigator();
 export default function LoginStack() {
   return (
     <accountStack.Navigator screenOptions={{headerShown: false}}>
+      <accountStack.Screen
+        name="Loading"
+        component={Loading}
+        options={{title: 'Loading'}}
+      />
       <accountStack.Screen
         name="Login"
         component={Login}

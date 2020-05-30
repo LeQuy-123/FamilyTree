@@ -15,7 +15,7 @@ import {
   AsyncStorage,
   Image,
 } from 'react-native';
-
+import _RefreshToken from '../components/refresh_Token';
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -153,9 +153,9 @@ class Login extends Component {
       console.error(error);
     }
   };
-  async storeToken(userToken, tokenRefresh, email) {
+  async storeToken(accessToken, tokenRefresh, email) {
     try {
-      await AsyncStorage.setItem('userToken', userToken);
+      await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('tokenRefresh', tokenRefresh);
       await AsyncStorage.setItem('email', email);
     } catch (error) {
@@ -164,11 +164,18 @@ class Login extends Component {
   }
   async checkToken() {
     try {
-      let userData = await AsyncStorage.getItem('userToken');
-      this.setState({accessToken: userData});
-      console.log('token for check: ' + userData);
-      if (userData !== null) {
-        this.props.navigation.navigate('App');
+      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+      let userEmail = await AsyncStorage.getItem('email');
+      let accessToken = await AsyncStorage.getItem('accessToken');
+      this.setState({accessToken: accessToken});
+      console.log('token for check: ' + accessToken);
+      if (accessToken) {
+        var check = _RefreshToken(userEmail, refreshToken);
+        if (check) {
+          this.props.navigation.navigate('App');
+        } else {
+          console.log('chua dang nhap hoac token het han');
+        }
       }
     } catch (error) {
       console.log('Something went wrong', error);

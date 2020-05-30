@@ -17,7 +17,7 @@ import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
-
+import onClickAddImages from '../../components/pickImage';
 import DatePicker from 'react-native-datepicker';
 
 export default class FixAccountScreen extends Component {
@@ -39,60 +39,9 @@ export default class FixAccountScreen extends Component {
       myRefreshToken: '',
     };
   }
-  onClickAddImages = () => {
-    const Buttons = ['Chup anh', 'Chon anh tu thu vien', 'Thoat'];
-    nativeBase.ActionSheet.show(
-      {
-        options: Buttons,
-        cancelButtonIndex: 2,
-        title: 'Tai avatar moi',
-      },
-      buttonIndex => {
-        switch (buttonIndex) {
-          case 0:
-            this.takePhotoFromCamera();
-            break;
-          case 1:
-            this.chosePhotoFromLibrary();
-            break;
-          default:
-            break;
-        }
-      },
-    );
-  };
-
-  chosePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      this.setState({
-        image: image.path,
-        imageType: image.mime,
-      });
-      this._postImage(this.state.accessToken, image);
-      console.log(image.path);
-    });
-  };
-  takePhotoFromCamera = () => {
-    ImagePicker.openCamera({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      this.setState({
-        image: image.path,
-        imageType: image.mime,
-      });
-      this._postImage(this.state.accessToken, image);
-      console.log(image.path);
-    });
-  };
   async getToken() {
     try {
-      let userData = await AsyncStorage.getItem('userToken');
+      let userData = await AsyncStorage.getItem('accessToken');
       let email = await AsyncStorage.getItem('email');
       let refreshToken = await AsyncStorage.getItem('tokenRefresh');
       this.setState({
@@ -199,7 +148,7 @@ export default class FixAccountScreen extends Component {
                   <View style={styles.InfoEdit}>
                     <TouchableOpacity
                       style={styles.avatar}
-                      onPress={this.onClickAddImages}>
+                      onPress={onClickAddImages}>
                       {this.state.image === '' && (
                         <Image
                           source={require('./avatar_default.png')}

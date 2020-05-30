@@ -37,18 +37,20 @@ class AccountScreen extends Component {
   async getToken() {
     try {
       let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-      let accessToken = await AsyncStorage.getItem('userToken');
+      let accessToken = await AsyncStorage.getItem('accessToken');
       let email = await AsyncStorage.getItem('email');
       this.setState({refreshToken: refreshToken, accessToken: accessToken});
       if (this.state.accessToken !== null) {
         _RefreshToken(email, refreshToken);
-        this._getData(accessToken);
+        let newAccessToken = await AsyncStorage.getItem('accessToken');
+        this._getData(newAccessToken);
       }
     } catch (error) {
       console.log('Something went wrong', error);
     }
   }
   componentDidMount() {
+    console.log('load data dang nhap moi');
     this.getToken();
   }
   _Logout = async () => {
@@ -199,11 +201,11 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    //backgroundColor: 'white',
     fontSize: 35,
     fontFamily: 'serif',
     paddingStart: 20,
     color: 'white',
+    fontWeight: 'bold',
   },
   infocontainer: {
     flex: 2,

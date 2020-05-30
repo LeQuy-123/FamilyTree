@@ -14,22 +14,35 @@ async function _RefreshToken(email, token) {
         email: email,
         token: token,
       }),
-    })
-      .then(response => response.json())
-      .then(json => {
-        console.log('dang refresh token');
-        storeToken(json.accessToken);
-        return json.accessToken;
-      });
+    }).then(response => {
+      const statusCode = response.status;
+      if (statusCode === 200) {
+        response.json();
+        storeToken(response.json.accessToken);
+      } else {
+        console.log('het han');
+        AsyncStorage.clear();
+        return null;
+      }
+    });
+    // .then(json => {
+    //   console.log('dang refresh token');
+    //   if (json) {
+    //     storeToken(json.accessToken);
+    //   } else {
+    //     console.log('het han');
+    //     return null;
+    //   }
+    // });
   } catch (error) {
     console.error(error);
   }
 }
 async function storeToken(userToken) {
   try {
-    if (userToken !== null) {
-      await AsyncStorage.removeItem('userToken');
-      await AsyncStorage.setItem('userToken', userToken);
+    if (userToken) {
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.setItem('accessToken', userToken);
     }
   } catch (error) {
     console.log('Something went wrong', error);
