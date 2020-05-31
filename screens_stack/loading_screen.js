@@ -14,11 +14,6 @@ import _RefreshToken from '../components/refresh_Token';
 export default class Loading extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      email: '',
-      refreshToken: '',
-      accessToken: null,
-    };
   }
   async getToken() {
     try {
@@ -29,13 +24,9 @@ export default class Loading extends Component {
       console.log('email: ' + userEmail);
       console.log('refresh toke: ' + refreshToken);
 
-      this.setState({
-        refreshToken: refreshToken,
-        email: userEmail,
-        accessToken: accessToken,
-      });
       if (refreshToken) {
-        _RefreshToken(this.state.email, this.state.refreshToken);
+        console.log('goi refresh token');
+        _RefreshToken(userEmail, refreshToken);
       }
       this.props.navigation.navigate('Login');
     } catch (error) {

@@ -43,6 +43,7 @@ class AccountScreen extends Component {
       if (this.state.accessToken !== null) {
         _RefreshToken(email, refreshToken);
         let newAccessToken = await AsyncStorage.getItem('accessToken');
+        // console.log('newAccessToken' + newAccessToken);
         this._getData(newAccessToken);
       }
     } catch (error) {

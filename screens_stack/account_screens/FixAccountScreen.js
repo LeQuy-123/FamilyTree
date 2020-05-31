@@ -12,13 +12,13 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import ImagePicker from 'react-native-image-crop-picker';
+//import ImagePicker from 'react-native-image-crop-picker';
 import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
-import onClickAddImages from '../../components/pickImage';
 import DatePicker from 'react-native-datepicker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default class FixAccountScreen extends Component {
   constructor(props) {
@@ -38,6 +38,56 @@ export default class FixAccountScreen extends Component {
       accessToken: null,
       myRefreshToken: '',
     };
+  }
+  chosePhotoFromLibrary() {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        image: image.path,
+        imageType: image.mime,
+      });
+      //this._postImage(this.state.accessToken, image);
+      console.log(image.path);
+    });
+  }
+  takePhotoFromCamera() {
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        image: image.path,
+        imageType: image.mime,
+      });
+      //this._postImage(this.state.accessToken, image);
+      console.log(image.path);
+    });
+  }
+  onClickAddImages() {
+    const Buttons = ['Chup anh', 'Chon anh tu thu vien', 'Thoat'];
+    nativeBase.ActionSheet.show(
+      {
+        options: Buttons,
+        cancelButtonIndex: 2,
+        title: 'Tai avatar moi',
+      },
+      buttonIndex => {
+        switch (buttonIndex) {
+          case 0:
+            this.takePhotoFromCamera();
+            break;
+          case 1:
+            this.chosePhotoFromLibrary();
+            break;
+          default:
+            break;
+        }
+      },
+    );
   }
   async getToken() {
     try {
@@ -148,7 +198,7 @@ export default class FixAccountScreen extends Component {
                   <View style={styles.InfoEdit}>
                     <TouchableOpacity
                       style={styles.avatar}
-                      onPress={onClickAddImages}>
+                      onPress={() => this.onClickAddImages()}>
                       {this.state.image === '' && (
                         <Image
                           source={require('./avatar_default.png')}
