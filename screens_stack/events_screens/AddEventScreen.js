@@ -15,8 +15,7 @@ import {
 import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
-
-import DatePicker from 'react-native-datepicker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default class FixAccountScreen extends Component {
   constructor(props) {
@@ -26,15 +25,58 @@ export default class FixAccountScreen extends Component {
       date: '',
       image: '',
       imageType: '',
-      TextInput_Name: ' ',
-      TextInput_NickName: ' ',
-      TextInput_Number: 'Chưa cập nhật',
-      TextInput_Gender: 'Chưa cập nhật',
-      TextInput_Address: 'Chưa cập nhật',
       baseUrl: 'https://familytree1.herokuapp.com/api/user/update',
       accessToken: null,
       myRefreshToken: '',
     };
+  }
+  chosePhotoFromLibrary() {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        image: image.path,
+        imageType: image.mime,
+      });
+      console.log(image.path);
+    });
+  }
+  takePhotoFromCamera() {
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        image: image.path,
+        imageType: image.mime,
+      });
+      console.log(image.path);
+    });
+  }
+  onClickAddImages() {
+    const Buttons = ['Chup anh', 'Chon anh tu thu vien', 'Thoat'];
+    nativeBase.ActionSheet.show(
+      {
+        options: Buttons,
+        cancelButtonIndex: 2,
+        title: 'Tai avatar moi',
+      },
+      buttonIndex => {
+        switch (buttonIndex) {
+          case 0:
+            this.takePhotoFromCamera();
+            break;
+          case 1:
+            this.chosePhotoFromLibrary();
+            break;
+          default:
+            break;
+        }
+      },
+    );
   }
   render() {
     return (
@@ -45,7 +87,7 @@ export default class FixAccountScreen extends Component {
           <ScrollView style={styles.contentContainer}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View style={styles.container}>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'row', left: -50}}>
                   <TouchableOpacity
                     onPress={() => this.props.navigation.goBack()}>
                     <Image
@@ -54,7 +96,7 @@ export default class FixAccountScreen extends Component {
                         width: 40,
                         top: 8,
                       }}
-                      source={require('../account_screens/icons8-back-to-100.png')}
+                      source={require('../../images/icons8-back-to-100.png')}
                     />
                   </TouchableOpacity>
                   <Text style={styles.Title2}>Chỉnh sửa sự kiện</Text>
@@ -74,7 +116,19 @@ export default class FixAccountScreen extends Component {
                       }
                     />
                     <Text style={styles.testTitle}>Thời gian diễn ra </Text>
-                    <Text style={styles.inputText} />
+                    <Text
+                      style={{
+                        width: '90%',
+                        height: 40,
+                        fontSize: 16,
+                        borderColor: 'darkgrey',
+                        paddingStart: 10,
+                        paddingTop: 10,
+                        borderRadius: 10,
+                        borderWidth: 1,
+                      }}>
+                      {this.props.route.params.date}
+                    </Text>
                     <Text style={styles.testTitle}>Loại sự kiện </Text>
                     <TextInput
                       style={styles.inputText}
@@ -128,15 +182,31 @@ export default class FixAccountScreen extends Component {
                       }
                     />
                     <Text style={styles.testTitle}>Hình ảnh sự kiện </Text>
-                    <TextInput
-                      style={styles.inputText}
-                      ref={input => {
-                        this.sixthTextInput = input;
-                      }}
-                      onChangeText={data =>
-                        this.setState({TextInput_Address: data})
-                      }
-                    />
+                    <TouchableOpacity
+                      style={styles.avatar}
+                      onPress={() => this.onClickAddImages()}>
+                      {this.state.image === '' && (
+                        <Image
+                          source={require('../../images/avatar_default.png')}
+                          style={{
+                            width: 120,
+                            height: 120,
+                            borderRadius: 20,
+                          }}
+                        />
+                      )}
+                      {this.state.image !== '' && (
+                        <Image
+                          source={{uri: this.state.image}}
+                          style={{
+                            width: 130,
+                            height: 130,
+                            borderRadius: 65,
+                          }}
+                        />
+                      )}
+                      <Text style={styles.textAva}>+ Ảnh sự kiện</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
                 <View style={styles.ComboButton}>

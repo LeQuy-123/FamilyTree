@@ -1,9 +1,10 @@
 import {AsyncStorage} from 'react-native';
-
+import url from './MainURL';
 async function _RefreshToken(email, token) {
-  var url = 'https://familytree1.herokuapp.com/api/auth/refreshtoken';
+  var URL = url + '/api/auth/refreshtoken';
+  //console.log('refresh token: ' + token);
   try {
-    await fetch(url, {
+    return await fetch(URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: {
@@ -16,15 +17,16 @@ async function _RefreshToken(email, token) {
       }),
     })
       .then(response => response.json())
-      .then(json => {
-        console.log('dang refresh token');
-        console.log('new aceess token: ' + json.accessToken);
-        if (json.accessToken !== 'undefined') {
-          storeToken(json.accessToken);
-        } else {
-          console.log('het han');
-          AsyncStorage.clear();
-        }
+      .then(data => {
+        console.log('thanh cong');
+        console.log('token: ' + data.accessToken);
+        storeToken(data.accessToken);
+        return data.accessToken;
+      })
+      .catch(error => {
+        console.log('error: ' + error.toString());
+        AsyncStorage.clear();
+        throw error;
       });
   } catch (error) {
     console.error(error);

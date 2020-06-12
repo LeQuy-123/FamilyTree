@@ -1,14 +1,14 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import * as React from 'react';
-
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AccountStack from './screens_stack/account_screens/accountStack';
 import EventStack from './screens_stack/events_screens/eventStack';
-import {FamilyScreen} from './screens_stack/family_screens/export_family_screen';
-import {GenealogyScreen} from './screens_stack/genealogy_screens/export_genealogy_screen';
+import FamilyStack from './screens_stack/family_screens/FamilyStack';
+import GenealogyStack from './screens_stack/genealogy_screens/GenealogyStack';
+//import DisplayGenealogy from './screens_stack/genealogy_screens/DisplayGenealogy';
 import {NewsScreen} from './screens_stack/news_screens/export_news_screen';
-const Tab = createBottomTabNavigator();
 
+const Tab = createBottomTabNavigator();
 export default function MyTabs() {
   return (
     <Tab.Navigator
@@ -32,7 +32,7 @@ export default function MyTabs() {
       />
       <Tab.Screen
         name="Family"
-        component={FamilyScreen}
+        component={FamilyStack}
         options={{
           tabBarLabel: 'Family',
           tabBarIcon: ({color, size}) => (
@@ -45,8 +45,8 @@ export default function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="History"
-        component={GenealogyScreen}
+        name="Genealogy"
+        component={GenealogyStack}
         options={{
           tabBarLabel: 'Genealogy',
           tabBarIcon: ({color, size}) => (

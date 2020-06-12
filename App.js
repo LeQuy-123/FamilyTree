@@ -7,8 +7,6 @@ import LoginStack from './screens_stack/loginStack';
 import Loading from './screens_stack/loading_screen';
 import _RefreshToken from './components/refresh_Token';
 
-const Tab = createBottomTabNavigator();
-
 export default class App extends Component {
   render() {
     return <NavigationContainer>{<LoginStack />}</NavigationContainer>;

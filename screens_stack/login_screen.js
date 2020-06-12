@@ -70,11 +70,10 @@ class Login extends Component {
             accessToken: json.accessToken,
             refreshToken: json.refreshToken,
           });
-          this.storeToken(
-            this.state.accessToken,
-            this.state.refreshToken,
-            this.state.email.trim().toLowerCase(),
-          );
+          console.log('token refresh for user: ' + this.state.refreshToken);
+          AsyncStorage.setItem('accessToken', this.state.accessToken);
+          AsyncStorage.setItem('tokenRefresh', this.state.refreshToken);
+          AsyncStorage.setItem('email', this.state.email);
           if (this.state.message !== undefined) {
             console.log(this.state.message);
             Alert.alert(
@@ -153,15 +152,6 @@ class Login extends Component {
       console.error(error);
     }
   };
-  async storeToken(accessToken, tokenRefresh, email) {
-    try {
-      await AsyncStorage.setItem('accessToken', accessToken);
-      await AsyncStorage.setItem('tokenRefresh', tokenRefresh);
-      await AsyncStorage.setItem('email', email);
-    } catch (error) {
-      console.log('Something went wrong', error);
-    }
-  }
   async checkToken() {
     try {
       let accessToken = await AsyncStorage.getItem('accessToken');

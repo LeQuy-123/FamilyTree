@@ -10,6 +10,7 @@ import {
   AsyncStorage,
 } from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
+import url from '../../components/MainURL';
 class AccountScreen extends Component {
   constructor(props) {
     super(props);
@@ -41,10 +42,14 @@ class AccountScreen extends Component {
       let email = await AsyncStorage.getItem('email');
       this.setState({refreshToken: refreshToken, accessToken: accessToken});
       if (this.state.accessToken !== null) {
-        _RefreshToken(email, refreshToken);
-        let newAccessToken = await AsyncStorage.getItem('accessToken');
-        // console.log('newAccessToken' + newAccessToken);
-        this._getData(newAccessToken);
+        _RefreshToken(email, refreshToken).then(data => {
+          if (data) {
+            console.log('newAccessToken: ' + data);
+            this._getData(data);
+          } else {
+            this.props.navigation.navigate('Login');
+          }
+        });
       }
     } catch (error) {
       console.log('Something went wrong', error);
@@ -55,9 +60,9 @@ class AccountScreen extends Component {
     this.getToken();
   }
   _Logout = async () => {
-    var url = 'https://familytree1.herokuapp.com/api/auth/logout';
+    var URL = url + '/api/auth/logout';
     try {
-      await fetch(url, {
+      await fetch(URL, {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
@@ -72,10 +77,10 @@ class AccountScreen extends Component {
     }
   };
   _getData = async token => {
-    var url = this.state.baseUrl;
+    var URL = url + '/api/user/show';
     // console.log('access token:' + token);
     try {
-      await fetch(url, {
+      await fetch(URL, {
         method: 'GET',
         headers: {
           Accept: 'application/json',

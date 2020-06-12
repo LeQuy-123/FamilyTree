@@ -68,7 +68,7 @@ export default class FixAccountScreen extends Component {
     });
   }
   onClickAddImages() {
-    const Buttons = ['Chup anh', 'Chon anh tu thu vien', 'Thoat'];
+    const Buttons = ['Chụp từ máy ảnh', 'Chọn từ thư viện', 'Thoát'];
     nativeBase.ActionSheet.show(
       {
         options: Buttons,
@@ -106,6 +106,7 @@ export default class FixAccountScreen extends Component {
   }
   _postData = async () => {
     _RefreshToken(this.state.myEmail, this.state.myRefreshToken);
+    let userData = await AsyncStorage.getItem('accessToken');
     var url = this.state.baseUrl;
     try {
       await fetch(url, {
@@ -113,7 +114,7 @@ export default class FixAccountScreen extends Component {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.state.accessToken,
+          Authorization: 'Bearer ' + userData,
         },
         body: JSON.stringify({
           nickname: this.state.TextInput_NickName,
@@ -219,7 +220,7 @@ export default class FixAccountScreen extends Component {
                           }}
                         />
                       )}
-                      <Text style={styles.textAva}>+ Thêm ảnh đại điện</Text>
+                      <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
                     </TouchableOpacity>
                     <Text style={styles.testTitle}>Tên: </Text>
                     <TextInput
