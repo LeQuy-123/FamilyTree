@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {AsyncStorage, TouchableHighlightBase} from 'react-native';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  AsyncStorage,
 } from 'react-native';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import url from '../../components/MainURL';
