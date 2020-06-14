@@ -30,19 +30,29 @@ export default class FamilyScreen extends Component {
               />
             </TouchableOpacity>
           </View>
-          <TextInput
+          <View
             style={{
               backgroundColor: 'white',
               alignSelf: 'flex-start',
+              alignItems: 'center',
               height: 40,
-              width: '80%',
+              width: '65%',
               borderRadius: 10,
               bottom: 10,
               left: 10,
-              paddingLeft: 20,
-            }}
-            placeholder="Tìm kiếm người thân"
-          />
+              paddingLeft: 10,
+              flexDirection: 'row',
+            }}>
+            <Image
+              style={{width: 30, height: 30}}
+              source={require('../../images/icons8-search-contacts-50.png')}
+            />
+            <TextInput
+              style={{paddingLeft: 10}}
+              placeholder="Tìm kiếm người thân"
+            />
+          </View>
+
           <View style={styles.listFamily}>
             <Text style={styles.titleList}>Danh sách người thân</Text>
             <View style={styles.list} />
@@ -89,7 +99,7 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontSize: 18,
     //backgroundColor: 'blue',
-    bottom: 15,
+    bottom: 35,
     left: 15,
     fontWeight: 'bold',
   },
@@ -98,13 +108,14 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 30,
     backgroundColor: '#FBBD00',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   list: {
-    height: '80%',
+    height: 490,
     width: '100%',
     borderRadius: 30,
     backgroundColor: 'white',
+    bottom: 20,
   },
   buttonAdd: {
     flex: 1,

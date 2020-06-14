@@ -21,7 +21,8 @@ export default class FixAccountScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      image: '',
+      imagePre: this.props.route.params.eventImage,
+      image: this.props.route.params.eventImage,
       imageType: '',
       accessToken: null,
       id: this.props.route.params.id,
@@ -231,13 +232,12 @@ export default class FixAccountScreen extends Component {
                     <TouchableOpacity
                       style={styles.avatar}
                       onPress={() => this.onClickAddImages()}>
-                      {this.state.image === '' && (
+                      {this.state.image === undefined && (
                         <Image
                           source={require('../../images/avatar_default.png')}
                           style={{
-                            width: 120,
-                            height: 120,
-                            borderRadius: 20,
+                            width: 100,
+                            height: 100,
                           }}
                         />
                       )}
@@ -386,6 +386,5 @@ const styles = StyleSheet.create({
   textAva: {
     fontSize: 18,
     color: 'darkgrey',
-    start: 10,
   },
 });
