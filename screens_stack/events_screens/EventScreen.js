@@ -1,10 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {AsyncStorage} from 'react-native';
+import {AsyncStorage, TouchableHighlightBase} from 'react-native';
 import {
   SafeAreaView,
   StyleSheet,
-  ScrollView,
   View,
   Text,
   Image,
@@ -14,7 +13,6 @@ import {
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import url from '../../components/MainURL';
 import _RefreshToken from '../../components/refresh_Token';
-
 LocaleConfig.locales.fr = {
   monthNames: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
   monthNamesShort: [
@@ -47,8 +45,9 @@ LocaleConfig.defaultLocale = 'fr';
 export default class EventScreen extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
+      refreshToken: '',
+      email: '',
       selectedDate: '',
       markedDates: {},
       current: '',
@@ -57,6 +56,9 @@ export default class EventScreen extends Component {
       day: '',
       id: '',
       dataEvent: [],
+      isFocused: false,
+      deleteId: '',
+      event: [],
     };
   }
   setMarkedDates(key) {
@@ -94,6 +96,13 @@ export default class EventScreen extends Component {
             this.setState({
               id: json.event._id,
             });
+            if (this.state.day) {
+              this.props.navigation.navigate('AddEvent', {
+                date: this.state.day,
+                id: this.state.id,
+                onGoBack: this.loadEvent,
+              });
+            }
             console.log('id :' + this.state.id);
           });
       } catch (error) {
@@ -103,49 +112,99 @@ export default class EventScreen extends Component {
   };
   loadEvent = async () => {
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    console.log('refresh token: ' + refreshToken);
+    console.log('Loading event');
     let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
     _RefreshToken(userEmail, refreshToken).then(data => {
       var URL = url + '/api/user/eventshow';
-      try {
-        fetch(URL, {
-          method: 'GET',
-          headers: {
-            Authorization: 'Bearer ' + data,
-          },
-        })
-          .then(response => response.json())
-          .then(json => {
-            this.setState({
-              dataEvent: json.event,
-            });
-            console.log(this.state.dataEvent);
+      if (data === null) {
+        console.log('ko the refresh token do token het han');
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'GET',
+            headers: {
+              Authorization: 'Bearer ' + data,
+            },
           })
-          .catch(error => console.log(error));
-      } catch (error) {
-        console.error(error);
+            .then(response => response.json())
+            .then(json => {
+              this.setState({
+                dataEvent: json.event,
+              });
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
       }
     });
   };
-  AddEvent() {
-    if (this.state.day) {
-      //this.createEvent();
-      //this.props.navigation.navigate('AddEvent', {date: this.state.day});
-    }
-    console.log(this.state.currentDate);
-    console.log(this.state.nextDate);
-  }
+  loadOneEvent = async id => {
+    console.log('Loading 1 event');
+    console.log('id: ' + id);
+    _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
+      var URL = url + '/api/user/eventshowone';
+      if (data === null) {
+        console.log('ko the refresh token do token het han');
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              id: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.props.navigation.navigate('AddEvent', {
+                date: json.event.date,
+                id: id,
+                address: json.event.address,
+                bio: json.event.bio,
+                cate: json.event.catelogy,
+                event: json.event.event,
+                eventImage: json.event.eventImage,
+                time: json.event.time,
+                onGoBack: this.loadEvent,
+              });
+              this.setState({
+                event: json.event,
+              });
+              console.log('event: ' + this.state.event.id);
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  deleteItem = id => {
+    this.setState({
+      dataEvent: this.state.dataEvent.filter(x => x.id !== id),
+    });
+  };
   componentDidMount() {
     this.loadEvent();
     this.getDate();
   }
   getDate() {
-    var date = new Date().getDate();
+    var date = new Date().getUTCDate();
     var month = new Date().getMonth() + 1;
     var year = new Date().getFullYear();
     var current = new Date();
     var followingDay = new Date(current.getTime() + 86400000);
-    var nextDate = followingDay.getDate();
+    var nextDate = followingDay.getUTCDate();
     if (date.toString().length === 1) {
       date = '0' + date;
     }
@@ -159,28 +218,80 @@ export default class EventScreen extends Component {
       currentDate: year + '-' + month + '-' + date,
       nextDate: year + '-' + month + '-' + nextDate,
     });
+    console.log(this.state.nextDate);
   }
-  render() {
-    function Item({title, time, id, bio}) {
-      return (
-        <TouchableOpacity onPress={() => console.log(id)}>
-          <View style={styles.listContainer}>
-            <View style={styles.item}>
-              <Text style={styles.titleItem}>
-                {time} - {bio}
-              </Text>
-              <Text style={styles.titleItem}>{title}</Text>
-            </View>
-            <View style={{justifyContent: 'center'}}>
-              <Image
-                style={{height: 25, width: 25}}
-                source={require('../../images/calendar.png')}
-              />
-            </View>
-          </View>
+  _deleteEvent = async id => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let email = await AsyncStorage.getItem('email');
+    _RefreshToken(email, refreshToken).then(data => {
+      var URL = url + '/api/user/destroyevent';
+      if (data === null) {
+        console.log('ko the refresh token do token het han');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              id: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              console.log(json.message);
+              this.deleteItem(id);
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  deleteItem = id => {
+    console.log('id bi xoa: ' + id);
+    this.setState({
+      dataEvent: this.state.dataEvent.filter(x => x._id !== id),
+    });
+    console.log(this.state.dataEvent);
+  };
+  _renderItem = ({item}) => (
+    <View style={styles.listContainer}>
+      <View style={styles.item}>
+        <Text style={styles.titleItem}>
+          {item.time} - {item.bio}
+        </Text>
+        <Text style={styles.titleItem}>{item.event}</Text>
+      </View>
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+        }}>
+        <TouchableOpacity
+          style={{padding: 15}}
+          onPress={() => {
+            this.loadOneEvent(item._id);
+            console.log(item._id);
+          }}>
+          <Image
+            style={{height: 30, width: 30}}
+            source={require('../../images/icons8-event-accepted-30.png')}
+          />
         </TouchableOpacity>
-      );
-    }
+        <TouchableOpacity onPress={() => this._deleteEvent(item._id)}>
+          <Image
+            style={{height: 30, width: 30}}
+            source={require('../../images/icons8-delete-view-24.png')}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+  render() {
     const todayEvent = this.state.dataEvent.filter(
       x => x.date === this.state.currentDate,
     );
@@ -192,7 +303,7 @@ export default class EventScreen extends Component {
         <View style={styles.container}>
           <View style={styles.titleView}>
             <Text style={styles.title}>SỰ KIỆN </Text>
-            <TouchableOpacity onPress={() => this.AddEvent()}>
+            <TouchableOpacity onPress={() => this.createEvent()}>
               <Image
                 style={{top: 5}}
                 source={require('../../images/icons8-add-40.png')}
@@ -201,18 +312,15 @@ export default class EventScreen extends Component {
           </View>
           <View style={styles.eventView}>
             <Text style={styles.titleEvent}>Sự kiện hôm nay</Text>
+            <Text style={{fontSize: 15, left: 10}}>
+              {this.state.currentDate}
+            </Text>
             <View style={styles.eventList}>
               <FlatList
                 data={todayEvent}
-                renderItem={({item}) => (
-                  <Item
-                    title={item.event}
-                    time={item.time}
-                    bio={item.bio}
-                    id={item._id}
-                  />
-                )}
-                keyExtractor={item => item.id}
+                renderItem={this._renderItem}
+                keyExtractor={item => item._id}
+                extraData={this.state.dataEvent}
               />
             </View>
             <Text style={styles.titleEvent}>Sự kiện sắp diễn ra</Text>
@@ -226,15 +334,9 @@ export default class EventScreen extends Component {
               }}>
               <FlatList
                 data={nextDayEvent}
-                renderItem={({item}) => (
-                  <Item
-                    title={item.event}
-                    time={item.time}
-                    bio={item.bio}
-                    id={item._id}
-                  />
-                )}
-                keyExtractor={item => item.id}
+                renderItem={this._renderItem}
+                keyExtractor={item => item._id}
+                extraData={this.state.dataEvent}
               />
             </View>
           </View>

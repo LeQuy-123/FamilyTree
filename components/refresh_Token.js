@@ -26,7 +26,7 @@ async function _RefreshToken(email, token) {
       .catch(error => {
         console.log('error: ' + error.toString());
         AsyncStorage.clear();
-        throw error;
+        return 'null';
       });
   } catch (error) {
     console.error(error);

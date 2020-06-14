@@ -25,7 +25,11 @@ export default class Loading extends Component {
 
       if (refreshToken) {
         console.log('goi refresh token');
-        _RefreshToken(userEmail, refreshToken);
+        _RefreshToken(userEmail, refreshToken).catch(error => {
+          console.log('error: ' + error.toString());
+          AsyncStorage.clear();
+          throw error;
+        });
       }
       this.props.navigation.navigate('Login');
     } catch (error) {

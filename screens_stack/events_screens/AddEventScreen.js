@@ -16,18 +16,24 @@ import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-
+import _RefreshToken from '../../components/refresh_Token';
+import url from '../../components/MainURL';
 export default class FixAccountScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      myEmail: '',
-      date: '',
       image: '',
       imageType: '',
-      baseUrl: 'https://familytree1.herokuapp.com/api/user/update',
       accessToken: null,
+      id: this.props.route.params.id,
       myRefreshToken: '',
+      date: this.props.route.params.date,
+      name: this.props.route.params.event,
+      time: this.props.route.params.time,
+      type: this.props.route.params.type,
+      bio: this.props.route.params.bio,
+      cate: this.props.route.params.cate,
+      address: this.props.route.params.address,
     };
   }
   chosePhotoFromLibrary() {
@@ -78,6 +84,52 @@ export default class FixAccountScreen extends Component {
       },
     );
   }
+  _postDataEvent = async () => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let email = await AsyncStorage.getItem('email');
+    _RefreshToken(email, refreshToken).then(data => {
+      var URL = url + '/api/user/eventupdate';
+      // console.log(URL);
+      // console.log('id = ' + this.state.id);
+      // console.log('data token = ' + data);
+      try {
+        fetch(URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + data,
+          },
+          body: JSON.stringify({
+            id: this.state.id,
+            event: this.state.name,
+            address: this.state.address,
+            bio: this.state.bio,
+            catelogy: this.state.cate,
+            date: this.state.date,
+            time: this.state.time,
+            eventImage: this.state.image,
+          }),
+        })
+          .then(response => response.json())
+          .then(json => {
+            console.log(json.event);
+          })
+          .catch(error => {
+            console.log('error: ' + error.toString());
+            throw error;
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    });
+    this.props.navigation.goBack();
+    this.props.route.params.onGoBack();
+  };
+  componentDidMount() {
+    if (!this.state.date) {
+      this._loadOneEvent();
+    }
+  }
   render() {
     return (
       <nativeBase.Root>
@@ -108,14 +160,13 @@ export default class FixAccountScreen extends Component {
                     <TextInput
                       style={styles.inputText}
                       onSubmitEditing={() => {
-                        this.secondTextInput.focus();
+                        this.nextTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Name: data})
-                      }
-                    />
-                    <Text style={styles.testTitle}>Thời gian diễn ra </Text>
+                      onChangeText={data => this.setState({name: data})}>
+                      {this.props.route.params.event}
+                    </TextInput>
+                    <Text style={styles.testTitle}>Ngày diễn ra </Text>
                     <Text
                       style={{
                         width: '90%',
@@ -129,20 +180,19 @@ export default class FixAccountScreen extends Component {
                       }}>
                       {this.props.route.params.date}
                     </Text>
-                    <Text style={styles.testTitle}>Loại sự kiện </Text>
+                    <Text style={styles.testTitle}>Thời gian diễn ra </Text>
                     <TextInput
                       style={styles.inputText}
                       ref={input => {
-                        this.secondTextInput = input;
+                        this.nextTextInput = input;
                       }}
                       onSubmitEditing={() => {
                         this.thirdTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_NickName: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({time: data})}>
+                      {this.props.route.params.time}
+                    </TextInput>
                     <Text style={styles.testTitle}>Nhóm </Text>
                     <TextInput
                       style={styles.inputText}
@@ -153,10 +203,9 @@ export default class FixAccountScreen extends Component {
                         this.fourthTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Number: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({bio: data})}>
+                      {this.props.route.params.bio}
+                    </TextInput>
                     <Text style={styles.testTitle}>Mô tả</Text>
                     <TextInput
                       ref={input => {
@@ -167,20 +216,18 @@ export default class FixAccountScreen extends Component {
                         this.sixthTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Gender: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({cate: data})}>
+                      {this.props.route.params.cate}
+                    </TextInput>
                     <Text style={styles.testTitle}>Địa điểm </Text>
                     <TextInput
                       style={styles.inputText}
                       ref={input => {
                         this.sixthTextInput = input;
                       }}
-                      onChangeText={data =>
-                        this.setState({TextInput_Address: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({address: data})}>
+                      {this.props.route.params.address}
+                    </TextInput>
                     <Text style={styles.testTitle}>Hình ảnh sự kiện </Text>
                     <TouchableOpacity
                       style={styles.avatar}
@@ -215,7 +262,9 @@ export default class FixAccountScreen extends Component {
                     onPress={() => this.props.navigation.goBack()}>
                     <Text style={styles.ButtonText1}>Hủy</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.Button2}>
+                  <TouchableOpacity
+                    style={styles.Button2}
+                    onPress={() => this._postDataEvent()}>
                     <Text style={styles.ButtonText2}>Cập nhật</Text>
                   </TouchableOpacity>
                 </View>
@@ -249,7 +298,7 @@ const styles = StyleSheet.create({
   },
   InfoEdit: {
     width: '100%',
-    height: '92%',
+    height: '93%',
     borderRadius: 30,
     backgroundColor: 'white',
     alignItems: 'flex-start',
