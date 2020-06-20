@@ -6,9 +6,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LoginStack from './screens_stack/loginStack';
 import Loading from './screens_stack/loading_screen';
 import _RefreshToken from './components/refresh_Token';
+import * as nativeBase from 'native-base';
 
 export default class App extends Component {
   render() {
-    return <NavigationContainer>{<LoginStack />}</NavigationContainer>;
+    return (
+      <nativeBase.Root>
+        <NavigationContainer>{<LoginStack />}</NavigationContainer>
+      </nativeBase.Root>
+    );
   }
 }

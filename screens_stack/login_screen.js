@@ -237,6 +237,7 @@ class Login extends Component {
                     blurOnSubmit={false}
                     //placeholder="Password"
                     autoCorrect={false}
+                    onSubmitEditing={Keyboard.dismiss}
                     onChangeText={password => this.setState({password})}>
                     {this.props.route.params?.passwordOJB2}
                   </TextInput>

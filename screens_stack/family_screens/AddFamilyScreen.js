@@ -9,10 +9,14 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Picker,
+  Keyboard,
+  Alert,
 } from 'react-native';
 import * as nativeBase from 'native-base';
 import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
+import url from '../../components/MainURL';
 import DatePicker from 'react-native-datepicker';
 import ImagePicker from 'react-native-image-crop-picker';
 
@@ -21,8 +25,21 @@ export default class FixInfoGenealogy extends Component {
     super(props);
     //set value in state for initial date
     this.state = {
+      id: this.props.route.params.id,
       image: '',
-      imageType: '',
+      parentage: 'Họ nội',
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      email: '',
+      nickName: '',
+      phone: '',
+      sex: '',
+      address: '',
+      job: '',
+      yourself: '',
+      religion: '',
+      date: '',
     };
   }
   chosePhotoFromLibrary() {
@@ -34,7 +51,6 @@ export default class FixInfoGenealogy extends Component {
       this.setState({
         image: image.path,
       });
-      //this._postImage(this.state.accessToken, image);
       console.log(image.path);
     });
   }
@@ -47,7 +63,6 @@ export default class FixInfoGenealogy extends Component {
       this.setState({
         image: image.path,
       });
-      //this._postImage(this.state.accessToken, image);
       console.log(image.path);
     });
   }
@@ -73,6 +88,111 @@ export default class FixInfoGenealogy extends Component {
       },
     );
   }
+  _postDataFamily = async () => {
+    if (this.state.firstName !== '' || this.state.lastName !== '') {
+      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+      let email = await AsyncStorage.getItem('email');
+      _RefreshToken(email, refreshToken).then(data => {
+        var URL = url + '/api/user/familyupdate';
+        try {
+          fetch(URL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              id: this.state.id,
+              firstname: this.state.firstName,
+              middlename: this.state.middleName,
+              lastname: this.state.lastName,
+              email: this.state.email,
+              nickname: this.state.nickName,
+              numphone: this.state.phone,
+              sex: this.state.sex,
+              datebirth: this.state.date,
+              address: this.state.address,
+              job: this.state.job,
+              parentage: this.state.parentage,
+              yourself: this.state.yourself,
+              religion: this.state.religion,
+              profileImage: this.state.image,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.props.navigation.goBack();
+            })
+            .catch(error => {
+              console.log('error: ' + error.toString());
+              throw error;
+            });
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    } else {
+      console.log(this.state.firstName);
+      console.log(this.state.lastName);
+      Alert.alert('Vui lòng nhập đầy đủ họ tên người thân');
+    }
+  };
+  loadOneFamily = async id => {
+    console.log('Loading 1 family');
+    console.log('id: ' + id);
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let email = await AsyncStorage.getItem('email');
+    _RefreshToken(email, refreshToken).then(data => {
+      var URL = url + '/api/user/familyshowone';
+      if (data === null) {
+        console.log('ko the refresh token do token het han');
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              id: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              console.log('family id: ' + json.family._id);
+              this.setState({
+                image: json.family.profileImage,
+                parentage: json.family.parentage,
+                firstName: json.family.firstname,
+                middleName: json.family.middlename,
+                lastName: json.family.lastname,
+                email: json.family.email,
+                nickName: json.family.nickname,
+                phone: json.family.numphone,
+                sex: json.family.sex,
+                address: json.family.address,
+                job: json.family.job,
+                yourself: json.family.yourself,
+                religion: json.family.religion,
+                date: json.family.datebirth,
+              });
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  componentDidMount() {
+    if (this.props.route.params.id) {
+      console.log(this.props.route.params.id);
+      this.loadOneFamily(this.props.route.params.id);
+    }
+  }
+
   render() {
     return (
       <nativeBase.Root>
@@ -129,33 +249,92 @@ export default class FixInfoGenealogy extends Component {
                   <Text style={styles.inputTitle}>Họ* </Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onSubmitEditing={() => {
+                      this.TextInput1.focus();
+                    }}
+                    blurOnSubmit={false}
+                    onChangeText={data => this.setState({firstName: data})}>
+                    {this.state.firstName}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Đêm* </Text>
                   <TextInput
+                    ref={input => {
+                      this.TextInput1 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput2.focus();
+                    }}
+                    blurOnSubmit={false}
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data => this.setState({middleName: data})}>
+                    {this.state.middleName}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Tên* </Text>
                   <TextInput
+                    ref={input => {
+                      this.TextInput2 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput3.focus();
+                    }}
+                    blurOnSubmit={false}
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
-                  <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
+                    onChangeText={data => this.setState({lastName: data})}>
+                    {this.state.lastName}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Email </Text>
                   <TextInput
+                    ref={input => {
+                      this.TextInput3 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput4.focus();
+                    }}
+                    blurOnSubmit={false}
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data => this.setState({email: data})}>
+                    {this.state.email}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Biệt danh* </Text>
+                  <TextInput
+                    ref={input => {
+                      this.TextInput4 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput5.focus();
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    onChangeText={data => this.setState({nickName: data})}>
+                    {' '}
+                    {this.state.nickName}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Số điện thoại </Text>
+                  <TextInput
+                    ref={input => {
+                      this.TextInput5 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput6.focus();
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    onChangeText={data => this.setState({phone: data})}>
+                    {this.state.phone}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Giới tính</Text>
                   <TextInput
+                    ref={input => {
+                      this.TextInput6 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput7.focus();
+                    }}
+                    blurOnSubmit={false}
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
-                  <Text style={styles.inputTitle}>Nguyên quán</Text>
-                  <TextInput
-                    style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data => this.setState({sex: data})}>
+                    {this.state.sex}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Ngày sinh</Text>
                   <DatePicker
                     style={{width: '90%', borderRadius: 50}}
@@ -177,49 +356,82 @@ export default class FixInfoGenealogy extends Component {
                       dateInput: {
                         marginLeft: 36,
                       },
-                      // ... You can check the source to find the other keys.
                     }}
                     onDateChange={date => {
                       this.setState({date: date});
                     }}
                   />
-                  <Text style={styles.inputTitle}>Ngày giỗ</Text>
-                  <DatePicker
-                    style={{width: '90%', borderRadius: 50}}
-                    date={this.state.date}
-                    mode="date"
-                    placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="1900-05-01"
-                    maxDate="2100-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    customStyles={{
-                      dateIcon: {
-                        position: 'absolute',
-                        left: 0,
-                        top: 4,
-                        marginLeft: 0,
-                      },
-                      dateInput: {
-                        marginLeft: 36,
-                      },
-                      // ... You can check the source to find the other keys.
-                    }}
-                    onDateChange={date => {
-                      this.setState({date: date});
-                    }}
-                  />
-                  <Text style={styles.inputTitle}>Mộ tang </Text>
+                  <Text style={styles.inputTitle}>Địa chỉ</Text>
                   <TextInput
+                    ref={input => {
+                      this.TextInput7 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput8.focus();
+                    }}
+                    blurOnSubmit={false}
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data => this.setState({address: data})}>
+                    {this.state.address}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Nghề nghiệp</Text>
+                  <TextInput
+                    ref={input => {
+                      this.TextInput8 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput9.focus();
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    onChangeText={data => this.setState({job: data})}>
+                    {this.state.job}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Cách xưng hô</Text>
+                  <TextInput
+                    ref={input => {
+                      this.TextInput9 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput10.focus();
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    onChangeText={data => this.setState({yourself: data})}>
+                    {this.state.yourself}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Dòng họ</Text>
+                  <Picker
+                    selectedValue={this.state.parentage}
+                    style={styles.inputText}
+                    onValueChange={(itemValue, itemIndex) => {
+                      this.setState({parentage: itemValue});
+                      console.log(itemValue);
+                    }}>
+                    <Picker.Item label="Họ nội" value="Họ nội" />
+                    <Picker.Item label="Họ ngoại" value="Họ ngoại" />
+                  </Picker>
+                  <Text style={styles.inputTitle}>Tôn giáo</Text>
+                  <TextInput
+                    ref={input => {
+                      this.TextInput10 = input;
+                    }}
+                    //blurOnSubmit={false}
+                    onSubmitEditing={Keyboard.dismiss}
+                    style={styles.inputText}
+                    onChangeText={data => this.setState({religion: data})}>
+                    {this.state.religion}
+                  </TextInput>
                 </View>
               </View>
             </View>
             <View style={styles.buttonAdd}>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  this._postDataFamily();
+                  console.log('hinh anh: ' + this.state.image);
+                }}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -238,7 +450,7 @@ export default class FixInfoGenealogy extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    height: 1000,
+    height: 1110,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#FBBD00',
@@ -246,7 +458,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   titleGroup: {
-    height: 60,
+    height: 50,
     alignItems: 'center',
     //backgroundColor: '#FBBD00',
     width: '100%',
@@ -260,18 +472,19 @@ const styles = StyleSheet.create({
     left: 20,
   },
   infoGroup: {
-    flex: 1,
+    height: 1050,
     width: '100%',
     backgroundColor: '#00B2BF',
     borderRadius: 30,
     justifyContent: 'flex-end',
   },
   info: {
-    height: '95%',
+    height: '96%',
     backgroundColor: 'white',
     width: '100%',
     justifyContent: 'space-around',
     borderRadius: 30,
+    paddingBottom: 10,
   },
   titleGr: {
     color: 'white',

@@ -21,12 +21,11 @@ export default class FixAccountScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      imagePre: this.props.route.params.eventImage,
-      image: this.props.route.params.eventImage,
       imageType: '',
       accessToken: null,
-      id: this.props.route.params.id,
       myRefreshToken: '',
+      id: this.props.route.params.id,
+      image: this.props.route.params.eventImage,
       date: this.props.route.params.date,
       name: this.props.route.params.event,
       time: this.props.route.params.time,
@@ -34,6 +33,7 @@ export default class FixAccountScreen extends Component {
       bio: this.props.route.params.bio,
       cate: this.props.route.params.cate,
       address: this.props.route.params.address,
+      event: [],
     };
   }
   chosePhotoFromLibrary() {
@@ -89,9 +89,6 @@ export default class FixAccountScreen extends Component {
     let email = await AsyncStorage.getItem('email');
     _RefreshToken(email, refreshToken).then(data => {
       var URL = url + '/api/user/eventupdate';
-      // console.log(URL);
-      // console.log('id = ' + this.state.id);
-      // console.log('data token = ' + data);
       try {
         fetch(URL, {
           method: 'PUT',
@@ -113,6 +110,7 @@ export default class FixAccountScreen extends Component {
           .then(response => response.json())
           .then(json => {
             console.log(json.event);
+            this.setState({event: json.event});
           })
           .catch(error => {
             console.log('error: ' + error.toString());

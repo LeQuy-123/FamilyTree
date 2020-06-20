@@ -56,9 +56,6 @@ export default class EventScreen extends Component {
       day: '',
       id: '',
       dataEvent: [],
-      isFocused: false,
-      deleteId: '',
-      event: [],
     };
   }
   setMarkedDates(key) {
@@ -189,11 +186,7 @@ export default class EventScreen extends Component {
       }
     });
   };
-  deleteItem = id => {
-    this.setState({
-      dataEvent: this.state.dataEvent.filter(x => x.id !== id),
-    });
-  };
+
   componentDidMount() {
     this.loadEvent();
     this.getDate();
@@ -342,7 +335,7 @@ export default class EventScreen extends Component {
           </View>
           <View style={styles.backGround}>
             <Calendar
-              style={{width: '76%', height: 275}}
+              style={{width: '80%', height: 255}}
               theme={{
                 calendarBackground: '#AEECEF',
                 textSectionTitleColor: 'black',
@@ -393,7 +386,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
   },
   eventView: {
-    height: '53%',
+    height: '55%',
     bottom: 15,
     borderRadius: 30,
     backgroundColor: '#FBBD00',
@@ -416,7 +409,6 @@ const styles = StyleSheet.create({
   titleView: {
     flex: 1,
     top: 9,
-    right: 3,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingRight: 20,
