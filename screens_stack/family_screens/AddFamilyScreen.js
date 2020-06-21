@@ -120,9 +120,7 @@ export default class FixInfoGenealogy extends Component {
             }),
           })
             .then(response => response.json())
-            .then(json => {
-              this.props.navigation.goBack();
-            })
+            .then(json => {})
             .catch(error => {
               console.log('error: ' + error.toString());
               throw error;
@@ -132,14 +130,11 @@ export default class FixInfoGenealogy extends Component {
         }
       });
     } else {
-      console.log(this.state.firstName);
-      console.log(this.state.lastName);
       Alert.alert('Vui lòng nhập đầy đủ họ tên người thân');
     }
   };
   loadOneFamily = async id => {
     console.log('Loading 1 family');
-    console.log('id: ' + id);
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let email = await AsyncStorage.getItem('email');
     _RefreshToken(email, refreshToken).then(data => {
@@ -161,7 +156,6 @@ export default class FixInfoGenealogy extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              console.log('family id: ' + json.family._id);
               this.setState({
                 image: json.family.profileImage,
                 parentage: json.family.parentage,
@@ -188,7 +182,6 @@ export default class FixInfoGenealogy extends Component {
   };
   componentDidMount() {
     if (this.props.route.params.id) {
-      console.log(this.props.route.params.id);
       this.loadOneFamily(this.props.route.params.id);
     }
   }
@@ -204,9 +197,7 @@ export default class FixInfoGenealogy extends Component {
             <View style={styles.container}>
               <View style={styles.titleGroup}>
                 <TouchableOpacity
-                  onPress={() =>
-                    this.props.navigation.navigate('FamilyScreen')
-                  }>
+                  onPress={() => this.props.navigation.goBack()}>
                   <Image
                     style={{
                       height: 40,
@@ -406,7 +397,6 @@ export default class FixInfoGenealogy extends Component {
                     style={styles.inputText}
                     onValueChange={(itemValue, itemIndex) => {
                       this.setState({parentage: itemValue});
-                      console.log(itemValue);
                     }}>
                     <Picker.Item label="Họ nội" value="Họ nội" />
                     <Picker.Item label="Họ ngoại" value="Họ ngoại" />
@@ -430,7 +420,7 @@ export default class FixInfoGenealogy extends Component {
                 style={styles.button}
                 onPress={() => {
                   this._postDataFamily();
-                  console.log('hinh anh: ' + this.state.image);
+                  this.props.navigation.navigate('FamilyScreen');
                 }}>
                 <Text
                   style={{

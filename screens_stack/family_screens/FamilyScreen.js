@@ -10,6 +10,9 @@ import {
   TextInput,
   FlatList,
   AsyncStorage,
+  Linking,
+  Platform,
+  Alert,
 } from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
@@ -73,7 +76,6 @@ export default class FamilyScreen extends Component {
               this.setState({
                 dataFamily: json.family,
               });
-              console.log(this.state.dataFamily);
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -82,6 +84,46 @@ export default class FamilyScreen extends Component {
       }
     });
   };
+  makeCall = phone => {
+    if (phone) {
+      let phoneNumber = '';
+
+      if (Platform.OS === 'android') {
+        phoneNumber = 'tel:${' + phone + '}';
+      } else {
+        phoneNumber = 'telprompt:${' + phone + '}';
+      }
+      Linking.openURL(phoneNumber);
+    } else {
+      Alert.alert('Người thân này chưa đươc cập nhật số điện thoại');
+    }
+  };
+  sendSMS = phone => {
+    if (phone) {
+      let phoneNumber = '';
+
+      if (Platform.OS === 'android') {
+        phoneNumber = 'sms:' + phone;
+      } else {
+        phoneNumber = 'sms:/open?addresses=' + phone;
+      }
+      Linking.openURL(phoneNumber);
+    } else {
+      Alert.alert('Người thân này chưa đươc cập nhật số điện thoại');
+    }
+  };
+  openMap(address) {
+    if (address) {
+      console.log('open directions');
+      if (Platform.OS === 'android') {
+        Linking.openURL('geo:' + address);
+      } else {
+        Linking.openURL('maps:' + address);
+      }
+    } else {
+      Alert.alert('Người thân này chưa đươc cập nhật địa chỉ');
+    }
+  }
   setOneFamily(item) {
     this.setState({
       currentID: item._id,
@@ -100,10 +142,15 @@ export default class FamilyScreen extends Component {
       religion: item.religion,
       date: item.datebirth,
     });
+    console.log(item._id);
     this.toggleModal();
   }
   componentDidMount() {
-    this.loadFamily();
+    const {navigation} = this.props;
+    navigation.addListener('focus', async () => {
+      this.loadFamily();
+      console.log('willFocus runs');
+    });
   }
   _renderItem = ({item}) => (
     <TouchableOpacity onPress={() => this.setOneFamily(item)}>
@@ -337,21 +384,22 @@ export default class FamilyScreen extends Component {
               </View>
             </View>
             <View style={styles.modalOption}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.makeCall(this.state.phone)}>
                 <Image
                   style={styles.modalOptionImage}
                   //source={require('../../images/icons8-call-50.png')}
                 />
                 <Text style={styles.modalOptionText}>Gọi điện</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.sendSMS(this.state.phone)}>
                 <Image
                   style={styles.modalOptionImage}
                   //source={require('../../images/icons8-send-email-50.png')}
                 />
                 <Text style={styles.modalOptionText}>Nhắn tin</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.openMap(this.state.address)}>
                 <Image style={styles.modalOptionImage} />
                 <Text style={styles.modalOptionText}>Chỉ đường</Text>
               </TouchableOpacity>

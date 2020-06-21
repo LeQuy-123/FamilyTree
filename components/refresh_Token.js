@@ -18,8 +18,8 @@ async function _RefreshToken(email, token) {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('thanh cong');
-        console.log('token: ' + data.accessToken);
+        // console.log('thanh cong');
+        // console.log('token: ' + data.accessToken);
         storeToken(data.accessToken);
         return data.accessToken;
       })

@@ -97,7 +97,6 @@ export default class EventScreen extends Component {
               this.props.navigation.navigate('AddEvent', {
                 date: this.state.day,
                 id: this.state.id,
-                onGoBack: this.loadEvent,
               });
             }
             console.log('id :' + this.state.id);
@@ -188,8 +187,11 @@ export default class EventScreen extends Component {
   };
 
   componentDidMount() {
-    this.loadEvent();
     this.getDate();
+    const {navigation} = this.props;
+    navigation.addListener('focus', async () => {
+      this.loadEvent();
+    });
   }
   getDate() {
     var date = new Date().getUTCDate();

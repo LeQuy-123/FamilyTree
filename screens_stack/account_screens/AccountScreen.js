@@ -56,7 +56,6 @@ class AccountScreen extends Component {
     }
   }
   componentDidMount() {
-    console.log('load data dang nhap moi');
     this.getToken();
   }
   _Logout = async () => {

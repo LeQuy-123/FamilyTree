@@ -46,7 +46,6 @@ export default class FixAccountScreen extends Component {
         image: image.path,
         imageType: image.mime,
       });
-      console.log(image.path);
     });
   }
   takePhotoFromCamera() {
@@ -59,7 +58,6 @@ export default class FixAccountScreen extends Component {
         image: image.path,
         imageType: image.mime,
       });
-      console.log(image.path);
     });
   }
   onClickAddImages() {
@@ -109,7 +107,6 @@ export default class FixAccountScreen extends Component {
         })
           .then(response => response.json())
           .then(json => {
-            console.log(json.event);
             this.setState({event: json.event});
           })
           .catch(error => {
@@ -120,8 +117,6 @@ export default class FixAccountScreen extends Component {
         console.error(error);
       }
     });
-    this.props.navigation.goBack();
-    this.props.route.params.onGoBack();
   };
   componentDidMount() {
     if (!this.state.date) {
@@ -261,7 +256,10 @@ export default class FixAccountScreen extends Component {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.Button2}
-                    onPress={() => this._postDataEvent()}>
+                    onPress={() => {
+                      this._postDataEvent();
+                      this.props.navigation.navigate('Event');
+                    }}>
                     <Text style={styles.ButtonText2}>Cập nhật</Text>
                   </TouchableOpacity>
                 </View>

@@ -1,6 +1,5 @@
 import FamilyScreen from './FamilyScreen';
 import AddFamilyScreen from './AddFamilyScreen';
-import FixInfoScreen from './FixInfoScreen.js';
 
 import {createStackNavigator} from '@react-navigation/stack';
 //import MyTabs from '../../TabBar';
@@ -18,11 +17,6 @@ const FamilyStack = () => (
       name="AddFamilyScreen"
       component={AddFamilyScreen}
       //options={{tabBarVisible: false}}
-    />
-    <familyStack.Screen
-      name="FixInfoScreen"
-      component={FixInfoScreen}
-      //options={{title: 'GenealogyScreen'}}
     />
   </familyStack.Navigator>
 );
