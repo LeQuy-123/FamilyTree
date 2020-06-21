@@ -84,6 +84,45 @@ export default class FamilyScreen extends Component {
       }
     });
   };
+  findFamily = async name => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    console.log('find family ' + name);
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      var URL = url + '/api/user/familysearch';
+      if (data === null) {
+        console.log('ko the refresh token do token het han');
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              name: name,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.setState({
+                dataFamily: json.result,
+              });
+              console.log(json);
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
   makeCall = phone => {
     if (phone) {
       let phoneNumber = '';
@@ -317,13 +356,14 @@ export default class FamilyScreen extends Component {
               style={{paddingLeft: 10}}
               placeholder="Tìm kiếm người thân"
               onChangeText={data => this.setState({srName: data})}
-              onSubmitEditing={() => console.log(this.state.srName)}
+              onSubmitEditing={() => this.findFamily(this.state.srName)}
             />
           </View>
           <View style={styles.listFamily}>
             <Text style={styles.titleList}>Danh sách người thân</Text>
             <View style={styles.list}>
               <FlatList
+                style={{width: '100%'}}
                 data={this.state.dataFamily}
                 renderItem={this._renderItem}
                 keyExtractor={item => item._id}
@@ -366,7 +406,7 @@ export default class FamilyScreen extends Component {
                 <Text
                   style={{
                     fontFamily: 'serif',
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: 'bold',
                   }}>
                   {this.state.firstName} {this.state.middleName}{' '}
@@ -543,13 +583,13 @@ const styles = StyleSheet.create({
   },
   item: {
     height: 80,
-    width: '88%',
+    width: '80%',
     marginTop: 25,
     marginBottom: 10,
     marginHorizontal: 70,
     backgroundColor: 'white',
     borderRadius: 20,
-    right: 30,
+    right: 20,
     flexDirection: 'row',
   },
   textStyle: {
@@ -599,7 +639,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00B2BF',
   },
   modalTitleInfo: {
-    left: 50,
+    left: 45,
     justifyContent: 'space-around',
   },
   modalOption: {
