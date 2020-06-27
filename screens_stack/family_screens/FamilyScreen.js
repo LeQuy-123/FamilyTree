@@ -188,7 +188,6 @@ export default class FamilyScreen extends Component {
     const {navigation} = this.props;
     navigation.addListener('focus', async () => {
       this.loadFamily();
-      console.log('willFocus runs');
     });
   }
   _renderItem = ({item}) => (
@@ -359,18 +358,25 @@ export default class FamilyScreen extends Component {
               onSubmitEditing={() => this.findFamily(this.state.srName)}
             />
           </View>
-          <View style={styles.listFamily}>
-            <Text style={styles.titleList}>Danh sách người thân</Text>
-            <View style={styles.list}>
-              <FlatList
-                style={{width: '100%'}}
-                data={this.state.dataFamily}
-                renderItem={this._renderItem}
-                keyExtractor={item => item._id}
-                extraData={this.state.dataFamily}
-              />
+          {this.state.dataFamily.length !== 0 ? (
+            <View style={styles.listFamily}>
+              <Text style={styles.titleList}>Danh sách người thân</Text>
+              <View style={styles.list}>
+                <FlatList
+                  style={{width: '100%', height: '100%', top: -10}}
+                  data={this.state.dataFamily}
+                  renderItem={this._renderItem}
+                  keyExtractor={item => item._id}
+                  extraData={this.state.dataFamily}
+                />
+              </View>
             </View>
-          </View>
+          ) : (
+            <View style={styles.listFamily}>
+              <Text style={styles.titleList}>Danh sách người thân</Text>
+              <View style={styles.list} />
+            </View>
+          )}
           <View style={styles.buttonAdd}>
             <TouchableOpacity
               style={styles.button}
@@ -524,14 +530,14 @@ const styles = StyleSheet.create({
   },
   titleList: {
     fontFamily: 'serif',
-    fontSize: 18,
-    //backgroundColor: 'blue',
+    height: '5%',
+    fontSize: 20,
     left: 15,
-    top: 10,
+    top: 5,
     fontWeight: 'bold',
   },
   listFamily: {
-    flex: 7,
+    flex: 7.5,
     width: '100%',
     borderRadius: 30,
     backgroundColor: '#FBBD00',
@@ -542,9 +548,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     alignSelf: 'center',
-    top: 20,
-    bottom: 30,
-    paddingBottom: 30,
+    top: 15,
+    paddingBottom: 20,
   },
   buttonAdd: {
     flex: 1,
@@ -607,7 +612,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#AEECEF',
     right: 30,
-    bottom: 30,
+    bottom: 25,
   },
   view: {
     justifyContent: 'flex-end',

@@ -2,7 +2,6 @@ import {AsyncStorage} from 'react-native';
 import url from './MainURL';
 async function _RefreshToken(email, token) {
   var URL = url + '/api/auth/refreshtoken';
-  //console.log('refresh token: ' + token);
   try {
     return await fetch(URL, {
       method: 'POST',
@@ -18,28 +17,16 @@ async function _RefreshToken(email, token) {
     })
       .then(response => response.json())
       .then(data => {
-        // console.log('thanh cong');
-        // console.log('token: ' + data.accessToken);
-        storeToken(data.accessToken);
+        AsyncStorage.removeItem('accessToken');
+        AsyncStorage.setItem('accessToken', data.accessToken);
         return data.accessToken;
       })
       .catch(error => {
         console.log('error: ' + error.toString());
-        AsyncStorage.clear();
-        return 'null';
+        return null;
       });
   } catch (error) {
     console.error(error);
-  }
-}
-async function storeToken(newToken) {
-  try {
-    if (newToken) {
-      await AsyncStorage.removeItem('accessToken');
-      await AsyncStorage.setItem('accessToken', newToken);
-    }
-  } catch (error) {
-    console.log('Something went wrong', error);
   }
 }
 

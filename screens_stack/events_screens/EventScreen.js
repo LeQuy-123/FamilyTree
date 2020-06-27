@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
+import moment from 'moment';
 import {
   SafeAreaView,
   StyleSheet,
@@ -50,12 +51,13 @@ export default class EventScreen extends Component {
       email: '',
       selectedDate: '',
       markedDates: {},
+      markedDate: moment(new Date()).format('YYYY-MM-DD'),
       current: '',
-      currentDate: '',
-      nextDate: '',
       day: '',
       id: '',
       dataEvent: [],
+      newDataEvent: [],
+      newDataEvent1: [],
     };
   }
   setMarkedDates(key) {
@@ -76,144 +78,94 @@ export default class EventScreen extends Component {
     });
   }
 
-  createEvent = async () => {
+  createEvent = async day => {
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      var URL = url + '/api/user/event';
+    if (day) {
+      _RefreshToken(userEmail, refreshToken).then(data => {
+        var URL = url + '/api/user/event';
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + data,
+            },
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.setState({
+                id: json.event._id,
+              });
+
+              this.props.navigation.navigate('AddEvent', {
+                date: day,
+                id: this.state.id,
+              });
+            });
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    }
+  };
+  loadEvent = async () => {
+    let accessToken = await AsyncStorage.getItem('accessToken');
+    var URL = url + '/api/user/eventshow';
+    if (accessToken === null) {
+      this.props.navigation.navigate('Login');
+    } else {
       try {
         fetch(URL, {
-          method: 'POST',
+          method: 'GET',
           headers: {
-            Authorization: 'Bearer ' + data,
+            Authorization: 'Bearer ' + accessToken,
           },
         })
           .then(response => response.json())
           .then(json => {
             this.setState({
-              id: json.event._id,
+              dataEvent: json.event,
             });
-            if (this.state.day) {
-              this.props.navigation.navigate('AddEvent', {
-                date: this.state.day,
-                id: this.state.id,
-              });
-            }
-            console.log('id :' + this.state.id);
-          });
+            console.log(json.event);
+          })
+          .catch(error => console.log(error));
       } catch (error) {
         console.error(error);
       }
-    });
+    }
   };
-  loadEvent = async () => {
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    console.log('Loading event');
-    let userEmail = await AsyncStorage.getItem('email');
-    this.setState({
-      refreshToken: refreshToken,
-      email: userEmail,
-    });
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      var URL = url + '/api/user/eventshow';
-      if (data === null) {
-        console.log('ko the refresh token do token het han');
-        this.props.navigation.navigate('Login');
-      } else {
-        try {
-          fetch(URL, {
-            method: 'GET',
-            headers: {
-              Authorization: 'Bearer ' + data,
-            },
-          })
-            .then(response => response.json())
-            .then(json => {
-              this.setState({
-                dataEvent: json.event,
-              });
-            })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
+  checkEvent(day) {
+    return moment(day, 'YYYYMMDD').isBetween(
+      moment(this.state.markedDate).subtract(1, 'days'),
+      moment(this.state.markedDate).add(4, 'days'),
+    );
+  }
   loadOneEvent = async id => {
-    console.log('Loading 1 event');
-    console.log('id: ' + id);
     _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
       var URL = url + '/api/user/eventshowone';
       if (data === null) {
-        console.log('ko the refresh token do token het han');
         this.props.navigation.navigate('Login');
       } else {
-        try {
-          fetch(URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              id: id,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {
-              this.props.navigation.navigate('AddEvent', {
-                date: json.event.date,
-                id: id,
-                address: json.event.address,
-                bio: json.event.bio,
-                cate: json.event.catelogy,
-                event: json.event.event,
-                eventImage: json.event.eventImage,
-                time: json.event.time,
-                onGoBack: this.loadEvent,
-              });
-              this.setState({
-                event: json.event,
-              });
-              console.log('event: ' + this.state.event.id);
-            })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
+        this.props.navigation.navigate('AddEvent', {id: id});
+        console.log('Loading 1 event' + id);
       }
     });
   };
 
   componentDidMount() {
-    this.getDate();
+    this.getData();
     const {navigation} = this.props;
     navigation.addListener('focus', async () => {
       this.loadEvent();
     });
   }
-  getDate() {
-    var date = new Date().getUTCDate();
-    var month = new Date().getMonth() + 1;
-    var year = new Date().getFullYear();
-    var current = new Date();
-    var followingDay = new Date(current.getTime() + 86400000);
-    var nextDate = followingDay.getUTCDate();
-    if (date.toString().length === 1) {
-      date = '0' + date;
-    }
-    if (month.toString().length === 1) {
-      month = '0' + month;
-    }
-    if (followingDay.toString().length === 1) {
-      followingDay = '0' + followingDay;
-    }
+  async getData() {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
     this.setState({
-      currentDate: year + '-' + month + '-' + date,
-      nextDate: year + '-' + month + '-' + nextDate,
+      refreshToken: refreshToken,
+      email: userEmail,
     });
-    console.log(this.state.nextDate);
   }
   _deleteEvent = async id => {
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
@@ -247,17 +199,15 @@ export default class EventScreen extends Component {
     });
   };
   deleteItem = id => {
-    console.log('id bi xoa: ' + id);
     this.setState({
       dataEvent: this.state.dataEvent.filter(x => x._id !== id),
     });
-    console.log(this.state.dataEvent);
   };
   _renderItem = ({item}) => (
     <View style={styles.listContainer}>
       <View style={styles.item}>
         <Text style={styles.titleItem}>
-          {item.time} - {item.bio}
+          {item.time} - {item.date} - {item.bio}
         </Text>
         <Text style={styles.titleItem}>{item.event}</Text>
       </View>
@@ -268,10 +218,7 @@ export default class EventScreen extends Component {
         }}>
         <TouchableOpacity
           style={{padding: 15}}
-          onPress={() => {
-            this.loadOneEvent(item._id);
-            console.log(item._id);
-          }}>
+          onPress={() => this.loadOneEvent(item._id)}>
           <Image
             style={{height: 30, width: 30}}
             source={require('../../images/icons8-event-accepted-30.png')}
@@ -287,18 +234,19 @@ export default class EventScreen extends Component {
     </View>
   );
   render() {
-    const todayEvent = this.state.dataEvent.filter(
-      x => x.date === this.state.currentDate,
-    );
-    const nextDayEvent = this.state.dataEvent.filter(
-      x => x.date === this.state.nextDate,
-    );
+    const event = this.state.dataEvent.filter(x => this.checkEvent(x.date));
+    const newEvent = this.state.dataEvent.filter(x => !this.checkEvent(x.date));
     return (
       <SafeAreaView>
         <View style={styles.container}>
           <View style={styles.titleView}>
             <Text style={styles.title}>SỰ KIỆN </Text>
-            <TouchableOpacity onPress={() => this.createEvent()}>
+            <TouchableOpacity
+              onPress={() => {
+                if (this.state.day) {
+                  this.createEvent(this.state.day);
+                }
+              }}>
               <Image
                 style={{top: 5}}
                 source={require('../../images/icons8-add-40.png')}
@@ -306,34 +254,72 @@ export default class EventScreen extends Component {
             </TouchableOpacity>
           </View>
           <View style={styles.eventView}>
-            <Text style={styles.titleEvent}>Sự kiện hôm nay</Text>
-            <Text style={{fontSize: 15, left: 10}}>
-              {this.state.currentDate}
-            </Text>
-            <View style={styles.eventList}>
-              <FlatList
-                data={todayEvent}
-                renderItem={this._renderItem}
-                keyExtractor={item => item._id}
-                extraData={this.state.dataEvent}
-              />
-            </View>
-            <Text style={styles.titleEvent}>Sự kiện sắp diễn ra</Text>
-            <Text style={{fontSize: 15, left: 10}}>{this.state.nextDate}</Text>
-            <View
-              style={{
-                height: '35%',
-                width: '95%',
-                left: 20,
-                borderLeftWidth: 2,
-              }}>
-              <FlatList
-                data={nextDayEvent}
-                renderItem={this._renderItem}
-                keyExtractor={item => item._id}
-                extraData={this.state.dataEvent}
-              />
-            </View>
+            {this.state.dataEvent.length !== 0 ? (
+              <View>
+                <View>
+                  <Text style={styles.titleEvent}>Sự kiện săp sảy ra</Text>
+                  <Text style={{fontSize: 16, left: 10}}>
+                    {this.state.markedDate}
+                  </Text>
+                  <FlatList
+                    style={styles.eventList}
+                    data={event}
+                    renderItem={this._renderItem}
+                    keyExtractor={item => item._id}
+                    extraData={event}
+                  />
+                </View>
+                <View>
+                  <Text style={styles.titleEvent}>Các sự kiện khác</Text>
+                  <FlatList
+                    style={styles.eventList}
+                    data={newEvent}
+                    renderItem={this._renderItem}
+                    keyExtractor={item => item._id}
+                    extraData={newEvent}
+                  />
+                </View>
+              </View>
+            ) : (
+              <View style={{paddingVertical: 30, alignItems: 'center'}}>
+                <Image
+                  style={{
+                    height: '65%',
+                    width: '85%',
+                    backgroundColor: 'blue',
+                  }}
+                  source={require('../../images/2989972.jpg')}
+                />
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 18,
+                    fontFamily: 'serif',
+                  }}>
+                  Đây là nơi ghi chép các sự kiện, hội họp, đám cưới, đám chay,
+                  giỗ chạp của gia đình mình cần ghi nhờ.
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.createEvent(this.state.markedDate);
+                  }}
+                  style={styles.buttonContainer}>
+                  <Image
+                    style={{}}
+                    source={require('../../images/icons8-add-40.png')}
+                  />
+                  <Text
+                    style={{
+                      left: 30,
+                      textAlign: 'center',
+                      fontSize: 18,
+                      fontFamily: 'serif',
+                    }}>
+                    Tạo sự kiện
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
           <View style={styles.backGround}>
             <Calendar
@@ -363,7 +349,9 @@ export default class EventScreen extends Component {
               }}
               current={this.state.current}
               markedDates={this.state.markedDates}
-              onDayPress={day => this.setMarkedDates(day.dateString)}
+              onDayPress={day => {
+                this.setMarkedDates(day.dateString);
+              }}
               markingType={'multi-dot'}
               monthFormat={'yyyy-MM'}
               showSixWeeks={true}
@@ -404,9 +392,8 @@ const styles = StyleSheet.create({
   },
   eventList: {
     backgroundColor: 'white',
-    height: '37%',
+    height: '38%',
     borderRadius: 20,
-    justifyContent: 'center',
   },
   titleView: {
     flex: 1,
@@ -437,5 +424,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     top: 5,
+  },
+  buttonContainer: {
+    width: '60%',
+    flexDirection: 'row',
+    height: '13%',
+    top: 20,
+    alignItems: 'center',
+    borderRadius: 17,
+    paddingHorizontal: 20,
+    backgroundColor: '#AEECEF',
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 1,
+      height: 12,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5.0,
+    elevation: 10,
   },
 });

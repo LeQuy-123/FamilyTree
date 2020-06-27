@@ -15,7 +15,7 @@ import {
   AsyncStorage,
   Image,
 } from 'react-native';
-//import _RefreshToken from '../components/refresh_Token';
+import _RefreshToken from '../components/refresh_Token';
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -70,7 +70,7 @@ class Login extends Component {
             accessToken: json.accessToken,
             refreshToken: json.refreshToken,
           });
-          console.log('token refresh for user: ' + this.state.refreshToken);
+          //console.log('token refresh for user: ' + this.state.email);
           AsyncStorage.setItem('accessToken', this.state.accessToken);
           AsyncStorage.setItem('tokenRefresh', this.state.refreshToken);
           AsyncStorage.setItem('email', this.state.email);
@@ -155,10 +155,20 @@ class Login extends Component {
   async checkToken() {
     try {
       let accessToken = await AsyncStorage.getItem('accessToken');
-      this.setState({accessToken: accessToken});
-      //console.log('token for check: ' + accessToken);
+      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+      let userEmail = await AsyncStorage.getItem('email');
+      // console.log('refresh token: ' + refreshToken);
+      // console.log('email: ' + userEmail);
       if (accessToken) {
-        this.props.navigation.navigate('App');
+        _RefreshToken(userEmail, refreshToken).then(data => {
+          if (data !== null) {
+            console.log('data: ' + data);
+            this.props.navigation.navigate('App');
+          } else {
+            console.log('clear');
+            AsyncStorage.clear();
+          }
+        });
       } else {
         console.log('chua dang nhap hoac token het han');
       }
