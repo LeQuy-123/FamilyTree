@@ -286,7 +286,6 @@ export default class EventScreen extends Component {
                   style={{
                     height: '65%',
                     width: '85%',
-                    backgroundColor: 'blue',
                   }}
                   source={require('../../images/2989972.jpg')}
                 />

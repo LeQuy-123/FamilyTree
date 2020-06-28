@@ -25,6 +25,7 @@ class AccountScreen extends Component {
       Number: '',
       Gender: '',
       Address: '',
+      email: '',
     };
   }
   clearAsyncStorage = async () => {
@@ -40,7 +41,11 @@ class AccountScreen extends Component {
       let refreshToken = await AsyncStorage.getItem('tokenRefresh');
       let accessToken = await AsyncStorage.getItem('accessToken');
       let email = await AsyncStorage.getItem('email');
-      this.setState({refreshToken: refreshToken, accessToken: accessToken});
+      this.setState({
+        refreshToken: refreshToken,
+        accessToken: accessToken,
+        email: email,
+      });
       if (this.state.accessToken !== null) {
         _RefreshToken(email, refreshToken).then(data => {
           if (data) {
@@ -98,8 +103,6 @@ class AccountScreen extends Component {
             Address: json.user.address,
             image: json.user.profileImage,
           });
-          console.log('tên:' + this.state.Name);
-          console.log('ảnh: ' + this.state.image);
         });
     } catch (error) {
       console.error(error);
@@ -148,12 +151,18 @@ class AccountScreen extends Component {
               )}
               <View style={styles.info}>
                 <Text style={styles.infoText}>{this.state.Name}</Text>
-                <Text style={styles.infoText}>{this.state.NickName}</Text>
+                {this.state.NickName ? (
+                  <Text style={styles.infoText}>{this.state.NickName}</Text>
+                ) : (
+                  <View />
+                )}
               </View>
             </View>
           </View>
           <View style={styles.inputcontainer}>
             <View style={styles.inputs}>
+              <Text style={styles.baseText}> Email </Text>
+              <Text style={styles.input}>{this.state.email}</Text>
               <Text style={styles.baseText}> Số điện thoại </Text>
               <Text style={styles.input}>{this.state.Number}</Text>
               <Text style={styles.baseText}> Giới tính </Text>
@@ -231,6 +240,8 @@ const styles = StyleSheet.create({
     width: 200,
     backgroundColor: '#AEECEF',
     borderRadius: 115,
+    borderWidth: 1,
+    borderColor: 'white',
     marginLeft: 10,
   },
   inputs: {
@@ -246,9 +257,9 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontFamily: 'serif',
-    fontSize: 18,
+    fontSize: 20,
     width: '100%',
-    height: 28,
+    height: 30,
     backgroundColor: '#AEECEF',
     borderRadius: 15,
     paddingStart: 10,

@@ -19,6 +19,8 @@ import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
 import DatePicker from 'react-native-datepicker';
 import ImagePicker from 'react-native-image-crop-picker';
+import url from '../../components/MainURL';
+import PhoneInput from 'react-native-phone-input';
 
 export default class FixAccountScreen extends Component {
   constructor(props) {
@@ -26,15 +28,15 @@ export default class FixAccountScreen extends Component {
     //set value in state for initial date
     this.state = {
       myEmail: '',
-      date: '',
       image: '',
       imageType: '',
-      TextInput_Name: ' ',
-      TextInput_NickName: ' ',
-      TextInput_Number: 'Chưa cập nhật',
-      TextInput_Gender: 'Chưa cập nhật',
-      TextInput_Address: 'Chưa cập nhật',
-      baseUrl: 'https://familytree1.herokuapp.com/api/user/update',
+      Name: '',
+      NickName: '',
+      Number: '',
+      Gender: '',
+      Address: '',
+      date: '',
+      baseUrl: url + '/api/user/update',
       accessToken: null,
       myRefreshToken: '',
     };
@@ -47,10 +49,7 @@ export default class FixAccountScreen extends Component {
     }).then(image => {
       this.setState({
         image: image.path,
-        imageType: image.mime,
       });
-      //this._postImage(this.state.accessToken, image);
-      console.log(image.path);
     });
   }
   takePhotoFromCamera() {
@@ -61,10 +60,7 @@ export default class FixAccountScreen extends Component {
     }).then(image => {
       this.setState({
         image: image.path,
-        imageType: image.mime,
       });
-      //this._postImage(this.state.accessToken, image);
-      console.log(image.path);
     });
   }
   onClickAddImages() {
@@ -99,77 +95,109 @@ export default class FixAccountScreen extends Component {
         myEmail: email,
         myRefreshToken: refreshToken,
       });
-      console.log(userData);
     } catch (error) {
       console.log('Something went wrong', error);
     }
   }
   _postData = async () => {
-    _RefreshToken(this.state.myEmail, this.state.myRefreshToken);
-    let userData = await AsyncStorage.getItem('accessToken');
-    var url = this.state.baseUrl;
+    if (this.thirdTextInput.isValidNumber()) {
+      _RefreshToken(this.state.myEmail, this.state.myRefreshToken);
+      let userData = await AsyncStorage.getItem('accessToken');
+      try {
+        await fetch(this.state.baseUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + userData,
+          },
+          body: JSON.stringify({
+            nickname: this.state.NickName,
+            numphone: this.state.Number,
+            sex: this.state.Gender,
+            datebirth: this.state.date,
+            address: this.state.Address,
+          }),
+        })
+          .then(response => response.json())
+          .then(json => {
+            console.log(json.message);
+            Alert.alert(
+              json.message,
+              'Vui lòng reload app để cập nhật thông tin',
+              [
+                {
+                  text: 'Xác nhận',
+                  style: 'cancel',
+                  onPress: () => this.props.navigation.navigate('Account'),
+                },
+              ],
+              {cancelable: false},
+            );
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      Alert.alert('Vui lòng nhập số điện thoại hợp lệ');
+    }
+  };
+  _postImage = async image => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let email = await AsyncStorage.getItem('email');
+    _RefreshToken(email, refreshToken).then(data => {
+      var URL = url + '/api/user/familyupdate';
+      try {
+        fetch(URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + data,
+          },
+          body: JSON.stringify({
+            file: image,
+          }),
+        })
+          .then(response => response.json())
+          .then(json => {})
+          .catch(error => {
+            console.log('error: ' + error.toString());
+            throw error;
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
+  _getData = async token => {
+    var URL = url + '/api/user/show';
     try {
-      await fetch(url, {
-        method: 'PUT',
+      await fetch(URL, {
+        method: 'GET',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + userData,
+          Authorization: 'Bearer ' + token,
         },
-        body: JSON.stringify({
-          nickname: this.state.TextInput_NickName,
-          numphone: this.state.TextInput_Number,
-          sex: this.state.TextInput_Gender,
-          datebirth: this.state.date,
-          address: this.state.TextInput_Address,
-        }),
       })
         .then(response => response.json())
         .then(json => {
-          console.log(json.message);
-          Alert.alert(
-            json.message,
-            'Vui lòng reload app để cập nhật thông tin',
-            [
-              {
-                text: 'Xác nhận',
-                style: 'cancel',
-                onPress: () => this.props.navigation.navigate('Account'),
-              },
-            ],
-            {cancelable: false},
-          );
+          this.setState({
+            date: json.user.datebirth,
+            Name: json.user.username,
+            NickName: json.user.nickname,
+            Number: json.user.numphone,
+            Gender: json.user.sex,
+            Address: json.user.address,
+            image: json.user.profileImage,
+          });
+          console.log(this.state.Name);
         });
     } catch (error) {
       console.error(error);
     }
   };
-  _postImage = async (token, image) => {
-    // eslint-disable-next-line no-undef
-    var myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Bearer ' + token);
-    const photo = {
-      uri: image.path,
-      type: 'image/jpeg',
-      name: 'photo.jpg',
-    };
-    var formData = new FormData();
-    formData.append('file', photo);
-
-    var requestOptions = {
-      method: 'PUT',
-      headers: myHeaders,
-      formData,
-      redirect: 'follow',
-    };
-
-    fetch('https://familytree1.herokuapp.com/api/user/update', requestOptions)
-      .then(response => response.json())
-      .then(result => console.log(result.user.profileImage))
-      .catch(error => console.log('error', error));
-  };
   componentDidMount() {
-    this.getToken();
+    this.getToken().then(() => this._getData(this.state.accessToken));
   }
   render() {
     return (
@@ -229,10 +257,10 @@ export default class FixAccountScreen extends Component {
                         this.secondTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Name: data})
-                      }
-                    />
+                      editable={false}
+                      onChangeText={data => this.setState({Name: data})}>
+                      {this.state.Name}
+                    </TextInput>
                     <Text style={styles.testTitle}>Họ:</Text>
                     <TextInput
                       style={styles.inputText}
@@ -243,12 +271,11 @@ export default class FixAccountScreen extends Component {
                         this.thirdTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_NickName: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({NickName: data})}>
+                      {this.state.NickName}
+                    </TextInput>
                     <Text style={styles.testTitle}>Số điện thoại: </Text>
-                    <TextInput
+                    <PhoneInput
                       style={styles.inputText}
                       ref={input => {
                         this.thirdTextInput = input;
@@ -257,8 +284,10 @@ export default class FixAccountScreen extends Component {
                         this.fourthTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Number: data})
+                      value={this.state.Number}
+                      initialCountry="vn"
+                      onChangePhoneNumber={number =>
+                        this.setState({Number: number})
                       }
                     />
                     <Text style={styles.testTitle}>Giới tính: </Text>
@@ -271,10 +300,9 @@ export default class FixAccountScreen extends Component {
                         this.sixthTextInput.focus();
                       }}
                       blurOnSubmit={false}
-                      onChangeText={data =>
-                        this.setState({TextInput_Gender: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({Gender: data})}>
+                      {this.state.Gender}
+                    </TextInput>
                     <Text style={styles.testTitle}>Ngày sinh: </Text>
                     <DatePicker
                       style={{width: 266, borderRadius: 50}}
@@ -308,10 +336,9 @@ export default class FixAccountScreen extends Component {
                       ref={input => {
                         this.sixthTextInput = input;
                       }}
-                      onChangeText={data =>
-                        this.setState({TextInput_Address: data})
-                      }
-                    />
+                      onChangeText={data => this.setState({Address: data})}>
+                      {this.state.Address}
+                    </TextInput>
                   </View>
                 </View>
                 <View style={styles.ComboButton}>

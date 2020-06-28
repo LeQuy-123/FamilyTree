@@ -19,6 +19,7 @@ import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
 import DatePicker from 'react-native-datepicker';
 import ImagePicker from 'react-native-image-crop-picker';
+import PhoneInput from 'react-native-phone-input';
 
 export default class FixInfoGenealogy extends Component {
   constructor(props) {
@@ -89,48 +90,53 @@ export default class FixInfoGenealogy extends Component {
     );
   }
   _postDataFamily = async () => {
-    if (this.state.firstName !== '' || this.state.lastName !== '') {
-      let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-      let email = await AsyncStorage.getItem('email');
-      _RefreshToken(email, refreshToken).then(data => {
-        var URL = url + '/api/user/familyupdate';
-        try {
-          fetch(URL, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              id: this.state.id,
-              firstname: this.state.firstName,
-              middlename: this.state.middleName,
-              lastname: this.state.lastName,
-              email: this.state.email,
-              nickname: this.state.nickName,
-              numphone: this.state.phone,
-              sex: this.state.sex,
-              datebirth: this.state.date,
-              address: this.state.address,
-              job: this.state.job,
-              parentage: this.state.parentage,
-              yourself: this.state.yourself,
-              religion: this.state.religion,
-              profileImage: this.state.image,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {})
-            .catch(error => {
-              console.log('error: ' + error.toString());
-              throw error;
-            });
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    if (this.TextInput5.isValidNumber()) {
+      if (this.state.firstName !== '' || this.state.lastName !== '') {
+        let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+        let email = await AsyncStorage.getItem('email');
+        _RefreshToken(email, refreshToken).then(data => {
+          var URL = url + '/api/user/familyupdate';
+          try {
+            fetch(URL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + data,
+              },
+              body: JSON.stringify({
+                id: this.state.id,
+                firstname: this.state.firstName,
+                middlename: this.state.middleName,
+                lastname: this.state.lastName,
+                email: this.state.email,
+                nickname: this.state.nickName,
+                numphone: this.state.phone,
+                sex: this.state.sex,
+                datebirth: this.state.date,
+                address: this.state.address,
+                job: this.state.job,
+                parentage: this.state.parentage,
+                yourself: this.state.yourself,
+                religion: this.state.religion,
+                profileImage: this.state.image,
+              }),
+            })
+              .then(response => response.json())
+              .then(json => {})
+              .catch(error => {
+                console.log('error: ' + error.toString());
+                throw error;
+              });
+          } catch (error) {
+            console.error(error);
+          }
+        });
+        this.props.navigation.navigate('FamilyScreen');
+      } else {
+        Alert.alert('Vui lòng nhập đầy đủ họ tên người thân');
+      }
     } else {
-      Alert.alert('Vui lòng nhập đầy đủ họ tên người thân');
+      Alert.alert('Vui lòng nhập số điện thoại hợp lệ');
     }
   };
   loadOneFamily = async id => {
@@ -301,7 +307,7 @@ export default class FixInfoGenealogy extends Component {
                     {this.state.nickName}
                   </TextInput>
                   <Text style={styles.inputTitle}>Số điện thoại </Text>
-                  <TextInput
+                  <PhoneInput
                     ref={input => {
                       this.TextInput5 = input;
                     }}
@@ -310,9 +316,12 @@ export default class FixInfoGenealogy extends Component {
                     }}
                     blurOnSubmit={false}
                     style={styles.inputText}
-                    onChangeText={data => this.setState({phone: data})}>
-                    {this.state.phone}
-                  </TextInput>
+                    value={this.state.phone}
+                    initialCountry="vn"
+                    onChangePhoneNumber={number =>
+                      this.setState({phone: number})
+                    }
+                  />
                   <Text style={styles.inputTitle}>Giới tính</Text>
                   <TextInput
                     ref={input => {
@@ -420,7 +429,6 @@ export default class FixInfoGenealogy extends Component {
                 style={styles.button}
                 onPress={() => {
                   this._postDataFamily();
-                  this.props.navigation.navigate('FamilyScreen');
                 }}>
                 <Text
                   style={{

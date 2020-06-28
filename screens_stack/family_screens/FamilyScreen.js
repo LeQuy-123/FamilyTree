@@ -339,12 +339,6 @@ export default class FamilyScreen extends Component {
           }}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}> GIA ĐÌNH</Text>
-            <TouchableOpacity onPress={() => this.createFamily()}>
-              <Image
-                style={{top: -1, left: -6}}
-                source={require('../../images/icons8-add-40.png')}
-              />
-            </TouchableOpacity>
           </View>
           <View style={styles.searchText}>
             <Image
@@ -373,8 +367,41 @@ export default class FamilyScreen extends Component {
             </View>
           ) : (
             <View style={styles.listFamily}>
-              <Text style={styles.titleList}>Danh sách người thân</Text>
-              <View style={styles.list} />
+              <Text
+                style={{
+                  fontFamily: 'serif',
+                  height: '5%',
+                  fontSize: 25,
+                  left: 15,
+                  top: 10,
+                  fontWeight: 'bold',
+                }}>
+                Danh sách người thân
+              </Text>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flex: 1,
+                  //backgroundColor: 'blue',
+                }}>
+                <Image
+                  style={{
+                    height: '62%',
+                    width: '81%',
+                  }}
+                  source={require('../../images/1833517.png')}
+                />
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 18,
+                    fontFamily: 'serif',
+                  }}>
+                  Bạn chưa có thông tin của người thân nào trong danh sách, bắt
+                  đầu chép thông tin người thân gia đình ngay thôi!
+                </Text>
+              </View>
             </View>
           )}
           <View style={styles.buttonAdd}>
@@ -552,7 +579,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   buttonAdd: {
-    flex: 1,
+    height: '10%',
     width: '100%',
     top: 8,
     borderTopLeftRadius: 30,

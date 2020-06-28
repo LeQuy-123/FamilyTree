@@ -10,8 +10,8 @@ import {
   FlatList,
   Linking,
 } from 'react-native';
-import key from '../../components/APIkey';
-
+//import key from '../../components/APIkey';
+const sampleNews = require('../../sampleNEWS.json');
 export default class NewsScreen extends PureComponent {
   constructor(props) {
     super(props);
@@ -20,29 +20,34 @@ export default class NewsScreen extends PureComponent {
       news2Data: [],
     };
   }
-  loadNews1 = async () => {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow',
-    };
+  // loadNews1 = async () => {
+  //   var requestOptions = {
+  //     method: 'GET',
+  //     redirect: 'follow',
+  //   };
 
-    fetch(
-      'https://api.breakingapi.com/news?api_key=' +
-        key +
-        '&type=headlines&locale=vi-VN&q=Lịch sử Việt Nam&output=json',
-      requestOptions,
-    )
-      .then(response => response.json())
-      .then(json => {
-        // const news1 = json.articles.slice(1, 10);
-        // const news2 = json.articles.slice(11, 20);
-        // this.setState({news1Data: news1, news2Data: news2});
-        console.log(json.message);
-      })
-      .catch(error => console.log('error', error));
-  };
+  //   fetch(
+  // 'https://api.breakingapi.com/news?api_key=' +
+  //   key +
+  //   '&type=headlines&locale=vi-VN&q=Lịch sử Việt Nam&output=json',
+  //     requestOptions,
+  //   )
+  //     .then(response => response.json())
+  //     .then(json => {
+  //       const news1 = json.articles.slice(1, 10);
+  //       const news2 = json.articles.slice(11, 20);
+  //       this.setState({news1Data: news1, news2Data: news2});
+  //       console.log(json.message);
+  //     })
+  //     .catch(error => console.log('error', error));
+  // };
   componentDidMount() {
-    this.loadNews1();
+    this.sampleLoadNews();
+  }
+  sampleLoadNews() {
+    const news1 = sampleNews.articles.slice(0, 9);
+    const news2 = sampleNews.articles.slice(10, 19);
+    this.setState({news1Data: news1, news2Data: news2});
   }
   goTolink = link => {
     if (Linking.canOpenURL(link)) {
@@ -58,16 +63,15 @@ export default class NewsScreen extends PureComponent {
           alignItems: 'center',
           paddingHorizontal: 30,
         }}>
-        {item.primary_image_link && (
+        {item.primary_image_link ? (
           <Image
             style={{width: 200, height: 150}}
             source={{uri: item.primary_image_link}}
           />
-        )}
-        {!item.primary_image_link && (
+        ) : (
           <Image
-            style={{width: 200, height: 150, backgroundColor: 'blue'}}
-            //source={{uri: item.primary_image_link}}
+            style={{width: 200, height: 150}}
+            source={require('../../images/icons8-user-96.png')}
           />
         )}
         <Text
@@ -311,7 +315,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     width: '90%',
     flexDirection: 'row',
-    //backgroundColor: 'blue',
   },
   tinNoiBat: {
     height: '70%',
@@ -319,6 +322,5 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#FBBD00',
     bottom: 10,
-    //backgroundColor: 'blue',
   },
 });
