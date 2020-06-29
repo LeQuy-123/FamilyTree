@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
+import moment from 'moment';
 import {
   View,
   Text,
@@ -10,12 +11,15 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Alert,
+  Picker,
 } from 'react-native';
 import * as nativeBase from 'native-base';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 export default class FixAccountScreen extends Component {
   constructor(props) {
     super(props);
@@ -28,16 +32,18 @@ export default class FixAccountScreen extends Component {
       name: '',
       time: '',
       type: '',
-      bio: '',
+      bio: 'Bên nội',
       cate: '',
       address: '',
       event: [],
+      showTimePicker: false,
     };
   }
   _postDataEvent = async () => {
     if (this.state.name !== undefined || this.state.time !== undefined) {
       _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
         var URL = url + '/api/user/eventupdate';
+        console.log(this.state.bio);
         try {
           fetch(URL, {
             method: 'PUT',
@@ -92,17 +98,30 @@ export default class FixAccountScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              this.setState({
-                event: json.event,
-                name: json.event.event,
-                date: json.event.date,
-                id: id,
-                address: json.event.address,
-                bio: json.event.bio,
-                cate: json.event.catelogy,
-                eventImage: json.event.eventImage,
-                time: json.event.time,
-              });
+              if (json.event.bio) {
+                this.setState({
+                  event: json.event,
+                  name: json.event.event,
+                  date: json.event.date,
+                  id: id,
+                  address: json.event.address,
+                  bio: json.event.bio,
+                  cate: json.event.catelogy,
+                  eventImage: json.event.eventImage,
+                  time: json.event.time,
+                });
+              } else {
+                this.setState({
+                  event: json.event,
+                  name: json.event.event,
+                  date: json.event.date,
+                  id: id,
+                  address: json.event.address,
+                  cate: json.event.catelogy,
+                  eventImage: json.event.eventImage,
+                  time: json.event.time,
+                });
+              }
               if (this.props.route.params.date) {
                 this.setState({date: this.props.route.params.date});
               }
@@ -143,7 +162,17 @@ export default class FixAccountScreen extends Component {
       }
     });
   };
-
+  onChange = selectedDate => {
+    var date = moment(new Date(selectedDate.nativeEvent.timestamp)).format(
+      'HH:mm',
+    );
+    this.setState({
+      time: date,
+      showTimePicker: false,
+    });
+    console.log('----------------------------------');
+    console.log(this.state.time);
+  };
   componentDidMount() {
     this.getData().then(() => {
       if (this.props.route.params.id) {
@@ -193,7 +222,7 @@ export default class FixAccountScreen extends Component {
                   <TextInput
                     style={styles.inputText}
                     onSubmitEditing={() => {
-                      this.nextTextInput.focus();
+                      this.fourthTextInput.focus();
                     }}
                     blurOnSubmit={false}
                     onChangeText={data => this.setState({name: data})}>
@@ -214,31 +243,46 @@ export default class FixAccountScreen extends Component {
                     {this.state.date}
                   </Text>
                   <Text style={styles.testTitle}>Thời gian diễn ra </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    ref={input => {
-                      this.nextTextInput = input;
-                    }}
-                    onSubmitEditing={() => {
-                      this.thirdTextInput.focus();
-                    }}
-                    blurOnSubmit={false}
-                    onChangeText={data => this.setState({time: data})}>
-                    {this.state.time}
-                  </TextInput>
+                  <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity
+                      onPress={() => this.setState({showTimePicker: true})}>
+                      <Image
+                        style={{width: 38, height: 38}}
+                        source={require('../../images/icons8-time-64.png')}
+                      />
+                    </TouchableOpacity>
+                    <TextInput
+                      style={styles.inputTime}
+                      ref={input => {
+                        this.nextTextInput = input;
+                      }}
+                      onSubmitEditing={() => {
+                        this.fourthTextInput.focus();
+                      }}
+                      blurOnSubmit={false}
+                      onChangeText={data => this.setState({time: data})}>
+                      {this.state.time}
+                    </TextInput>
+                  </View>
+                  {this.state.showTimePicker && (
+                    <DateTimePicker
+                      style={styles.inputText}
+                      mode="time"
+                      value={new Date()}
+                      onChange={data => this.onChange(data)}
+                    />
+                  )}
                   <Text style={styles.testTitle}>Nhóm </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    ref={input => {
-                      this.thirdTextInput = input;
-                    }}
-                    onSubmitEditing={() => {
-                      this.fourthTextInput.focus();
-                    }}
-                    blurOnSubmit={false}
-                    onChangeText={data => this.setState({bio: data})}>
-                    {this.state.bio}
-                  </TextInput>
+                  <View style={styles.picker}>
+                    <Picker
+                      selectedValue={this.state.bio}
+                      onValueChange={(itemValue, itemIndex) => {
+                        this.setState({bio: itemValue});
+                      }}>
+                      <Picker.Item label="Bên nội" value="Bên nội" />
+                      <Picker.Item label="Bên ngoại" value="Bên ngoại" />
+                    </Picker>
+                  </View>
                   <Text style={styles.testTitle}>Mô tả</Text>
                   <TextInput
                     ref={input => {
@@ -357,12 +401,32 @@ const styles = StyleSheet.create({
   inputText: {
     width: '90%',
     height: 40,
+    borderColor: 'darkgrey',
+    paddingStart: 10,
+    borderRadius: 10,
     fontSize: 15,
+    paddingVertical: -15,
+    borderWidth: 1,
+  },
+  inputTime: {
+    width: '79%',
+    height: 40,
     borderColor: 'darkgrey',
     paddingStart: 10,
     borderRadius: 10,
     paddingVertical: -15,
     borderWidth: 1,
+    fontSize: 15,
+  },
+  picker: {
+    width: '90%',
+    height: 40,
+    fontSize: 15,
+    borderColor: 'darkgrey',
+    paddingStart: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    justifyContent: 'center',
   },
   avatar: {
     flexDirection: 'row',

@@ -35,7 +35,7 @@ export default class FixInfoGenealogy extends Component {
       email: '',
       nickName: '',
       phone: '',
-      sex: '',
+      sex: 'Nam',
       address: '',
       job: '',
       yourself: '',
@@ -162,22 +162,40 @@ export default class FixInfoGenealogy extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              this.setState({
-                image: json.family.profileImage,
-                parentage: json.family.parentage,
-                firstName: json.family.firstname,
-                middleName: json.family.middlename,
-                lastName: json.family.lastname,
-                email: json.family.email,
-                nickName: json.family.nickname,
-                phone: json.family.numphone,
-                sex: json.family.sex,
-                address: json.family.address,
-                job: json.family.job,
-                yourself: json.family.yourself,
-                religion: json.family.religion,
-                date: json.family.datebirth,
-              });
+              if (this.state.sex) {
+                this.setState({
+                  image: json.family.profileImage,
+                  parentage: json.family.parentage,
+                  firstName: json.family.firstname,
+                  middleName: json.family.middlename,
+                  lastName: json.family.lastname,
+                  email: json.family.email,
+                  nickName: json.family.nickname,
+                  phone: json.family.numphone,
+                  sex: json.family.sex,
+                  address: json.family.address,
+                  job: json.family.job,
+                  yourself: json.family.yourself,
+                  religion: json.family.religion,
+                  date: json.family.datebirth,
+                });
+              } else {
+                this.setState({
+                  image: json.family.profileImage,
+                  parentage: json.family.parentage,
+                  firstName: json.family.firstname,
+                  middleName: json.family.middlename,
+                  lastName: json.family.lastname,
+                  email: json.family.email,
+                  nickName: json.family.nickname,
+                  phone: json.family.numphone,
+                  address: json.family.address,
+                  job: json.family.job,
+                  yourself: json.family.yourself,
+                  religion: json.family.religion,
+                  date: json.family.datebirth,
+                });
+              }
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -312,7 +330,7 @@ export default class FixInfoGenealogy extends Component {
                       this.TextInput5 = input;
                     }}
                     onSubmitEditing={() => {
-                      this.TextInput6.focus();
+                      this.TextInput7.focus();
                     }}
                     blurOnSubmit={false}
                     style={styles.inputText}
@@ -323,18 +341,19 @@ export default class FixInfoGenealogy extends Component {
                     }
                   />
                   <Text style={styles.inputTitle}>Giới tính</Text>
-                  <TextInput
-                    ref={input => {
-                      this.TextInput6 = input;
-                    }}
-                    onSubmitEditing={() => {
-                      this.TextInput7.focus();
-                    }}
-                    blurOnSubmit={false}
-                    style={styles.inputText}
-                    onChangeText={data => this.setState({sex: data})}>
-                    {this.state.sex}
-                  </TextInput>
+                  <View style={styles.picker}>
+                    <Picker
+                      selectedValue={this.state.sex}
+                      onValueChange={(itemValue, itemIndex) => {
+                        this.setState({
+                          sex: itemValue,
+                        });
+                      }}>
+                      <Picker.Item label="Nam" value="Nam" />
+                      <Picker.Item label="Nữ" value="Nữ" />
+                      <Picker.Item label="Khác" value="Khác" />
+                    </Picker>
+                  </View>
                   <Text style={styles.inputTitle}>Ngày sinh</Text>
                   <DatePicker
                     style={{width: '90%', borderRadius: 50}}
@@ -401,15 +420,17 @@ export default class FixInfoGenealogy extends Component {
                     {this.state.yourself}
                   </TextInput>
                   <Text style={styles.inputTitle}>Dòng họ</Text>
-                  <Picker
-                    selectedValue={this.state.parentage}
-                    style={styles.inputText}
-                    onValueChange={(itemValue, itemIndex) => {
-                      this.setState({parentage: itemValue});
-                    }}>
-                    <Picker.Item label="Họ nội" value="Họ nội" />
-                    <Picker.Item label="Họ ngoại" value="Họ ngoại" />
-                  </Picker>
+                  <View style={styles.picker}>
+                    <Picker
+                      selectedValue={this.state.parentage}
+                      style={styles.inputText}
+                      onValueChange={(itemValue, itemIndex) => {
+                        this.setState({parentage: itemValue});
+                      }}>
+                      <Picker.Item label="Họ nội" value="Họ nội" />
+                      <Picker.Item label="Họ ngoại" value="Họ ngoại" />
+                    </Picker>
+                  </View>
                   <Text style={styles.inputTitle}>Tôn giáo</Text>
                   <TextInput
                     ref={input => {
@@ -540,5 +561,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'darkgrey',
     start: 10,
+  },
+  picker: {
+    fontFamily: 'serif',
+    left: 20,
+    width: '86%',
+    height: 35,
+    fontSize: 16,
+    borderColor: 'darkgrey',
+    paddingStart: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    justifyContent: 'center',
   },
 });
