@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Alert,
+  Picker,
 } from 'react-native';
 //import ImagePicker from 'react-native-image-crop-picker';
 import * as nativeBase from 'native-base';
@@ -33,7 +34,7 @@ export default class FixAccountScreen extends Component {
       Name: '',
       NickName: '',
       Number: '',
-      Gender: '',
+      Gender: 'Nam',
       Address: '',
       date: '',
       baseUrl: url + '/api/user/update',
@@ -101,6 +102,7 @@ export default class FixAccountScreen extends Component {
   }
   _postData = async () => {
     if (this.thirdTextInput.isValidNumber()) {
+      console.log(this.state.Gender);
       _RefreshToken(this.state.myEmail, this.state.myRefreshToken);
       let userData = await AsyncStorage.getItem('accessToken');
       try {
@@ -121,18 +123,7 @@ export default class FixAccountScreen extends Component {
           .then(response => response.json())
           .then(json => {
             console.log(json.message);
-            Alert.alert(
-              json.message,
-              'Vui lòng reload app để cập nhật thông tin',
-              [
-                {
-                  text: 'Xác nhận',
-                  style: 'cancel',
-                  onPress: () => this.props.navigation.navigate('Account'),
-                },
-              ],
-              {cancelable: false},
-            );
+            this.props.navigation.goBack();
           });
       } catch (error) {
         console.error(error);
@@ -181,16 +172,26 @@ export default class FixAccountScreen extends Component {
       })
         .then(response => response.json())
         .then(json => {
-          this.setState({
-            date: json.user.datebirth,
-            Name: json.user.username,
-            NickName: json.user.nickname,
-            Number: json.user.numphone,
-            Gender: json.user.sex,
-            Address: json.user.address,
-            image: json.user.profileImage,
-          });
-          console.log(this.state.Name);
+          if (this.state.Gender) {
+            this.setState({
+              date: json.user.datebirth,
+              Name: json.user.username,
+              NickName: json.user.nickname,
+              Number: json.user.numphone,
+              Gender: json.user.sex,
+              Address: json.user.address,
+              image: json.user.profileImage,
+            });
+          } else {
+            this.setState({
+              date: json.user.datebirth,
+              Name: json.user.username,
+              NickName: json.user.nickname,
+              Number: json.user.numphone,
+              Address: json.user.address,
+              image: json.user.profileImage,
+            });
+          }
         });
     } catch (error) {
       console.error(error);
@@ -281,7 +282,7 @@ export default class FixAccountScreen extends Component {
                         this.thirdTextInput = input;
                       }}
                       onSubmitEditing={() => {
-                        this.fourthTextInput.focus();
+                        this.sixthTextInput.focus();
                       }}
                       blurOnSubmit={false}
                       value={this.state.Number}
@@ -291,18 +292,19 @@ export default class FixAccountScreen extends Component {
                       }
                     />
                     <Text style={styles.testTitle}>Giới tính: </Text>
-                    <TextInput
-                      ref={input => {
-                        this.fourthTextInput = input;
-                      }}
-                      style={styles.inputText}
-                      onSubmitEditing={() => {
-                        this.sixthTextInput.focus();
-                      }}
-                      blurOnSubmit={false}
-                      onChangeText={data => this.setState({Gender: data})}>
-                      {this.state.Gender}
-                    </TextInput>
+                    <View style={styles.inputText}>
+                      <Picker
+                        selectedValue={this.state.Gender}
+                        onValueChange={(itemValue, itemIndex) => {
+                          this.setState({
+                            Gender: itemValue,
+                          });
+                        }}>
+                        <Picker.Item label="Nam" value="Nam" />
+                        <Picker.Item label="Nữ" value="Nữ" />
+                        <Picker.Item label="Khác" value="Khác" />
+                      </Picker>
+                    </View>
                     <Text style={styles.testTitle}>Ngày sinh: </Text>
                     <DatePicker
                       style={{width: 266, borderRadius: 50}}
@@ -463,6 +465,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: -15,
     borderWidth: 1,
+    justifyContent: 'center',
   },
   avatar: {
     flexDirection: 'row',

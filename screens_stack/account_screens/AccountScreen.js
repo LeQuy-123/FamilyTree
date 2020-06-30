@@ -49,7 +49,6 @@ class AccountScreen extends Component {
       if (this.state.accessToken !== null) {
         _RefreshToken(email, refreshToken).then(data => {
           if (data) {
-            console.log('newAccessToken: ' + data);
             this._getData(data);
           } else {
             this.props.navigation.navigate('Login');
@@ -61,7 +60,10 @@ class AccountScreen extends Component {
     }
   }
   componentDidMount() {
-    this.getToken();
+    const {navigation} = this.props;
+    navigation.addListener('focus', async () => {
+      this.getToken();
+    });
   }
   _Logout = async () => {
     var URL = url + '/api/auth/logout';

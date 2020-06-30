@@ -90,7 +90,8 @@ export default class FixInfoGenealogy extends Component {
     );
   }
   _postDataFamily = async () => {
-    if (this.TextInput5.isValidNumber()) {
+    console.log(this.state.phone);
+    if (this.TextInput5.isValidNumber() || this.state.phone === undefined) {
       if (this.state.firstName !== '' || this.state.lastName !== '') {
         let refreshToken = await AsyncStorage.getItem('tokenRefresh');
         let email = await AsyncStorage.getItem('email');

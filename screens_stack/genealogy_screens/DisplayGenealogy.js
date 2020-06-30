@@ -42,7 +42,16 @@ export default class DisplayGenealogy extends Component {
           />
           <View style={styles.listGenealogyBackground}>
             <Text style={styles.titleList}>Danh sách gia phả</Text>
-            <View style={styles.listGenealogy} />
+            <View style={styles.listGenealogy}>
+              <Image
+                style={{height: 320, width: 320, bottom: 10}}
+                source={require('../../images/pngguru.com.png')}
+              />
+              <Text style={styles.textWithoutGenealogy}>
+                Bạn chưa có gia phả nào, nhấn vào nút Tạo gia phả để bắt đầu tạo
+                cây gia phả ngay thôi!
+              </Text>
+            </View>
           </View>
           <View style={styles.buttonAdd}>
             <TouchableOpacity
@@ -85,8 +94,7 @@ const styles = StyleSheet.create({
   titleList: {
     fontFamily: 'serif',
     fontSize: 18,
-    //backgroundColor: 'blue',
-    bottom: 15,
+    bottom: 18,
     left: 15,
     fontWeight: 'bold',
   },
@@ -95,13 +103,15 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 30,
     backgroundColor: '#FBBD00',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   listGenealogy: {
-    height: '80%',
+    height: '90%',
     width: '100%',
     borderRadius: 30,
-    backgroundColor: 'white',
+    bottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonAdd: {
     flex: 1,
@@ -126,5 +136,13 @@ const styles = StyleSheet.create({
     color: '#840505',
     fontFamily: 'serif',
     fontSize: 16,
+  },
+  textWithoutGenealogy: {
+    height: '18%',
+    width: '80%',
+    textAlign: 'center',
+    fontSize: 17,
+    fontFamily: 'serif',
+    bottom: -10,
   },
 });

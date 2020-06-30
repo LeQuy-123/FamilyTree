@@ -9,7 +9,7 @@ import * as React from 'react';
 const genealogyStack = createStackNavigator();
 const GenealogyStack = () => (
   <genealogyStack.Navigator screenOptions={{headerShown: false}}>
-    {/* <genealogyStack.Screen
+    <genealogyStack.Screen
       name="DisplayGenealogy"
       component={DisplayGenealogy}
       //options={{title: 'DisplayGenealogy'}}
@@ -18,7 +18,7 @@ const GenealogyStack = () => (
       name="AddGenealogy"
       component={AddGenealogyScreen}
       //options={{tabBarVisible: false}}
-    /> */}
+    />
     <genealogyStack.Screen
       name="Genealogy"
       component={GenealogyScreen}

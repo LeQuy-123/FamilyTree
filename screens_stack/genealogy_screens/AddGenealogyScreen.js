@@ -10,8 +10,13 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-
+import DatePicker from 'react-native-datepicker';
+import url from '../../components/MainURL';
 export default class AddGenealogyScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
   render() {
     return (
       <SafeAreaView>
@@ -46,7 +51,7 @@ export default class AddGenealogyScreen extends Component {
                   style={styles.inputText}
                   //onChangeText={data => this.setState({TextInput_Address: data})}
                 />
-                <Text style={styles.inputTitle}>Địa chỉ* </Text>
+                <Text style={styles.inputTitle}>Mô tả gia phả* </Text>
                 <TextInput
                   style={styles.inputText}
                   //onChangeText={data => this.setState({TextInput_Address: data})}
@@ -54,7 +59,9 @@ export default class AddGenealogyScreen extends Component {
               </View>
             </View>
             <View style={styles.infoFirstGenerationGroup}>
-              <Text style={styles.titleGr}>Thế hệ thứ nhất</Text>
+              <Text style={styles.titleGr}>
+                Thế hệ thứ nhất/ Thủy tổ dòng họ
+              </Text>
               <View style={styles.infoFirstGeneration}>
                 <Text style={styles.inputTitle}>Họ* </Text>
                 <TextInput
@@ -77,14 +84,56 @@ export default class AddGenealogyScreen extends Component {
                   //onChangeText={data => this.setState({TextInput_Address: data})}
                 />
                 <Text style={styles.inputTitle}>Ngày sinh</Text>
-                <TextInput
-                  style={styles.inputText}
-                  //onChangeText={data => this.setState({TextInput_Address: data})}
+                <DatePicker
+                  style={{width: '90%'}}
+                  date={new Date()}
+                  mode="date"
+                  placeholder="select date"
+                  format="YYYY-MM-DD"
+                  minDate="1900-05-01"
+                  maxDate="2100-06-01"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateIcon: {
+                      position: 'absolute',
+                      left: 5,
+                      top: 4,
+                      marginLeft: 0,
+                    },
+                    dateInput: {
+                      marginLeft: 40,
+                    },
+                  }}
+                  // onDateChange={date => {
+                  //   this.setState({date: date});
+                  // }}
                 />
                 <Text style={styles.inputTitle}>Ngày giỗ</Text>
-                <TextInput
-                  style={styles.inputText}
-                  //onChangeText={data => this.setState({TextInput_Address: data})}
+                <DatePicker
+                  style={{width: '90%'}}
+                  date={new Date()}
+                  mode="date"
+                  placeholder="select date"
+                  format="YYYY-MM-DD"
+                  minDate="1900-05-01"
+                  maxDate="2100-06-01"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateIcon: {
+                      position: 'absolute',
+                      left: 5,
+                      top: 4,
+                      marginLeft: 0,
+                    },
+                    dateInput: {
+                      marginLeft: 40,
+                    },
+                  }}
+                  // onDateChange={date => {
+                  //   this.setState({date: date});
+                  // }}
                 />
                 <Text style={styles.inputTitle}>Mộ tang </Text>
                 <TextInput

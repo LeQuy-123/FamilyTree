@@ -640,11 +640,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#AEECEF',
     right: 30,
     bottom: 25,
+    borderWidth: 1,
+    borderColor: 'white',
   },
   view: {
     justifyContent: 'flex-end',
     margin: 0,
-    //backgroundColor: 'blue',
   },
   modal: {
     borderTopEndRadius: 30,
