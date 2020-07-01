@@ -22,6 +22,7 @@ export default class Create extends Component {
       email: '',
       username: '',
       password: '',
+      confirmPassword: '',
       baseUrl: 'https://familytree1.herokuapp.com/api/auth/register',
     };
   }
@@ -44,7 +45,14 @@ export default class Create extends Component {
     if (this.state.username) {
       if (this.validate(this.state.email.trim())) {
         if (this.state.password && this.state.password.length > 6) {
-          this._postData();
+          if (
+            this.state.password.trim().toLowerCase() ===
+            this.state.confirmPassword.trim().toLowerCase()
+          ) {
+            this._postData();
+          } else {
+            Alert.alert('Mật khẩu xác nhận không trùng với mật khẩu');
+          }
         } else {
           Alert.alert('Vui lòng nhập mật khẩu, dài hơn 6 kí tự');
         }
@@ -175,6 +183,21 @@ export default class Create extends Component {
                   blurOnSubmit={false}
                   autoCorrect={false}
                   onChangeText={password => this.setState({password})}
+                  onSubmitEditing={() => this.thTextInput.focus()}
+                />
+                <Text style={styleslogin.text}>Xác nhận mật khẩu </Text>
+                <TextInput
+                  ref={input => {
+                    this.thTextInput = input;
+                  }}
+                  secureTextEntry={true}
+                  textContentType="password"
+                  style={styleslogin.input_text}
+                  editable
+                  blurOnSubmit={false}
+                  autoCorrect={false}
+                  onChangeText={data => this.setState({confirmPassword: data})}
+                  onSubmitEditing={() => Keyboard.dismiss()}
                 />
               </View>
               <View style={styleslogin.button_group}>

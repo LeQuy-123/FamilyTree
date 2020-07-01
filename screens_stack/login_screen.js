@@ -16,6 +16,8 @@ import {
   Image,
 } from 'react-native';
 import _RefreshToken from '../components/refresh_Token';
+import {Icon} from 'native-base';
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -26,7 +28,15 @@ class Login extends Component {
       baseUrl: 'https://familytree1.herokuapp.com/api/auth/login',
       refreshToken: '',
       accessToken: null,
+      icon: 'eye-off',
+      showPassword: true,
     };
+  }
+  _changeIcon() {
+    this.setState(prevState => ({
+      icon: prevState.icon === 'eye' ? 'eye-off' : 'eye',
+      showPassword: !prevState.showPassword,
+    }));
   }
   //kiểm tra email
   validate = text => {
@@ -225,32 +235,45 @@ class Login extends Component {
                   <TextInput
                     textContentType="emailAddress"
                     style={styleslogin.input_text}
-                    onSubmitEditing={() => {
-                      this.secondTextInput.focus();
-                    }}
+                    onSubmitEditing={() => this.thTextInput.focus()}
                     editable
                     blurOnSubmit={false}
-                    //placeholder="Email address"
+                    placeholder="Email address"
                     autoCorrect={false}
                     onChangeText={email => this.setState({email})}>
                     {this.props.route.params?.emailOJB}
                   </TextInput>
                   <Text style={styleslogin.text}>Mật khẩu </Text>
-                  <TextInput
-                    secureTextEntry={true}
-                    textContentType="password"
-                    style={styleslogin.input_text}
-                    ref={input => {
-                      this.secondTextInput = input;
-                    }}
-                    editable
-                    blurOnSubmit={false}
-                    //placeholder="Password"
-                    autoCorrect={false}
-                    onSubmitEditing={Keyboard.dismiss}
-                    onChangeText={password => this.setState({password})}>
-                    {this.props.route.params?.passwordOJB2}
-                  </TextInput>
+                  <View
+                    style={{
+                      alignItems: 'flex-end',
+                      flexDirection: 'row',
+                      borderBottomWidth: 1,
+                      paddingBottom: 5,
+                    }}>
+                    <TextInput
+                      ref={input => {
+                        this.thTextInput = input;
+                      }}
+                      style={{
+                        paddingStart: 10,
+                        fontSize: 18,
+                        height: 40,
+                        width: '90%',
+                        fontFamily: 'serif',
+                        paddingBottom: -5,
+                      }}
+                      placeholder="Password"
+                      onSubmitEditing={() => Keyboard.dismiss()}
+                      secureTextEntry={this.state.showPassword}
+                      onChangeText={e => this.setState({password: e})}>
+                      {this.props.route.params?.passwordOJB2}
+                    </TextInput>
+                    <Icon
+                      name={this.state.icon}
+                      onPress={() => this._changeIcon()}
+                    />
+                  </View>
                   <TouchableOpacity
                     onPress={() => this.checkMailReset(this.state.email)}>
                     <Text

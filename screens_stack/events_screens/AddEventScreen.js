@@ -40,7 +40,7 @@ export default class FixAccountScreen extends Component {
     };
   }
   _postDataEvent = async () => {
-    if (this.state.name !== undefined || this.state.time !== undefined) {
+    if (this.state.name !== undefined && this.state.time !== undefined) {
       _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
         var URL = url + '/api/user/eventupdate';
         console.log(this.state.bio);
@@ -153,7 +153,6 @@ export default class FixAccountScreen extends Component {
             .then(response => response.json())
             .then(json => {
               console.log(json.message);
-              this.deleteItem(id);
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -188,6 +187,21 @@ export default class FixAccountScreen extends Component {
       email: email,
     });
   }
+  goBack() {
+    Alert.alert('Hủy tạo sự kiện', 'Bạn có muốn hủy tạo sự kiện ?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => {
+          this.props.navigation.navigate('Event');
+        },
+      },
+    ]);
+  }
   render() {
     return (
       <nativeBase.Root>
@@ -202,8 +216,7 @@ export default class FixAccountScreen extends Component {
                   alignSelf: 'flex-start',
                   left: 30,
                 }}>
-                <TouchableOpacity
-                  onPress={() => this.props.navigation.goBack()}>
+                <TouchableOpacity onPress={() => this.goBack()}>
                   <Image
                     style={{
                       height: 40,
