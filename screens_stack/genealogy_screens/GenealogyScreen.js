@@ -1,3 +1,5 @@
+/* eslint-disable no-lone-blocks */
+/* eslint-disable no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -7,7 +9,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
-  TextInput,
+  //TextInput,
   FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -21,9 +23,15 @@ export default class GenealogyScreen extends Component {
   }
 
   hasChildren(member) {
-    return member.children && member.children.length;
+    if (member.children && member.children.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
-
+  componentDidMount() {
+    console.log(this.props.route.params.data);
+  }
   renderTree(data, level) {
     return (
       <FlatList
@@ -41,7 +49,7 @@ export default class GenealogyScreen extends Component {
               style={{
                 justifyContent: 'center',
                 alignItems: 'center',
-                paddingLeft: this.props.siblingGap / 3,
+                paddingLeft: this.props.siblingGap / 1,
                 paddingRight: this.props.siblingGap / 3,
               }}>
               <View
@@ -49,38 +57,49 @@ export default class GenealogyScreen extends Component {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}>
-                <TouchableOpacity
-                  onLongPress={() => console.log(item.id)}
-                  onPress={() =>
-                    this.props.navigation.navigate('FixInfoScreen')
-                  }>
+                <View
+                  style={{
+                    ...this.props.nodeStyle,
+                  }}>
                   <View
                     style={{
-                      ...this.props.nodeStyle,
-                      //backgroundColor: 'blue',
+                      flexDirection: 'row',
+                      width: '100%',
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}>
-                    <Image
+                    <TouchableOpacity
                       style={{...this.props.imageStyle}}
-                      source={{uri: info.profile}}
-                    />
-                    <Text
-                      style={{
-                        ...this.props.nodeTitleStyle,
-                        color: this.props.nodeTitleColor,
-                      }}>
-                      {info.name}
-                      {level}
-                    </Text>
+                      onPress={() => console.log(item.id)}>
+                      <Image
+                        style={{...this.props.imageStyle}}
+                        source={{uri: info.profile}}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => console.log(item.id)}>
+                      <Image
+                        style={{width: 25, height: 25}}
+                        source={require('../../images/icons8-add-40.png')}
+                      />
+                    </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
+                  <Text
+                    style={{
+                      ...this.props.nodeTitleStyle,
+                      color: this.props.nodeTitleColor,
+                    }}>
+                    {info.name}
+                  </Text>
+                </View>
               </View>
               {this.hasChildren(item) && (
-                <Svg height="50" width="20">
+                <Svg height="40" width="20">
                   <Line
                     x1="50%"
-                    y1="0"
+                    y1="15%"
                     x2="50%"
-                    y2="150"
+                    y2="150%"
                     stroke={this.props.pathColor}
                     strokeWidth={this.props.strokeWidth}
                   />
@@ -93,8 +112,10 @@ export default class GenealogyScreen extends Component {
                 }}>
                 {this.hasChildren(item) &&
                   item.children.map((child, index) => {
-                    const {name, profile} = child;
-                    const info = {name, profile};
+                    {
+                      const {name, profile} = child;
+                      const info = {name, profile};
+                    }
                     return (
                       <View
                         key={child.name + child.spouse}
@@ -105,13 +126,12 @@ export default class GenealogyScreen extends Component {
                           <Svg height="50" width="100%">
                             <Line
                               x1="50%"
-                              y1="0"
+                              y1="0%"
                               x2="50%"
                               y2="100%"
                               stroke={this.props.pathColor}
                               strokeWidth={this.props.strokeWidth}
                             />
-                            {/* Right side horizontal line */}
                             {this.hasChildren(item) &&
                               item.children.length !== 1 &&
                               item.children.length - 1 !== index && (
@@ -124,7 +144,6 @@ export default class GenealogyScreen extends Component {
                                   strokeWidth={this.props.strokeWidth}
                                 />
                               )}
-                            {/* Left side horizontal line */}
                             {this.hasChildren(item) &&
                               item.children.length !== 1 &&
                               index !== 0 && (
@@ -140,7 +159,6 @@ export default class GenealogyScreen extends Component {
                           </Svg>
                           {this.renderTree([child], level + 1)}
                         </View>
-                        {}
                         <View
                           style={{
                             height: this.props.strokeWidth,
@@ -169,46 +187,44 @@ export default class GenealogyScreen extends Component {
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={styles.titleGr}>
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('DisplayGenealogy')
-                }>
-                <Image
-                  style={{
-                    height: 40,
-                    width: 40,
-                    top: 2,
-                  }}
-                  source={require('../../images/icons8-back-to-100.png')}
-                />
-              </TouchableOpacity>
-              <Text style={styles.title}>Tên gia phả</Text>
-            </View>
+        <View style={styles.container}>
+          <View style={styles.titleGr}>
+            <TouchableOpacity
+              onPress={() =>
+                this.props.navigation.navigate('DisplayGenealogy')
+              }>
+              <Image
+                style={{
+                  height: 40,
+                  width: 40,
+                  top: 2,
+                }}
+                source={require('../../images/icons8-back-to-100.png')}
+              />
+            </TouchableOpacity>
+            <Text style={styles.title}>Tên gia phả</Text>
+          </View>
+          <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}}>
             <View style={styles.Genealogy}>
               {this.renderTree(this.props.data, 1)}
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#AEECEF',
+    height: '100%',
   },
   Genealogy: {
-    flex: 1,
-    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#AEECEF',
   },
   titleGr: {
     height: 60,
@@ -248,7 +264,7 @@ GenealogyScreen.defaultProps = {
     fontWeight: 'bold',
   },
   pathColor: 'black',
-  siblingGap: 30,
+  siblingGap: 40,
   imageStyle: {
     width: '100%',
     height: '100%',
