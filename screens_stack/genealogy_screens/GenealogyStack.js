@@ -12,18 +12,9 @@ const GenealogyStack = () => (
     <genealogyStack.Screen
       name="DisplayGenealogy"
       component={DisplayGenealogy}
-      //options={{title: 'DisplayGenealogy'}}
     />
-    <genealogyStack.Screen
-      name="AddGenealogy"
-      component={AddGenealogyScreen}
-      //options={{tabBarVisible: false}}
-    />
-    <genealogyStack.Screen
-      name="Genealogy"
-      component={GenealogyScreen}
-      //options={{title: 'GenealogyScreen'}}
-    />
+    <genealogyStack.Screen name="AddGenealogy" component={AddGenealogyScreen} />
+    <genealogyStack.Screen name="Genealogy" component={GenealogyScreen} />
     <genealogyStack.Screen name="FixInfoScreen" component={FixInfoGenealogy} />
   </genealogyStack.Navigator>
 );

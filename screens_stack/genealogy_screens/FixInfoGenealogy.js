@@ -15,16 +15,18 @@ import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
 import DatePicker from 'react-native-datepicker';
 import ImagePicker from 'react-native-image-crop-picker';
+import url from '../../components/MainURL';
 
 export default class FixInfoGenealogy extends Component {
   constructor(props) {
     super(props);
     //set value in state for initial date
     this.state = {
-      image: '',
-      imageType: '',
-      date1: '',
-      date2: '',
+      leafId: this.props.route.params.leafId,
+      refreshToken: '',
+      email: '',
+      LeafData: '',
+      leafInfoEdit: '',
     };
   }
   chosePhotoFromLibrary() {
@@ -34,10 +36,11 @@ export default class FixInfoGenealogy extends Component {
       cropping: true,
     }).then(image => {
       this.setState({
-        image: image.path,
+        leafInfoEdit: {
+          ...this.state.leafInfoEdit,
+          image: image.path,
+        },
       });
-      //this._postImage(this.state.accessToken, image);
-      console.log(image.path);
     });
   }
   takePhotoFromCamera() {
@@ -47,10 +50,11 @@ export default class FixInfoGenealogy extends Component {
       cropping: true,
     }).then(image => {
       this.setState({
-        image: image.path,
+        leafInfoEdit: {
+          ...this.state.leafInfoEdit,
+          image: image.path,
+        },
       });
-      //this._postImage(this.state.accessToken, image);
-      console.log(image.path);
     });
   }
   onClickAddImages() {
@@ -74,6 +78,89 @@ export default class FixInfoGenealogy extends Component {
         }
       },
     );
+  }
+  loadOneLeaf = async id => {
+    var URL = url + '/api/user/leafshowone';
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              leafId: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.setState({
+                LeafData: json.leaf,
+                leafInfoEdit: {
+                  ...this.state.leafInfoEdit,
+                  image: json.leaf.profileImage,
+                  dateBirth: json.leaf.dob,
+                  dateDeath: json.leaf.dod,
+                },
+              });
+              console.log(JSON.stringify(this.state.LeafData));
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  updateLeaf = async id => {
+    var URL = url + '/api/user/leafupdate';
+    _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              leafId: this.state.leafId,
+              firstname: this.state.leafInfoEdit.firstname,
+              lastname: this.state.leafInfoEdit.lastname,
+              nickname: this.state.leafInfoEdit.nickname,
+              sex: this.state.leafInfoEdit.sex,
+              dob: this.state.leafInfoEdit.dateBirth,
+              domicile: this.state.leafInfoEdit.address,
+              dod: this.state.leafInfoEdit.dateDeath,
+              burialplace: this.state.leafInfoEdit.dp,
+              profileImage: this.state.leafInfoEdit.image,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              console.log(JSON.stringify(json));
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  componentDidMount() {
+    this.loadOneLeaf(this.state.leafId);
   }
   render() {
     return (
@@ -104,7 +191,7 @@ export default class FixInfoGenealogy extends Component {
                   <TouchableOpacity
                     style={styles.avatar}
                     onPress={() => this.onClickAddImages()}>
-                    {this.state.image === '' && (
+                    {!this.state.leafInfoEdit.image ? (
                       <Image
                         source={require('../../images/avatar_default.png')}
                         style={{
@@ -113,10 +200,9 @@ export default class FixInfoGenealogy extends Component {
                           borderRadius: 20,
                         }}
                       />
-                    )}
-                    {this.state.image !== '' && (
+                    ) : (
                       <Image
-                        source={{uri: this.state.image}}
+                        source={{uri: this.state.leafInfoEdit.image}}
                         style={{
                           width: 130,
                           height: 130,
@@ -124,42 +210,78 @@ export default class FixInfoGenealogy extends Component {
                         }}
                       />
                     )}
+
                     <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
                   </TouchableOpacity>
                   <Text style={styles.inputTitle}>Họ* </Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
-                  <Text style={styles.inputTitle}>Đêm* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          firstname: data,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.firstname}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Tên* </Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          lastname: data,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.lastname}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          nickname: data,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.nickname}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Giới tính</Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          sex: data,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.sex}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Nguyên quán</Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          address: data,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.domicile}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Ngày sinh</Text>
                   <DatePicker
                     style={{width: '90%', borderRadius: 50}}
-                    date={this.state.date1}
+                    date={this.state.leafInfoEdit.dateBirth}
                     mode="date"
                     placeholder="select date"
                     format="YYYY-MM-DD"
@@ -180,13 +302,18 @@ export default class FixInfoGenealogy extends Component {
                       // ... You can check the source to find the other keys.
                     }}
                     onDateChange={date => {
-                      this.setState({date1: date});
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          dateBirth: date,
+                        },
+                      });
                     }}
                   />
                   <Text style={styles.inputTitle}>Ngày giỗ</Text>
                   <DatePicker
                     style={{width: '90%', borderRadius: 50}}
-                    date={this.state.date2}
+                    date={this.state.leafInfoEdit.dateDeath}
                     mode="date"
                     placeholder="select date"
                     format="YYYY-MM-DD"
@@ -207,19 +334,37 @@ export default class FixInfoGenealogy extends Component {
                       // ... You can check the source to find the other keys.
                     }}
                     onDateChange={date => {
-                      this.setState({date2: date});
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          dateDeath: date,
+                        },
+                      });
                     }}
                   />
                   <Text style={styles.inputTitle}>Mộ tang </Text>
                   <TextInput
                     style={styles.inputText}
-                    //onChangeText={data => this.setState({TextInput_Address: data})}
-                  />
+                    onChangeText={data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          dp: data,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.burialplace}
+                  </TextInput>
                 </View>
               </View>
             </View>
             <View style={styles.buttonAdd}>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  this.updateLeaf(this.state.leafId);
+                  console.log(JSON.stringify(this.state.leafInfoEdit));
+                }}>
                 <Text
                   style={{
                     fontSize: 18,

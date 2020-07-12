@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import moment from 'moment';
-import {Icon} from 'native-base';
 
 import {
   View,
@@ -10,7 +9,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
-  TextInput,
   AsyncStorage,
   FlatList,
 } from 'react-native';
@@ -28,6 +26,7 @@ export default class DisplayGenealogy extends Component {
       data: '',
     };
   }
+
   loadRoot = async () => {
     var URL = url + '/api/user/rootshowall';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
@@ -61,7 +60,7 @@ export default class DisplayGenealogy extends Component {
     });
   };
   _renderItem = ({item}) => (
-    <TouchableOpacity onPress={() => console.log('press item')}>
+    <TouchableOpacity>
       <View style={styles.item}>
         <View style={{flexDirection: 'row'}}>
           <Image
@@ -112,7 +111,7 @@ export default class DisplayGenealogy extends Component {
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
               onPress={() =>
-                this.props.navigation.navigate('Genealogy', {data: item})
+                this.props.navigation.navigate('Genealogy', {data: item._id})
               }>
               <View style={{flexDirection: 'row'}}>
                 <Image
@@ -140,14 +139,14 @@ export default class DisplayGenealogy extends Component {
                     width: 25,
                     right: 6,
                   }}
-                  source={require('../../images/icons8-trash-26.png')}
+                  source={require('../../images/icons8-edit-property-26.png')}
                 />
                 <Text
                   style={{
                     fontSize: 15,
                     paddingRight: 15,
                   }}>
-                  Xóa
+                  Sửa
                 </Text>
               </View>
             </TouchableOpacity>

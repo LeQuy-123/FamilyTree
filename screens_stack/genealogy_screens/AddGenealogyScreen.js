@@ -34,7 +34,7 @@ export default class AddGenealogyScreen extends Component {
       },
       firstPerson: {
         familyName: '',
-        profile: 'https://img.icons8.com/cotton/2x/person-male.png',
+        profile: '',
         nickName: '',
         dateBirth: '',
         dateDeath: '',
@@ -180,15 +180,6 @@ export default class AddGenealogyScreen extends Component {
                       })
                     }
                   />
-                  <Text style={styles.inputTitle}>Đêm* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
-                      this.setState({
-                        middleName: data,
-                      })
-                    }
-                  />
                   <Text style={styles.inputTitle}>Tên* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -289,7 +280,7 @@ export default class AddGenealogyScreen extends Component {
                 style={styles.button}
                 onPress={() => {
                   this.onPressHandel();
-                  //this.props.navigation.navigate('Genealogy');
+                  this.props.navigation.navigate('DisplayGenealogy');
                 }}>
                 <Text
                   style={{
