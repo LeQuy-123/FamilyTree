@@ -59,6 +59,41 @@ export default class DisplayGenealogy extends Component {
       }
     });
   };
+  CreateRoot = async () => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        this.setState({
+          accessToken: data,
+        });
+        try {
+          var URL = url + '/api/user/root';
+          fetch(URL, {
+            method: 'GET',
+            headers: {
+              Authorization: 'Bearer ' + data,
+            },
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.props.navigation.navigate('AddGenealogy', {
+                rootId: json.root._id,
+              });
+            })
+            .catch(error => console.log('error here: ' + error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
   _renderItem = ({item}) => (
     <TouchableOpacity>
       <View style={styles.item}>
@@ -131,7 +166,12 @@ export default class DisplayGenealogy extends Component {
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                this.props.navigation.navigate('AddGenealogy', {
+                  rootId: item._id,
+                })
+              }>
               <View style={{flexDirection: 'row'}}>
                 <Image
                   style={{
@@ -222,7 +262,7 @@ export default class DisplayGenealogy extends Component {
           <View style={styles.buttonAdd}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => this.props.navigation.navigate('AddGenealogy')}>
+              onPress={() => this.CreateRoot()}>
               <Text style={styles.buttonText}>Tạo gia phả</Text>
             </TouchableOpacity>
           </View>

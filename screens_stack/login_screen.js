@@ -298,7 +298,7 @@ class Login extends Component {
                   </Text>
                   <TouchableOpacity
                     style={styleslogin.buttonContainerGoogle}
-                    onPress={() => this.clearAsyncStorage()}>
+                    onPress={() => console.log('press')}>
                     <Text style={styleslogin.text_in_buttonGoogle}>
                       Đăng nhập bằng Google
                     </Text>

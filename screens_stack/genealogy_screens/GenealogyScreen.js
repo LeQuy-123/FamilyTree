@@ -29,15 +29,8 @@ export default class GenealogyScreen extends Component {
       email: '',
       onShowLeafData: '',
       rootKey: this.props.route.params.data,
-      render: true,
-      data: [
-        {
-          key: '',
-          name: '',
-          image: '',
-          children: [],
-        },
-      ],
+      data: [],
+      tree: [],
       treeName: '',
     };
   }
@@ -55,35 +48,54 @@ export default class GenealogyScreen extends Component {
   }
   componentDidMount() {
     this.loadOneRoot(this.state.rootKey);
+    this.loadAllLeaf(this.state.rootKey);
   }
   handelPress(key, array, newKey, newName, image) {
     var ar = {key: newKey, name: newName, image: image};
-    console.log(ar);
     if (key === this.state.rootKey) {
       if (this.hasChildren(array)) {
         array.children.push(ar);
-        this.setState({render: !this.state.render});
       } else {
         array.children = [ar];
-        this.setState({render: !this.state.render});
       }
+      return array;
     } else {
       for (var i = 0; i < array.children.length; i++) {
-        var array2 = array.children[i];
         if (array.children[i].key === key) {
           if (this.hasChildren(array.children[i])) {
             array.children[i].children.push(ar);
-            this.setState({render: !this.state.render});
           } else {
             array.children[i].children = [ar];
-            this.setState({render: !this.state.render});
           }
-          return true;
-        } else if (this.hasChildren(array2)) {
-          this.handelPress(key, array2);
+          return array;
+        } else if (this.hasChildren(array.children[i])) {
+          this.handelPress(key, array.children[i], newKey, newName, image);
         }
       }
     }
+  }
+  list_to_tree(list) {
+    var map = {},
+      node,
+      roots = [],
+      i;
+
+    for (i = 0; i < list.length; i += 1) {
+      map[list[i]._id] = i; // initialize the map
+      list[i].children = []; // initialize the children
+    }
+
+    for (i = 0; i < list.length; i += 1) {
+      node = list[i];
+      if (node.rootId) {
+        // if you have dangling branches check that map[node.parentId] exists
+        console.log(JSON.stringify(list[map[node.rootId]].children));
+        list[map[node.rootId]].children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+    return roots;
   }
   removeItemOnce(arr, value) {
     var index = arr.findIndex(v => v.key === value);
@@ -95,6 +107,7 @@ export default class GenealogyScreen extends Component {
   }
   // xoa node trong array
   handelPressDelete(key, array) {
+    console.log(JSON.stringify(array));
     for (var i = 0; i < array.children.length; i++) {
       var array2 = array.children[i];
       if (array.children[i].key === key) {
@@ -132,17 +145,51 @@ export default class GenealogyScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
+              this.state.data.push(json.root);
               this.setState({
                 treeName: json.root.treename,
-                data: [
-                  {
-                    rootKey: this.props.route.params.data,
-                    key: json.root._id,
-                    image: json.root.profileImage,
-                    name: json.root.firstname + ' ' + json.root.lastname,
-                  },
-                ],
+                onShowLeafData: json.root,
               });
+              // console.log(
+              //   'show leaf data: ' + JSON.stringify(this.state.onShowLeafData),
+              // );
+              this.setState({tree: this.state.data});
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  loadAllLeaf = async id => {
+    var URL = url + '/api/user/leafshowall';
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              rootId: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              var arr = this.state.data.concat(json.leaf);
+              console.log('tat ca leaf: ' + JSON.stringify(this.state.data));
+              this.setState({tree: this.list_to_tree(arr), data: arr});
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -191,6 +238,7 @@ export default class GenealogyScreen extends Component {
     });
   };
   createLeaf = async id => {
+    console.log(id);
     var URL = url + '/api/user/leaf';
     _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
       if (data === null) {
@@ -204,19 +252,13 @@ export default class GenealogyScreen extends Component {
               Authorization: 'Bearer ' + data,
             },
             body: JSON.stringify({
-              rootId: this.state.rootKey,
+              rootId: id,
             }),
           })
             .then(response => response.json())
             .then(json => {
-              // console.log(JSON.stringify(json.leaf._id));
-              this.handelPress(
-                id,
-                this.state.data[0],
-                json.leaf._id,
-                json.leaf.fullname,
-                json.leaf.profileImage,
-              );
+              this.state.data.push(json.leaf);
+              this.setState({tree: this.list_to_tree(this.state.data)});
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -235,8 +277,13 @@ export default class GenealogyScreen extends Component {
         listKey={item => `${item.key}`}
         initialScrollIndex={0}
         renderItem={({item}) => {
-          const {key, name, image} = item;
-          const info = {key, name, image};
+          const {_id, firstname, lastname, profileImage} = item;
+          const info = {
+            _id,
+            firstname,
+            lastname,
+            profileImage,
+          };
           return (
             <View
               style={{
@@ -252,14 +299,20 @@ export default class GenealogyScreen extends Component {
                 <View style={styles.nodeStyle}>
                   <TouchableOpacity
                     onPress={() => {
-                      if (item.key !== this.state.rootKey) {
-                        this.loadOneLeaf(item.key);
+                      if (item._id !== this.state.rootKey) {
+                        console.log(item._id);
+                        this.loadOneLeaf(item._id);
+                      } else {
+                        console.log(item._id);
+                        this.toggleModal();
                       }
                     }}>
-                    {info.image ? (
+                    {info.profileImage ? (
                       <Image
                         style={styles.imageStyle}
-                        source={{uri: info.image}}
+                        source={{
+                          uri: info.profileImage,
+                        }}
                       />
                     ) : (
                       <Image
@@ -274,13 +327,13 @@ export default class GenealogyScreen extends Component {
                       textAlign: 'center',
                       color: this.props.nodeTitleColor,
                     }}>
-                    {info.name}
+                    {info.firstname} {info.lastname}
                   </Text>
                   <TouchableOpacity
                     onPress={() => {
-                      //this.handelPressDelete(item.key, this.state.data[0]);
-                      this.createLeaf(item.key);
-                      //this.handelPress(item.key, this.state.data[0]);
+                      this.createLeaf(item._id);
+
+                      //console.log(JSON.stringify(this.state.data));
                     }}>
                     <Image
                       style={{width: 25, height: 25}}
@@ -355,7 +408,6 @@ export default class GenealogyScreen extends Component {
                           </Svg>
                           {this.renderTree([child], level + 1)}
                         </View>
-                        {}
                         <View
                           style={{
                             height: this.props.strokeWidth,
@@ -403,7 +455,7 @@ export default class GenealogyScreen extends Component {
           </View>
           <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}}>
             <View style={styles.Genealogy}>
-              {this.renderTree(this.state.data, 1)}
+              {this.renderTree(this.state.tree, 1)}
             </View>
           </ScrollView>
         </View>
@@ -417,11 +469,11 @@ export default class GenealogyScreen extends Component {
           swipeDirection={['left', 'right', 'down']}
           style={styles.view}>
           <View style={styles.modal}>
-            <View>
-              {this.state.imageModal ? (
+            <View style={{flexDirection: 'row', paddingHorizontal: 30}}>
+              {this.state.onShowLeafData.profileImage ? (
                 <Image
                   style={styles.bigImageModal}
-                  source={{uri: this.state.imageModal}}
+                  source={{uri: this.state.onShowLeafData.profileImage}}
                 />
               ) : (
                 <Image
@@ -429,26 +481,80 @@ export default class GenealogyScreen extends Component {
                   source={require('../../images/icons8-user-96.png')}
                 />
               )}
+              <Text
+                style={{
+                  fontFamily: 'serif',
+                  fontSize: 22,
+                  fontWeight: 'bold',
+                  top: 15,
+                  left: 30,
+                }}>
+                {this.state.onShowLeafData.firstname}{' '}
+                {this.state.onShowLeafData.lastname}
+              </Text>
+            </View>
+            <View style={styles.modalInfo}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'space-around',
+                }}>
+                <Text style={styles.modalInfoText}>Tên thường gọi</Text>
+                <Text style={styles.modalOptionText}>
+                  {this.state.onShowLeafData.nickname}
+                </Text>
+                <Text style={styles.modalInfoText}>Ngày sinh</Text>
+                <Text style={styles.modalOptionText}>
+                  {this.state.onShowLeafData.dob}
+                </Text>
+                <Text style={styles.modalInfoText}>Giới tính</Text>
+                <Text style={styles.modalOptionText}>
+                  {this.state.onShowLeafData.sex}
+                </Text>
+              </View>
+              <View style={{flex: 1, justifyContent: 'space-around'}}>
+                <Text style={styles.modalInfoText}>Ngày mất</Text>
+                <Text style={styles.modalOptionText}>
+                  {this.state.onShowLeafData.dod}
+                </Text>
+                <Text style={styles.modalInfoText}>Nơi yên nghỉ</Text>
+                <Text style={styles.modalOptionText}>
+                  {this.state.onShowLeafData.burialplace}
+                </Text>
+                <Text style={styles.modalInfoText}>Địa chỉ</Text>
+                <Text style={styles.modalOptionText}>
+                  {this.state.onShowLeafData.domicile}
+                </Text>
+              </View>
             </View>
             <View
               style={{
                 flexDirection: 'row',
                 width: '100%',
-                height: '15%',
-                //backgroundColor: 'blue',
+                bottom: 80,
+                height: '20%',
                 justifyContent: 'space-around',
                 alignItems: 'center',
               }}>
-              <TouchableOpacity style={styles.modalButton}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  this.handelPressDelete(
+                    this.state.onShowLeafData._id,
+                    this.state.data[0],
+                  );
+                  this.toggleModal();
+                }}>
                 <Text style={styles.modalButtonText}>Xóa</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
-                onPress={() =>
+                onPress={() => {
                   this.props.navigation.navigate('FixInfoScreen', {
                     leafId: this.state.onShowLeafData._id,
-                  })
-                }>
+                  });
+                  this.toggleModal();
+                }}>
                 <Text style={styles.modalButtonText}>Sửa</Text>
               </TouchableOpacity>
             </View>
@@ -506,7 +612,6 @@ const styles = StyleSheet.create({
     height: 80,
     backgroundColor: 'white',
     borderWidth: 1,
-    opacity: 0.8,
     borderColor: 'black',
     borderRadius: 50,
     resizeMode: 'cover',
@@ -516,9 +621,8 @@ const styles = StyleSheet.create({
   modal: {
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
-    alignItems: 'center',
     justifyContent: 'space-between',
-    height: '40%',
+    height: '45%',
     width: '100%',
     backgroundColor: 'white',
   },
@@ -528,7 +632,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     width: 160,
-    height: '70%',
+    height: '60%',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
@@ -541,13 +645,31 @@ const styles = StyleSheet.create({
     color: '#840505',
   },
   bigImageModal: {
-    width: 180,
-    height: 180,
+    width: 140,
+    height: 140,
     borderRadius: 100,
-    bottom: 90,
+    bottom: 70,
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: 'white',
+  },
+  modalOptionText: {
+    fontFamily: 'serif',
+    fontSize: 16,
+    left: 5,
+    bottom: 5,
+  },
+  modalInfo: {
+    height: '60%',
+    bottom: 70,
+    flexDirection: 'row',
+    width: '100%',
+    paddingLeft: 20,
+  },
+  modalInfoText: {
+    fontFamily: 'serif',
+    fontSize: 17,
+    fontWeight: 'bold',
   },
 });
 GenealogyScreen.defaultProps = {

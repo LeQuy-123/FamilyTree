@@ -15,11 +15,14 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import url from '../../components/MainURL';
+import * as nativeBase from 'native-base';
+import ImagePicker from 'react-native-image-crop-picker';
 import _RefreshToken from '../../components/refresh_Token';
 export default class AddGenealogyScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      rootId: this.props.route.params.rootId,
       accessToken: '',
       refreshToken: '',
       email: '',
@@ -32,17 +35,107 @@ export default class AddGenealogyScreen extends Component {
         create: '',
         info: '',
       },
-      firstPerson: {
-        familyName: '',
-        profile: '',
-        nickName: '',
-        dateBirth: '',
-        dateDeath: '',
-        dp: '',
-      },
+      dataRoot: '',
+      firstPerson: '',
     };
   }
-  CreateRoot = async () => {
+  chosePhotoFromLibrary() {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        firstPerson: {
+          ...this.state.firstPerson,
+          image: image.path,
+        },
+      });
+    });
+  }
+  takePhotoFromCamera() {
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      this.setState({
+        firstPerson: {
+          ...this.state.firstPerson,
+          image: image.path,
+        },
+      });
+    });
+  }
+  onClickAddImages() {
+    const Buttons = ['Chụp từ máy ảnh', 'Chọn từ thư viện', 'Thoát'];
+    nativeBase.ActionSheet.show(
+      {
+        options: Buttons,
+        cancelButtonIndex: 2,
+        title: 'Chọn hình hảnh',
+      },
+      buttonIndex => {
+        switch (buttonIndex) {
+          case 0:
+            this.takePhotoFromCamera();
+            break;
+          case 1:
+            this.chosePhotoFromLibrary();
+            break;
+          default:
+            break;
+        }
+      },
+    );
+  }
+  updateRoot = async id => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      var updateURL = url + '/api/user/rootupdate';
+      try {
+        fetch(updateURL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + data,
+          },
+          body: JSON.stringify({
+            rootId: id,
+            treename: this.state.genoInfo.genoName,
+            author: this.state.genoInfo.create,
+            authoraddress: this.state.genoInfo.info,
+            firstname: this.state.firstName,
+            lastname: this.state.lastName,
+            nickname: this.state.firstPerson.nickName,
+            dob: this.state.firstPerson.dateBirth,
+            dod: this.state.firstPerson.dateDeath,
+            burialplace: this.state.firstPerson.dp,
+            sex: this.state.firstPerson.sex,
+            profileImage: this.state.firstPerson.image,
+          }),
+        })
+          .then(response => response.json())
+          .then(js => {
+            console.log(JSON.stringify(js));
+          })
+          .catch(error => console.log(error));
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
+  onPressHandel() {
+    this.updateRoot(this.state.rootId);
+    this.props.navigation.goBack();
+  }
+  loadOneRoot = async id => {
+    var URL = url + '/api/user/rootshowone';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
     this.setState({
@@ -53,60 +146,48 @@ export default class AddGenealogyScreen extends Component {
       if (data === null) {
         this.props.navigation.navigate('Login');
       } else {
-        this.setState({
-          accessToken: data,
-        });
         try {
-          var URL = url + '/api/user/root';
           fetch(URL, {
-            method: 'GET',
+            method: 'POST',
             headers: {
+              'Content-Type': 'application/json',
               Authorization: 'Bearer ' + data,
             },
+            body: JSON.stringify({
+              rootId: id,
+            }),
           })
             .then(response => response.json())
             .then(json => {
-              var updateURL = url + '/api/user/rootupdate';
-              try {
-                fetch(updateURL, {
-                  method: 'PUT',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + this.state.accessToken,
-                  },
-                  body: JSON.stringify({
-                    rootId: json.root._id,
-                    treename: this.state.genoInfo.genoName,
-                    author: this.state.genoInfo.create,
-                    authoraddress: this.state.genoInfo.info,
-                    firstname: this.state.firstName,
-                    middlename: this.state.middleName,
-                    lastname: this.state.lastName,
-                    nickname: this.state.firstPerson.nickName,
-                    dob: this.state.firstPerson.dateBirth,
-                    dod: this.state.firstPerson.dateDeath,
-                    burialplace: this.state.firstPerson.dp,
-                    profileImage: this.state.profile,
-                  }),
-                })
-                  .then(response => response.json())
-                  .then(js => {
-                    console.log('root: ' + js.root);
-                  })
-                  .catch(error => console.log(error));
-              } catch (error) {
-                console.error(error);
-              }
+              this.setState({
+                dataRoot: json.root,
+                firstName: json.root.firstname,
+                lastName: json.root.lastname,
+                genoInfo: {
+                  genoName: json.root.treename,
+                  create: json.root.author,
+                  info: json.root.authoraddress,
+                },
+                firstPerson: {
+                  image: json.root.profileImage,
+                  dateBirth: json.root.dob,
+                  dateDeath: json.root.dod,
+                  nickName: json.root.nickname,
+                  burialplace: json.root.burialplace,
+                  sex: json.root.sex,
+                  profileImage: json.root.profileImage,
+                },
+              });
             })
-            .catch(error => console.log('error here: ' + error));
+            .catch(error => console.log(error));
         } catch (error) {
           console.error(error);
         }
       }
     });
   };
-  onPressHandel() {
-    this.CreateRoot();
+  componentDidMount() {
+    this.loadOneRoot(this.props.route.params.rootId);
   }
   render() {
     return (
@@ -144,8 +225,9 @@ export default class AddGenealogyScreen extends Component {
                       this.setState({
                         genoInfo: {...this.state.genoInfo, genoName: data},
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.treename}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Tên người tạo* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -153,8 +235,9 @@ export default class AddGenealogyScreen extends Component {
                       this.setState({
                         genoInfo: {...this.state.genoInfo, create: data},
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.author}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Mô tả gia phả* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -162,8 +245,9 @@ export default class AddGenealogyScreen extends Component {
                       this.setState({
                         genoInfo: {...this.state.genoInfo, info: data},
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.authoraddress}
+                  </TextInput>
                 </View>
               </View>
               <View style={styles.infoFirstGenerationGroup}>
@@ -171,6 +255,34 @@ export default class AddGenealogyScreen extends Component {
                   Thế hệ thứ nhất/ Thủy tổ dòng họ
                 </Text>
                 <View style={styles.infoFirstGeneration}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 20,
+                    }}
+                    onPress={() => this.onClickAddImages()}>
+                    {this.state.firstPerson.image ? (
+                      <Image
+                        source={{uri: this.state.firstPerson.image}}
+                        style={{
+                          width: 120,
+                          height: 120,
+                          borderRadius: 60,
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../images/avatar_default.png')}
+                        style={{
+                          width: 120,
+                          height: 120,
+                          borderRadius: 20,
+                        }}
+                      />
+                    )}
+                    <Text style={styles.inputTitle}>+ Thêm ảnh đại diện</Text>
+                  </TouchableOpacity>
                   <Text style={styles.inputTitle}>Họ* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -178,8 +290,9 @@ export default class AddGenealogyScreen extends Component {
                       this.setState({
                         firstName: data,
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.firstname}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Tên* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -187,8 +300,9 @@ export default class AddGenealogyScreen extends Component {
                       this.setState({
                         lastName: data,
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.lastname}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -199,8 +313,22 @@ export default class AddGenealogyScreen extends Component {
                           nickName: data,
                         },
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.nickname}
+                  </TextInput>
+                  <Text style={styles.inputTitle}>Giới tính* </Text>
+                  <TextInput
+                    style={styles.inputText}
+                    onChangeText={data =>
+                      this.setState({
+                        firstPerson: {
+                          ...this.state.firstPerson,
+                          sex: data,
+                        },
+                      })
+                    }>
+                    {this.state.dataRoot.sex}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Ngày sinh</Text>
                   <DatePicker
                     style={{width: '90%'}}
@@ -270,8 +398,9 @@ export default class AddGenealogyScreen extends Component {
                       this.setState({
                         firstPerson: {...this.state.firstPerson, dp: data},
                       })
-                    }
-                  />
+                    }>
+                    {this.state.dataRoot.burialplace}
+                  </TextInput>
                 </View>
               </View>
             </View>
@@ -280,7 +409,6 @@ export default class AddGenealogyScreen extends Component {
                 style={styles.button}
                 onPress={() => {
                   this.onPressHandel();
-                  this.props.navigation.navigate('DisplayGenealogy');
                 }}>
                 <Text
                   style={{

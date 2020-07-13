@@ -210,7 +210,6 @@ export default class FixInfoGenealogy extends Component {
                         }}
                       />
                     )}
-
                     <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
                   </TouchableOpacity>
                   <Text style={styles.inputTitle}>Họ* </Text>
@@ -364,6 +363,7 @@ export default class FixInfoGenealogy extends Component {
                 onPress={() => {
                   this.updateLeaf(this.state.leafId);
                   console.log(JSON.stringify(this.state.leafInfoEdit));
+                  this.props.navigation.goBack();
                 }}>
                 <Text
                   style={{
