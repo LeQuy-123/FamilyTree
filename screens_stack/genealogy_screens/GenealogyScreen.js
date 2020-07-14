@@ -48,38 +48,12 @@ export default class GenealogyScreen extends Component {
   }
   componentDidMount() {
     this.loadOneRoot(this.state.rootKey);
-    this.loadAllLeaf(this.state.rootKey);
-  }
-  handelPress(key, array, newKey, newName, image) {
-    var ar = {key: newKey, name: newName, image: image};
-    if (key === this.state.rootKey) {
-      if (this.hasChildren(array)) {
-        array.children.push(ar);
-      } else {
-        array.children = [ar];
-      }
-      return array;
-    } else {
-      for (var i = 0; i < array.children.length; i++) {
-        if (array.children[i].key === key) {
-          if (this.hasChildren(array.children[i])) {
-            array.children[i].children.push(ar);
-          } else {
-            array.children[i].children = [ar];
-          }
-          return array;
-        } else if (this.hasChildren(array.children[i])) {
-          this.handelPress(key, array.children[i], newKey, newName, image);
-        }
-      }
-    }
   }
   list_to_tree(list) {
     var map = {},
       node,
       roots = [],
       i;
-
     for (i = 0; i < list.length; i += 1) {
       map[list[i]._id] = i; // initialize the map
       list[i].children = []; // initialize the children
@@ -89,7 +63,6 @@ export default class GenealogyScreen extends Component {
       node = list[i];
       if (node.rootId) {
         // if you have dangling branches check that map[node.parentId] exists
-        console.log(JSON.stringify(list[map[node.rootId]].children));
         list[map[node.rootId]].children.push(node);
       } else {
         roots.push(node);
@@ -97,28 +70,15 @@ export default class GenealogyScreen extends Component {
     }
     return roots;
   }
-  removeItemOnce(arr, value) {
-    var index = arr.findIndex(v => v.key === value);
-    //console.log('index: ' + index);
-    if (index > -1) {
-      arr.splice(index, 1);
-    }
-    return arr;
-  }
-  // xoa node trong array
-  handelPressDelete(key, array) {
-    console.log(JSON.stringify(array));
-    for (var i = 0; i < array.children.length; i++) {
-      var array2 = array.children[i];
-      if (array.children[i].key === key) {
-        this.removeItemOnce(array.children, key);
-        // console.log(JSON.stringify(array.children));
-        // this.setState({render: !this.state.render});
-        return true;
-      } else if (this.hasChildren(array2)) {
-        this.handelPressDelete(key, array2);
-      }
-    }
+  removeItem(key) {
+    console.log('00000000000000000000000000000000000000000000');
+    var newArray = this.state.data.filter(function(array) {
+      return array._id !== key;
+    });
+    var newItem = JSON.parse(JSON.stringify(newArray)); // clone i team
+    var tree = this.list_to_tree(newItem);
+    this.setState({data: newArray, tree: tree});
+    console.log('data splice' + JSON.stringify(newArray));
   }
   loadOneRoot = async id => {
     var URL = url + '/api/user/rootshowone';
@@ -145,15 +105,15 @@ export default class GenealogyScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              this.state.data.push(json.root);
+              var newItem = JSON.parse(JSON.stringify(json.root)); // clone i team
+              var tree = this.list_to_tree(newItem);
               this.setState({
+                data: [json.root],
                 treeName: json.root.treename,
                 onShowLeafData: json.root,
+                tree: tree,
               });
-              // console.log(
-              //   'show leaf data: ' + JSON.stringify(this.state.onShowLeafData),
-              // );
-              this.setState({tree: this.state.data});
+              this.loadAllLeaf(this.state.rootKey);
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -188,8 +148,16 @@ export default class GenealogyScreen extends Component {
             .then(response => response.json())
             .then(json => {
               var arr = this.state.data.concat(json.leaf);
-              console.log('tat ca leaf: ' + JSON.stringify(this.state.data));
-              this.setState({tree: this.list_to_tree(arr), data: arr});
+              var newItem = JSON.parse(JSON.stringify(arr)); // clone i team
+              var tree = this.list_to_tree(newItem);
+              this.setState({
+                data: arr,
+                tree: tree,
+              });
+              // console.log(
+              //   '----------------------------------------------------------------',
+              // );
+              // console.log(JSON.stringify(this.state.data));
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -227,7 +195,6 @@ export default class GenealogyScreen extends Component {
                 onShowLeafData: json.leaf,
                 imageModal: json.leaf.profileImage,
               });
-              console.log(JSON.stringify(this.state.onShowLeafData));
               this.toggleModal();
             })
             .catch(error => console.log(error));
@@ -258,7 +225,11 @@ export default class GenealogyScreen extends Component {
             .then(response => response.json())
             .then(json => {
               this.state.data.push(json.leaf);
-              this.setState({tree: this.list_to_tree(this.state.data)});
+              // console.log('=========================================');
+              // console.log(JSON.stringify(this.state.data));
+              var newItem = JSON.parse(JSON.stringify(this.state.data)); // clone i team
+              var tree = this.list_to_tree(newItem);
+              this.setState({tree: tree});
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -300,10 +271,8 @@ export default class GenealogyScreen extends Component {
                   <TouchableOpacity
                     onPress={() => {
                       if (item._id !== this.state.rootKey) {
-                        console.log(item._id);
                         this.loadOneLeaf(item._id);
                       } else {
-                        console.log(item._id);
                         this.toggleModal();
                       }
                     }}>
@@ -539,10 +508,7 @@ export default class GenealogyScreen extends Component {
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => {
-                  this.handelPressDelete(
-                    this.state.onShowLeafData._id,
-                    this.state.data[0],
-                  );
+                  this.removeItem(this.state.onShowLeafData._id);
                   this.toggleModal();
                 }}>
                 <Text style={styles.modalButtonText}>Xóa</Text>
