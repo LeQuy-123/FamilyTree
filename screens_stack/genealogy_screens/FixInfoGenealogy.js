@@ -151,6 +151,75 @@ export default class FixInfoGenealogy extends Component {
             .then(response => response.json())
             .then(json => {
               console.log(JSON.stringify(json));
+              this.props.navigation.goBack();
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  deleteLeaf = async id => {
+    var URL = url + '/api/user/destroyleaf';
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              leafId: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.props.navigation.goBack();
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  createLeaf = async id => {
+    console.log(id);
+    var URL = url + '/api/user/newleaf';
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              authId: this.props.route.params.authId,
+              parentId: id,
+              firstname: 'Tên',
+              lastname: 'Họ',
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.props.navigation.goBack();
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -160,7 +229,9 @@ export default class FixInfoGenealogy extends Component {
     });
   };
   componentDidMount() {
-    this.loadOneLeaf(this.state.leafId);
+    if (!this.props.route.params.authId) {
+      this.loadOneLeaf(this.state.leafId);
+    }
   }
   render() {
     return (
@@ -361,9 +432,11 @@ export default class FixInfoGenealogy extends Component {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  this.updateLeaf(this.state.leafId);
-                  console.log(JSON.stringify(this.state.leafInfoEdit));
-                  this.props.navigation.goBack();
+                  if (!this.props.route.params.authId) {
+                    this.updateLeaf(this.state.leafId);
+                  } else {
+                    this.createLeaf(this.state.leafId);
+                  }
                 }}>
                 <Text
                   style={{
@@ -372,6 +445,23 @@ export default class FixInfoGenealogy extends Component {
                     color: 'white',
                   }}>
                   Cập nhật
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                disabled={!this.props.route.params.isFinalLeaf}
+                onPress={() => {
+                  if (!this.props.route.params.authId) {
+                    this.deleteLeaf(this.state.leafId);
+                  }
+                }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: 'white',
+                  }}>
+                  Xóa
                 </Text>
               </TouchableOpacity>
             </View>
@@ -446,13 +536,15 @@ const styles = StyleSheet.create({
   buttonAdd: {
     width: '100%',
     height: 70,
+    flexDirection: 'row',
+    paddingHorizontal: 40,
     //backgroundColor: '#00B2BF',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   button: {
     backgroundColor: '#00B2BF',
-    width: '80%',
+    width: '45%',
     height: '60%',
     alignItems: 'center',
     justifyContent: 'center',

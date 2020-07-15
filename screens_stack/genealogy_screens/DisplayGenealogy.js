@@ -26,9 +26,48 @@ export default class DisplayGenealogy extends Component {
       data: '',
     };
   }
-
-  loadRoot = async () => {
-    var URL = url + '/api/user/rootshowall';
+  deleteTree = async id => {
+    var URL = url + '/api/user/destroytree';
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              authId: id,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              this.deleteItem(id);
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+  deleteItem = id => {
+    console.log('id bi xoa: ' + id);
+    this.setState({
+      data: this.state.data.filter(x => x._id !== id),
+    });
+  };
+  loadAllTree = async () => {
+    var URL = url + '/api/user/authshowall';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
     this.setState({
@@ -48,8 +87,9 @@ export default class DisplayGenealogy extends Component {
           })
             .then(response => response.json())
             .then(json => {
+              //console.log(JSON.stringify(json));
               this.setState({
-                data: json.root,
+                data: json.auth,
               });
             })
             .catch(error => console.log(error));
@@ -59,85 +99,83 @@ export default class DisplayGenealogy extends Component {
       }
     });
   };
-  CreateRoot = async () => {
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    let userEmail = await AsyncStorage.getItem('email');
-    this.setState({
-      refreshToken: refreshToken,
-      email: userEmail,
-    });
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      if (data === null) {
-        this.props.navigation.navigate('Login');
-      } else {
-        this.setState({
-          accessToken: data,
-        });
-        try {
-          var URL = url + '/api/user/root';
-          fetch(URL, {
-            method: 'GET',
-            headers: {
-              Authorization: 'Bearer ' + data,
-            },
-          })
-            .then(response => response.json())
-            .then(json => {
-              this.props.navigation.navigate('AddGenealogy', {
-                rootId: json.root._id,
-              });
-            })
-            .catch(error => console.log('error here: ' + error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
   _renderItem = ({item}) => (
     <TouchableOpacity>
       <View style={styles.item}>
-        <View style={{flexDirection: 'row'}}>
-          <Image
-            style={{
-              height: 25,
-              width: 25,
-              left: 15,
-            }}
-            source={require('../../images/icons8-contact-24.png')}
-          />
-          <Text
-            style={{
-              fontSize: 16,
-              paddingLeft: 20,
-            }}>
-            {item.treename}
-          </Text>
-        </View>
-        <View style={{flexDirection: 'row'}}>
-          <Text
-            style={{
-              fontSize: 13,
-              paddingLeft: 15,
-            }}>
-            {moment(new Date(item.updatedAt)).format('YYYY-MM-DD')}
-          </Text>
-        </View>
-        <View style={{flexDirection: 'row'}}>
-          <Text
-            style={{
-              fontSize: 16,
-              paddingLeft: 15,
-            }}>
-            {item.author}
-          </Text>
+        <View style={{flexDirection: 'row', bottom: 5}}>
+          {item.profileImage ? (
+            <Image
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 60,
+                left: 5,
+              }}
+              source={{uri: item.profileImage}}
+            />
+          ) : (
+            <Image
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 60,
+                left: 5,
+                borderColor: 'black',
+                borderWidth: 1.5,
+              }}
+              source={require('../../images/icons8-user-96.png')}
+            />
+          )}
+          <View>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={{
+                  height: 22,
+                  width: 22,
+                  left: 15,
+                }}
+                source={require('../../images/icons8-contact-24.png')}
+              />
+              <Text style={{fontSize: 16, paddingLeft: 20}}>
+                {item.treename}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+              }}>
+              <Image
+                style={{
+                  height: 22,
+                  width: 22,
+                  left: 15,
+                }}
+                source={require('../../images/icons8-maintenance-date-24.png')}
+              />
+              <Text style={{fontSize: 16, paddingLeft: 20}}>
+                {moment(new Date(item.updatedAt)).format('YYYY-MM-DD')}
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={{
+                  height: 22,
+                  width: 22,
+                  left: 15,
+                }}
+                source={require('../../images/icons8-add-user-male-24.png')}
+              />
+              <Text style={{fontSize: 16, paddingLeft: 20}}>{item.author}</Text>
+            </View>
+          </View>
         </View>
         <Svg height="5" width="100%">
           <Line
             x1="1%"
-            y1="0%"
+            y1="50%"
             x2="99%"
-            y2="0"
+            y2="50%"
             stroke="black"
             strokeWidth="2"
           />
@@ -145,9 +183,12 @@ export default class DisplayGenealogy extends Component {
         <View style={{alignItems: 'flex-end'}}>
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
-              onPress={() =>
-                this.props.navigation.navigate('Genealogy', {data: item._id})
-              }>
+              onPress={() => {
+                this.props.navigation.navigate('Genealogy', {
+                  data: item._id,
+                  name: item.treename,
+                });
+              }}>
               <View style={{flexDirection: 'row'}}>
                 <Image
                   style={{
@@ -169,14 +210,15 @@ export default class DisplayGenealogy extends Component {
             <TouchableOpacity
               onPress={() =>
                 this.props.navigation.navigate('AddGenealogy', {
-                  rootId: item._id,
+                  authId: item._id,
                 })
               }>
               <View style={{flexDirection: 'row'}}>
                 <Image
                   style={{
-                    height: 25,
-                    width: 25,
+                    top: 2,
+                    height: 22,
+                    width: 22,
                     right: 6,
                   }}
                   source={require('../../images/icons8-edit-property-26.png')}
@@ -190,16 +232,34 @@ export default class DisplayGenealogy extends Component {
                 </Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.deleteTree(item._id)}>
+              <View style={{flexDirection: 'row'}}>
+                <Image
+                  style={{
+                    height: 22,
+                    width: 22,
+                    right: 6,
+                  }}
+                  source={require('../../images/icons8-trash-26.png')}
+                />
+                <Text
+                  style={{
+                    fontSize: 15,
+                    paddingRight: 15,
+                  }}>
+                  Xóa
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     </TouchableOpacity>
   );
   componentDidMount() {
-    this.loadRoot();
     const {navigation} = this.props;
     navigation.addListener('focus', async () => {
-      this.loadRoot();
+      this.loadAllTree();
     });
   }
   render() {
@@ -214,7 +274,9 @@ export default class DisplayGenealogy extends Component {
           <View style={styles.titleContainer}>
             <Text style={styles.title}> GIA PHẢ</Text>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('AddGenealogy')}>
+              onPress={() =>
+                this.props.navigation.navigate('AddGenealogy', {rootId: 0})
+              }>
               <Image
                 style={{top: -1, left: -6}}
                 source={require('../../images/icons8-add-40.png')}
@@ -250,6 +312,7 @@ export default class DisplayGenealogy extends Component {
                   style={{
                     width: '100%',
                     height: '90%',
+                    left: -10,
                   }}
                   data={this.state.data}
                   renderItem={this._renderItem}
@@ -262,7 +325,9 @@ export default class DisplayGenealogy extends Component {
           <View style={styles.buttonAdd}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => this.CreateRoot()}>
+              onPress={() =>
+                this.props.navigation.navigate('AddGenealogy', {rootId: 0})
+              }>
               <Text style={styles.buttonText}>Tạo gia phả</Text>
             </TouchableOpacity>
           </View>
@@ -305,8 +370,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   item: {
-    height: 110,
-    width: '85%',
+    height: 120,
+    width: '90%',
     backgroundColor: 'white',
     borderRadius: 20,
     marginVertical: 15,

@@ -126,7 +126,6 @@ export default class EventScreen extends Component {
             this.setState({
               dataEvent: json.event,
             });
-            console.log('event' + json.event);
           })
           .catch(error => console.log(error));
       } catch (error) {

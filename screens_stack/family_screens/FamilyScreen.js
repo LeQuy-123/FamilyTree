@@ -52,7 +52,6 @@ export default class FamilyScreen extends Component {
   };
   loadFamily = async () => {
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    console.log('Loading family');
     let userEmail = await AsyncStorage.getItem('email');
     this.setState({
       refreshToken: refreshToken,
@@ -61,7 +60,6 @@ export default class FamilyScreen extends Component {
     _RefreshToken(userEmail, refreshToken).then(data => {
       var URL = url + '/api/user/familyshow';
       if (data === null) {
-        console.log('ko the refresh token do token het han');
         this.props.navigation.navigate('Login');
       } else {
         try {
@@ -86,7 +84,6 @@ export default class FamilyScreen extends Component {
   };
   findFamily = async name => {
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    console.log('find family ' + name);
     let userEmail = await AsyncStorage.getItem('email');
     this.setState({
       refreshToken: refreshToken,
@@ -95,7 +92,6 @@ export default class FamilyScreen extends Component {
     _RefreshToken(userEmail, refreshToken).then(data => {
       var URL = url + '/api/user/familysearch';
       if (data === null) {
-        console.log('ko the refresh token do token het han');
         this.props.navigation.navigate('Login');
       } else {
         try {
@@ -114,7 +110,6 @@ export default class FamilyScreen extends Component {
               this.setState({
                 dataFamily: json.result,
               });
-              console.log(json);
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -153,7 +148,6 @@ export default class FamilyScreen extends Component {
   };
   openMap(address) {
     if (address) {
-      console.log('open directions');
       if (Platform.OS === 'android') {
         Linking.openURL('geo:' + address);
       } else {
@@ -181,7 +175,6 @@ export default class FamilyScreen extends Component {
       religion: item.religion,
       date: item.datebirth,
     });
-    console.log(item._id);
     this.toggleModal();
   }
   componentDidMount() {
@@ -279,7 +272,6 @@ export default class FamilyScreen extends Component {
             this.props.navigation.navigate('AddFamilyScreen', {
               id: this.state.id,
             });
-            console.log('id :' + this.state.id);
           });
       } catch (error) {
         console.error(error);
@@ -297,7 +289,6 @@ export default class FamilyScreen extends Component {
     _RefreshToken(email, refreshToken).then(data => {
       var URL = url + '/api/user/destroyfamily';
       if (data === null) {
-        console.log('ko the refresh token do token het han');
       } else {
         try {
           fetch(URL, {
@@ -312,7 +303,6 @@ export default class FamilyScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              console.log(json.message);
               this.deleteItem(id);
             })
             .catch(error => console.log(error));
@@ -323,7 +313,6 @@ export default class FamilyScreen extends Component {
     });
   };
   deleteItem = id => {
-    console.log('id bi xoa: ' + id);
     this.setState({
       dataFamily: this.state.dataFamily.filter(x => x._id !== id),
     });

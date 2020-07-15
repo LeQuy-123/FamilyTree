@@ -34,6 +34,14 @@ export default class GenealogyScreen extends Component {
       treeName: '',
     };
   }
+  checkRoot(id) {
+    for (var i = 0; i < this.state.data.length; i++) {
+      if (this.state.data[i].parentId === id) {
+        return false;
+      }
+    }
+    return true;
+  }
   toggleModal = () => {
     this.setState({
       isModalVisible: !this.state.isModalVisible,
@@ -47,7 +55,10 @@ export default class GenealogyScreen extends Component {
     }
   }
   componentDidMount() {
-    this.loadOneRoot(this.state.rootKey);
+    const {navigation} = this.props;
+    navigation.addListener('focus', async () => {
+      this.loadAllLeaf(this.props.route.params.data);
+    });
   }
   list_to_tree(list) {
     var map = {},
@@ -61,75 +72,19 @@ export default class GenealogyScreen extends Component {
 
     for (i = 0; i < list.length; i += 1) {
       node = list[i];
-      if (node.rootId) {
+      if (node.parentId !== this.props.route.params.data) {
         // if you have dangling branches check that map[node.parentId] exists
-        list[map[node.rootId]].children.push(node);
+        list[map[node.parentId]].children.push(node);
       } else {
         roots.push(node);
       }
     }
     return roots;
   }
-  removeItem(key) {
-    console.log('00000000000000000000000000000000000000000000');
-    var newArray = this.state.data.filter(function(array) {
-      return array._id !== key;
-    });
-    var newItem = JSON.parse(JSON.stringify(newArray)); // clone i team
-    var tree = this.list_to_tree(newItem);
-    this.setState({data: newArray, tree: tree});
-    console.log('data splice' + JSON.stringify(newArray));
-  }
-  loadOneRoot = async id => {
-    var URL = url + '/api/user/rootshowone';
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    let userEmail = await AsyncStorage.getItem('email');
-    this.setState({
-      refreshToken: refreshToken,
-      email: userEmail,
-    });
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      if (data === null) {
-        this.props.navigation.navigate('Login');
-      } else {
-        try {
-          fetch(URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              rootId: id,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {
-              var newItem = JSON.parse(JSON.stringify(json.root)); // clone i team
-              var tree = this.list_to_tree(newItem);
-              this.setState({
-                data: [json.root],
-                treeName: json.root.treename,
-                onShowLeafData: json.root,
-                tree: tree,
-              });
-              this.loadAllLeaf(this.state.rootKey);
-            })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
   loadAllLeaf = async id => {
     var URL = url + '/api/user/leafshowall';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
-    this.setState({
-      refreshToken: refreshToken,
-      email: userEmail,
-    });
     _RefreshToken(userEmail, refreshToken).then(data => {
       if (data === null) {
         this.props.navigation.navigate('Login');
@@ -142,7 +97,7 @@ export default class GenealogyScreen extends Component {
               Authorization: 'Bearer ' + data,
             },
             body: JSON.stringify({
-              rootId: id,
+              authId: id,
             }),
           })
             .then(response => response.json())
@@ -154,10 +109,6 @@ export default class GenealogyScreen extends Component {
                 data: arr,
                 tree: tree,
               });
-              // console.log(
-              //   '----------------------------------------------------------------',
-              // );
-              // console.log(JSON.stringify(this.state.data));
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -204,40 +155,6 @@ export default class GenealogyScreen extends Component {
       }
     });
   };
-  createLeaf = async id => {
-    console.log(id);
-    var URL = url + '/api/user/leaf';
-    _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
-      if (data === null) {
-        this.props.navigation.navigate('Login');
-      } else {
-        try {
-          fetch(URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              rootId: id,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {
-              this.state.data.push(json.leaf);
-              // console.log('=========================================');
-              // console.log(JSON.stringify(this.state.data));
-              var newItem = JSON.parse(JSON.stringify(this.state.data)); // clone i team
-              var tree = this.list_to_tree(newItem);
-              this.setState({tree: tree});
-            })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
   renderTree(data, level) {
     return (
       <FlatList
@@ -270,11 +187,7 @@ export default class GenealogyScreen extends Component {
                 <View style={styles.nodeStyle}>
                   <TouchableOpacity
                     onPress={() => {
-                      if (item._id !== this.state.rootKey) {
-                        this.loadOneLeaf(item._id);
-                      } else {
-                        this.toggleModal();
-                      }
+                      this.loadOneLeaf(item._id);
                     }}>
                     {info.profileImage ? (
                       <Image
@@ -300,9 +213,11 @@ export default class GenealogyScreen extends Component {
                   </Text>
                   <TouchableOpacity
                     onPress={() => {
-                      this.createLeaf(item._id);
-
-                      //console.log(JSON.stringify(this.state.data));
+                      this.props.navigation.navigate('FixInfoScreen', {
+                        leafId: item._id,
+                        authId: this.props.route.params.data,
+                      });
+                      this.setState({data: [], tree: []});
                     }}>
                     <Image
                       style={{width: 25, height: 25}}
@@ -312,7 +227,7 @@ export default class GenealogyScreen extends Component {
                 </View>
               </View>
               {this.hasChildren(item) && (
-                <Svg height="50" width="100">
+                <Svg height="30" width="100%">
                   <Line
                     x1="50%"
                     y1="0"
@@ -339,7 +254,7 @@ export default class GenealogyScreen extends Component {
                           justifyContent: 'center',
                         }}>
                         <View>
-                          <Svg height="50" width="100%">
+                          <Svg height="30" width="100%">
                             <Line
                               x1="50%"
                               y1="0"
@@ -420,10 +335,10 @@ export default class GenealogyScreen extends Component {
                 source={require('../../images/icons8-back-to-100.png')}
               />
             </TouchableOpacity>
-            <Text style={styles.title}>{this.state.treeName}</Text>
+            <Text style={styles.title}>{this.props.route.params.name}</Text>
           </View>
           <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}}>
-            <View style={styles.Genealogy}>
+            <View style={styles.Genealogy} autoFocus="true">
               {this.renderTree(this.state.tree, 1)}
             </View>
           </ScrollView>
@@ -505,23 +420,20 @@ export default class GenealogyScreen extends Component {
                 justifyContent: 'space-around',
                 alignItems: 'center',
               }}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => {
-                  this.removeItem(this.state.onShowLeafData._id);
-                  this.toggleModal();
-                }}>
-                <Text style={styles.modalButtonText}>Xóa</Text>
+              <TouchableOpacity style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>Vợ/Chồng</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => {
                   this.props.navigation.navigate('FixInfoScreen', {
                     leafId: this.state.onShowLeafData._id,
+                    isFinalLeaf: this.checkRoot(this.state.onShowLeafData._id),
                   });
+                  this.setState({data: [], tree: []});
                   this.toggleModal();
                 }}>
-                <Text style={styles.modalButtonText}>Sửa</Text>
+                <Text style={styles.modalButtonText}>Sửa/Xóa</Text>
               </TouchableOpacity>
             </View>
           </View>

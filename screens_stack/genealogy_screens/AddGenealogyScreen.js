@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   AsyncStorage,
+  Alert,
 } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import url from '../../components/MainURL';
@@ -27,47 +28,58 @@ export default class AddGenealogyScreen extends Component {
       refreshToken: '',
       email: '',
       data: '',
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      genoInfo: {
-        genoName: '',
-        create: '',
-        info: '',
-      },
+      genoInfo: '',
       dataRoot: '',
       firstPerson: '',
     };
   }
-  chosePhotoFromLibrary() {
+  chosePhotoFromLibrary(i) {
     ImagePicker.openPicker({
       width: 300,
       height: 400,
       cropping: true,
     }).then(image => {
-      this.setState({
-        firstPerson: {
-          ...this.state.firstPerson,
-          image: image.path,
-        },
-      });
+      if (i === 0) {
+        this.setState({
+          firstPerson: {
+            ...this.state.firstPerson,
+            image: image.path,
+          },
+        });
+      } else {
+        this.setState({
+          genoInfo: {
+            ...this.state.genoInfo,
+            image: image.path,
+          },
+        });
+      }
     });
   }
-  takePhotoFromCamera() {
+  takePhotoFromCamera(i) {
     ImagePicker.openCamera({
       width: 300,
       height: 400,
       cropping: true,
     }).then(image => {
-      this.setState({
-        firstPerson: {
-          ...this.state.firstPerson,
-          image: image.path,
-        },
-      });
+      if (i === 0) {
+        this.setState({
+          firstPerson: {
+            ...this.state.firstPerson,
+            image: image.path,
+          },
+        });
+      } else {
+        this.setState({
+          genoInfo: {
+            ...this.state.genoInfo,
+            image: image.path,
+          },
+        });
+      }
     });
   }
-  onClickAddImages() {
+  onClickAddImages(i) {
     const Buttons = ['Chụp từ máy ảnh', 'Chọn từ thư viện', 'Thoát'];
     nativeBase.ActionSheet.show(
       {
@@ -78,10 +90,10 @@ export default class AddGenealogyScreen extends Component {
       buttonIndex => {
         switch (buttonIndex) {
           case 0:
-            this.takePhotoFromCamera();
+            this.takePhotoFromCamera(i);
             break;
           case 1:
-            this.chosePhotoFromLibrary();
+            this.chosePhotoFromLibrary(i);
             break;
           default:
             break;
@@ -130,18 +142,34 @@ export default class AddGenealogyScreen extends Component {
       }
     });
   };
-  onPressHandel() {
-    this.updateRoot(this.state.rootId);
-    this.props.navigation.goBack();
+  check() {
+    return (
+      this.state.genoInfo.genoName === undefined ||
+      this.state.genoInfo.create === undefined ||
+      this.state.firstPerson.firstName === undefined ||
+      this.state.firstPerson.lastName === undefined
+    );
   }
-  loadOneRoot = async id => {
-    var URL = url + '/api/user/rootshowone';
+  onPressHandel() {
+    if (!this.check()) {
+      this.createNewTree();
+      this.props.navigation.goBack();
+    } else {
+      Alert.alert(
+        'Thông báo',
+        'Vui lòng nhập đầy đủ thông tin tên gia phả, người tạo, tên và họ tổ tiên trước khi tạo gia phả!',
+      );
+    }
+  }
+  loadOneAuthor = async id => {
+    var URL = url + '/api/user/authshowone';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
     this.setState({
       refreshToken: refreshToken,
       email: userEmail,
     });
+    console.log(id);
     _RefreshToken(userEmail, refreshToken).then(data => {
       if (data === null) {
         this.props.navigation.navigate('Login');
@@ -154,28 +182,18 @@ export default class AddGenealogyScreen extends Component {
               Authorization: 'Bearer ' + data,
             },
             body: JSON.stringify({
-              rootId: id,
+              authId: id,
             }),
           })
             .then(response => response.json())
             .then(json => {
+              console.log(JSON.stringify(json.auth));
               this.setState({
-                dataRoot: json.root,
-                firstName: json.root.firstname,
-                lastName: json.root.lastname,
                 genoInfo: {
-                  genoName: json.root.treename,
-                  create: json.root.author,
-                  info: json.root.authoraddress,
-                },
-                firstPerson: {
-                  image: json.root.profileImage,
-                  dateBirth: json.root.dob,
-                  dateDeath: json.root.dod,
-                  nickName: json.root.nickname,
-                  burialplace: json.root.burialplace,
-                  sex: json.root.sex,
-                  profileImage: json.root.profileImage,
+                  genoName: json.auth.treename,
+                  create: json.auth.author,
+                  info: json.auth.address,
+                  image: json.auth.profileImage,
                 },
               });
             })
@@ -186,8 +204,58 @@ export default class AddGenealogyScreen extends Component {
       }
     });
   };
+  createNewTree = async () => {
+    var URL = url + '/api/user/newtree';
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    this.setState({
+      refreshToken: refreshToken,
+      email: userEmail,
+    });
+    // console.log('geno info: ' + JSON.stringify(this.state.genoInfo));
+    // console.log('person info: ' + JSON.stringify(this.state.firstPerson));
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      if (data === null) {
+        this.props.navigation.navigate('Login');
+      } else {
+        try {
+          fetch(URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + data,
+            },
+            body: JSON.stringify({
+              treename: this.state.genoInfo.genoName,
+              author: this.state.genoInfo.create,
+              address: this.state.genoInfo.info,
+              imgauth: this.state.genoInfo.image,
+              firstname: this.state.firstPerson.firstName,
+              lastname: this.state.firstPerson.lastName,
+              nickname: this.state.firstPerson.nickName,
+              sex: this.state.firstPerson.sex,
+              dob: this.state.firstPerson.dateBirth,
+              domicile: this.state.firstPerson.address,
+              dod: this.state.firstPerson.dateDeath,
+              burialplace: this.state.firstPerson.dp,
+              imgroot: this.state.firstPerson.image,
+            }),
+          })
+            .then(response => response.json())
+            .then(json => {
+              //console.log(JSON.stringify(json));
+            })
+            .catch(error => console.log(error));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
   componentDidMount() {
-    this.loadOneRoot(this.props.route.params.rootId);
+    if (this.props.route.params.authId !== 0) {
+      this.loadOneAuthor(this.props.route.params.authId);
+    }
   }
   render() {
     return (
@@ -218,6 +286,36 @@ export default class AddGenealogyScreen extends Component {
               <View style={styles.infoGroup}>
                 <Text style={styles.titleGr}>Thông tin gia phả</Text>
                 <View style={styles.info}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 20,
+                    }}
+                    onPress={() => this.onClickAddImages(1)}>
+                    {this.state.genoInfo.image ? (
+                      <Image
+                        source={{uri: this.state.genoInfo.image}}
+                        style={{
+                          width: 120,
+                          height: 120,
+                          borderRadius: 60,
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../images/avatar_default.png')}
+                        style={{
+                          width: 120,
+                          height: 120,
+                          borderRadius: 20,
+                        }}
+                      />
+                    )}
+                    <Text style={styles.inputTitle}>
+                      + Thêm ảnh hiển thị cho gia phả
+                    </Text>
+                  </TouchableOpacity>
                   <Text style={styles.inputTitle}>Tên gia phả* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -226,7 +324,7 @@ export default class AddGenealogyScreen extends Component {
                         genoInfo: {...this.state.genoInfo, genoName: data},
                       })
                     }>
-                    {this.state.dataRoot.treename}
+                    {this.state.genoInfo.genoName}
                   </TextInput>
                   <Text style={styles.inputTitle}>Tên người tạo* </Text>
                   <TextInput
@@ -236,9 +334,9 @@ export default class AddGenealogyScreen extends Component {
                         genoInfo: {...this.state.genoInfo, create: data},
                       })
                     }>
-                    {this.state.dataRoot.author}
+                    {this.state.genoInfo.create}
                   </TextInput>
-                  <Text style={styles.inputTitle}>Mô tả gia phả* </Text>
+                  <Text style={styles.inputTitle}>Mô tả gia phả </Text>
                   <TextInput
                     style={styles.inputText}
                     onChangeText={data =>
@@ -246,11 +344,13 @@ export default class AddGenealogyScreen extends Component {
                         genoInfo: {...this.state.genoInfo, info: data},
                       })
                     }>
-                    {this.state.dataRoot.authoraddress}
+                    {this.state.genoInfo.info}
                   </TextInput>
                 </View>
               </View>
-              <View style={styles.infoFirstGenerationGroup}>
+              <View
+                pointerEvents={this.props.route.params.authId ? 'none' : 'auto'}
+                style={styles.infoFirstGenerationGroup}>
                 <Text style={styles.titleGr}>
                   Thế hệ thứ nhất/ Thủy tổ dòng họ
                 </Text>
@@ -261,7 +361,7 @@ export default class AddGenealogyScreen extends Component {
                       alignItems: 'center',
                       paddingHorizontal: 20,
                     }}
-                    onPress={() => this.onClickAddImages()}>
+                    onPress={() => this.onClickAddImages(0)}>
                     {this.state.firstPerson.image ? (
                       <Image
                         source={{uri: this.state.firstPerson.image}}
@@ -288,7 +388,10 @@ export default class AddGenealogyScreen extends Component {
                     style={styles.inputText}
                     onChangeText={data =>
                       this.setState({
-                        firstName: data,
+                        firstPerson: {
+                          ...this.state.firstPerson,
+                          firstName: data,
+                        },
                       })
                     }>
                     {this.state.dataRoot.firstname}
@@ -298,12 +401,15 @@ export default class AddGenealogyScreen extends Component {
                     style={styles.inputText}
                     onChangeText={data =>
                       this.setState({
-                        lastName: data,
+                        firstPerson: {
+                          ...this.state.firstPerson,
+                          lastName: data,
+                        },
                       })
                     }>
                     {this.state.dataRoot.lastname}
                   </TextInput>
-                  <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
+                  <Text style={styles.inputTitle}>Tên gợi nhớ </Text>
                   <TextInput
                     style={styles.inputText}
                     onChangeText={data =>
@@ -316,7 +422,7 @@ export default class AddGenealogyScreen extends Component {
                     }>
                     {this.state.dataRoot.nickname}
                   </TextInput>
-                  <Text style={styles.inputTitle}>Giới tính* </Text>
+                  <Text style={styles.inputTitle}>Giới tính </Text>
                   <TextInput
                     style={styles.inputText}
                     onChangeText={data =>
@@ -391,6 +497,16 @@ export default class AddGenealogyScreen extends Component {
                       });
                     }}
                   />
+                  <Text style={styles.inputTitle}>Nơi sống </Text>
+                  <TextInput
+                    style={styles.inputText}
+                    onChangeText={data =>
+                      this.setState({
+                        firstPerson: {...this.state.firstPerson, address: data},
+                      })
+                    }>
+                    {this.state.dataRoot.burialplace}
+                  </TextInput>
                   <Text style={styles.inputTitle}>Mộ tang </Text>
                   <TextInput
                     style={styles.inputText}
@@ -428,7 +544,7 @@ export default class AddGenealogyScreen extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    height: 1000,
+    height: 1100,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#FBBD00',
@@ -451,14 +567,14 @@ const styles = StyleSheet.create({
     left: 20,
   },
   infoGroup: {
-    height: '31%',
+    height: '33%',
     width: '100%',
     backgroundColor: '#00B2BF',
     borderRadius: 30,
     justifyContent: 'flex-end',
   },
   info: {
-    height: '85%',
+    height: '88%',
     width: '100%',
     backgroundColor: 'white',
     justifyContent: 'space-around',
@@ -466,14 +582,14 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   infoFirstGenerationGroup: {
-    height: '63%',
+    height: '60%',
     width: '100%',
     backgroundColor: '#00B2BF',
     borderRadius: 30,
     justifyContent: 'flex-end',
   },
   infoFirstGeneration: {
-    height: '92%',
+    height: '93%',
     backgroundColor: 'white',
     width: '100%',
     justifyContent: 'space-around',
