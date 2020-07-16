@@ -146,7 +146,6 @@ export default class EventScreen extends Component {
         this.props.navigation.navigate('Login');
       } else {
         this.props.navigation.navigate('AddEvent', {id: id});
-        console.log('Loading 1 event' + id);
       }
     });
   };
@@ -187,7 +186,6 @@ export default class EventScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              console.log(json.message);
               this.deleteItem(id);
             })
             .catch(error => console.log(error));
@@ -342,9 +340,6 @@ export default class EventScreen extends Component {
                 textMonthFontSize: 15,
                 textDayHeaderFontSize: 15,
               }}
-              onMonthChange={month => {
-                console.log('month changed', month);
-              }}
               current={this.state.current}
               markedDates={this.state.markedDates}
               onDayPress={day => {
@@ -352,7 +347,6 @@ export default class EventScreen extends Component {
               }}
               markingType={'multi-dot'}
               monthFormat={'yyyy-MM'}
-              showSixWeeks={true}
             />
           </View>
         </View>

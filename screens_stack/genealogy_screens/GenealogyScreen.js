@@ -31,6 +31,7 @@ export default class GenealogyScreen extends Component {
       rootKey: this.props.route.params.data,
       data: [],
       tree: [],
+      spouse: [],
       treeName: '',
     };
   }
@@ -102,12 +103,15 @@ export default class GenealogyScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              var arr = this.state.data.concat(json.leaf);
+              const data = json.leaf.filter(x => x.isSpouse === false);
+              const dataSpouse = json.leaf.filter(x => x.isSpouse === true);
+              var arr = this.state.data.concat(data);
               var newItem = JSON.parse(JSON.stringify(arr)); // clone i team
               var tree = this.list_to_tree(newItem);
               this.setState({
                 data: arr,
                 tree: tree,
+                spouse: dataSpouse,
               });
             })
             .catch(error => console.log(error));
@@ -225,6 +229,56 @@ export default class GenealogyScreen extends Component {
                     />
                   </TouchableOpacity>
                 </View>
+                <View style={styles.nodeStyle}>
+                  {this.findSpouse(info._id).length > 0 ? (
+                    <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 18 }}>
+                        Vợ/Chồng
+                    </Text>
+                      <FlatList
+                        style={{ flex: 1, width: '100%' }}
+                        keyExtractor={item => item._id}
+                        data={this.findSpouse(info._id)}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            style={{ borderBottomWidth: 1, borderTopWidth: 1, width: '100%'}}
+                            key={item.key}
+                            onPress={() => this.loadOneLeaf(item._id)}>
+                            <Text style={{ fontSize: 15 }}>{item.firstname}{' '}{item.lastname}</Text>
+                          </TouchableOpacity>)} />
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.props.navigation.navigate('FixNode', {
+                            leafId: item._id,
+                            authId: this.props.route.params.data,
+                          });
+                          this.setState({ data: [], tree: [] });
+                        }}>
+                        <Image
+                          style={{ width: 25, height: 25 }}
+                          source={require('../../images/icons8-add-40.png')}
+                        />
+                      </TouchableOpacity>
+                    </View>):(
+                      <View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                      <Text style={{textAlign: 'center', fontFamily: 'serif'}}>
+                      Bạn có thể nhấn vào nút (+) phía dưới để cập nhật thông tin vợ, chồng</Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            this.props.navigation.navigate('FixNode', {
+                              leafId: item._id,
+                              authId: this.props.route.params.data,
+                            });
+                            this.setState({ data: [], tree: [] });
+                          }}>
+                          <Image
+                            style={{ width: 25, height: 25 }}
+                            source={require('../../images/icons8-add-40.png')}
+                          />
+                        </TouchableOpacity>
+                        </View>
+                    )}
+                </View>          
               </View>
               {this.hasChildren(item) && (
                 <Svg height="30" width="100%">
@@ -317,6 +371,14 @@ export default class GenealogyScreen extends Component {
       />
     );
   }
+  clearView () {
+    this.setState({ data: [], tree: [] });
+    this.toggleModal();
+  }
+  findSpouse(id) {
+    const dataSpouse = this.state.spouse.filter(x => x.spouseId === id);
+    return dataSpouse;
+  }
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -353,7 +415,7 @@ export default class GenealogyScreen extends Component {
           swipeDirection={['left', 'right', 'down']}
           style={styles.view}>
           <View style={styles.modal}>
-            <View style={{flexDirection: 'row', paddingHorizontal: 30}}>
+            <View style={{flexDirection: 'row', paddingHorizontal: 20}}>
               {this.state.onShowLeafData.profileImage ? (
                 <Image
                   style={styles.bigImageModal}
@@ -371,7 +433,7 @@ export default class GenealogyScreen extends Component {
                   fontSize: 22,
                   fontWeight: 'bold',
                   top: 15,
-                  left: 30,
+                  left: 5,
                 }}>
                 {this.state.onShowLeafData.firstname}{' '}
                 {this.state.onShowLeafData.lastname}
@@ -420,7 +482,10 @@ export default class GenealogyScreen extends Component {
                 justifyContent: 'space-around',
                 alignItems: 'center',
               }}>
-              <TouchableOpacity style={styles.modalButton}>
+              <TouchableOpacity style={styles.modalButton} 
+              onPress={() => {
+                this.findSpouse(this.state.onShowLeafData._id);
+              }}>
                 <Text style={styles.modalButtonText}>Vợ/Chồng</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -429,9 +494,9 @@ export default class GenealogyScreen extends Component {
                   this.props.navigation.navigate('FixInfoScreen', {
                     leafId: this.state.onShowLeafData._id,
                     isFinalLeaf: this.checkRoot(this.state.onShowLeafData._id),
+                    expand: 1,
                   });
-                  this.setState({data: [], tree: []});
-                  this.toggleModal();
+                  this.clearView();
                 }}>
                 <Text style={styles.modalButtonText}>Sửa/Xóa</Text>
               </TouchableOpacity>
@@ -480,10 +545,11 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 10,
     alignItems: 'center',
-    paddingTop: 5,
+    padding: 5,
     borderWidth: 1,
     opacity: 0.8,
     borderColor: 'black',
+    justifyContent: 'space-between',
   },
   imageStyle: {
     width: 80,

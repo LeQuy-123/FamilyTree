@@ -2,6 +2,7 @@ import AddGenealogyScreen from './AddGenealogyScreen';
 import DisplayGenealogy from './DisplayGenealogy';
 import FixInfoGenealogy from './FixInfoGenealogy';
 import GenealogyScreen from './GenealogyScreen';
+import FixInfoNode from './FixInfoNode';
 import {createStackNavigator} from '@react-navigation/stack';
 //import MyTabs from '../../TabBar';
 import * as React from 'react';
@@ -16,6 +17,7 @@ const GenealogyStack = () => (
     <genealogyStack.Screen name="AddGenealogy" component={AddGenealogyScreen} />
     <genealogyStack.Screen name="Genealogy" component={GenealogyScreen} />
     <genealogyStack.Screen name="FixInfoScreen" component={FixInfoGenealogy} />
+    <genealogyStack.Screen name="FixNode" component={FixInfoNode} />
   </genealogyStack.Navigator>
 );
 export default GenealogyStack;
