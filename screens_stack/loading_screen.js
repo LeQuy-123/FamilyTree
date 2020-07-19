@@ -55,7 +55,7 @@ export default class Loading extends Component {
                 'https://mellullaby.herokuapp.com/api/normal/image/amadeus-1589026468500-genealogy-logo.png',
             }}
           />
-          <Text style={styleslogin.header_text1_1}> Genealogy </Text>
+          <Text style={styleslogin.header_text1_1}> Gia Phả </Text>
         </View>
       </SafeAreaView>
     );

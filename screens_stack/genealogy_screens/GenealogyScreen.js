@@ -231,54 +231,70 @@ export default class GenealogyScreen extends Component {
                 </View>
                 <View style={styles.nodeStyle}>
                   {this.findSpouse(info._id).length > 0 ? (
-                    <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
-                      <Text style={{ fontSize: 18 }}>
-                        Vợ/Chồng
-                    </Text>
+                    <View
+                      style={{flex: 1, width: '100%', alignItems: 'center'}}>
+                      <Text style={{fontSize: 18}}>Vợ/Chồng</Text>
                       <FlatList
-                        style={{ flex: 1, width: '100%' }}
+                        style={{flex: 1, width: '100%'}}
                         keyExtractor={item => item._id}
                         data={this.findSpouse(info._id)}
-                        renderItem={({ item }) => (
+                        renderItem={({item}) => (
                           <TouchableOpacity
-                            style={{ borderBottomWidth: 1, borderTopWidth: 1, width: '100%'}}
+                            style={{
+                              borderBottomWidth: 1,
+                              borderTopWidth: 1,
+                              width: '100%',
+                            }}
                             key={item.key}
                             onPress={() => this.loadOneLeaf(item._id)}>
-                            <Text style={{ fontSize: 15 }}>{item.firstname}{' '}{item.lastname}</Text>
-                          </TouchableOpacity>)} />
+                            <Text style={{fontSize: 15}}>
+                              {item.firstname} {item.lastname}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      />
                       <TouchableOpacity
                         onPress={() => {
                           this.props.navigation.navigate('FixNode', {
                             leafId: item._id,
                             authId: this.props.route.params.data,
                           });
-                          this.setState({ data: [], tree: [] });
+                          this.setState({data: [], tree: []});
                         }}>
                         <Image
-                          style={{ width: 25, height: 25 }}
+                          style={{width: 25, height: 25}}
                           source={require('../../images/icons8-add-40.png')}
                         />
                       </TouchableOpacity>
-                    </View>):(
-                      <View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        flex: 1,
+                        width: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
                       <Text style={{textAlign: 'center', fontFamily: 'serif'}}>
-                      Bạn có thể nhấn vào nút (+) phía dưới để cập nhật thông tin vợ, chồng</Text>
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.props.navigation.navigate('FixNode', {
-                              leafId: item._id,
-                              authId: this.props.route.params.data,
-                            });
-                            this.setState({ data: [], tree: [] });
-                          }}>
-                          <Image
-                            style={{ width: 25, height: 25 }}
-                            source={require('../../images/icons8-add-40.png')}
-                          />
-                        </TouchableOpacity>
-                        </View>
-                    )}
-                </View>          
+                        Bạn có thể nhấn vào nút (+) phía dưới để cập nhật thông
+                        tin vợ, chồng
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.props.navigation.navigate('FixNode', {
+                            leafId: item._id,
+                            authId: this.props.route.params.data,
+                          });
+                          this.setState({data: [], tree: []});
+                        }}>
+                        <Image
+                          style={{width: 25, height: 25}}
+                          source={require('../../images/icons8-add-40.png')}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
               </View>
               {this.hasChildren(item) && (
                 <Svg height="30" width="100%">
@@ -371,8 +387,8 @@ export default class GenealogyScreen extends Component {
       />
     );
   }
-  clearView () {
-    this.setState({ data: [], tree: [] });
+  clearView() {
+    this.setState({data: [], tree: []});
     this.toggleModal();
   }
   findSpouse(id) {
@@ -482,12 +498,6 @@ export default class GenealogyScreen extends Component {
                 justifyContent: 'space-around',
                 alignItems: 'center',
               }}>
-              <TouchableOpacity style={styles.modalButton} 
-              onPress={() => {
-                this.findSpouse(this.state.onShowLeafData._id);
-              }}>
-                <Text style={styles.modalButtonText}>Vợ/Chồng</Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={() => {
@@ -575,7 +585,7 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   modalButton: {
-    width: 160,
+    width: '80%',
     height: '60%',
     justifyContent: 'center',
     alignItems: 'center',

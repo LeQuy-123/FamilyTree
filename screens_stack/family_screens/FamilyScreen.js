@@ -449,20 +449,23 @@ export default class FamilyScreen extends Component {
               <TouchableOpacity onPress={() => this.makeCall(this.state.phone)}>
                 <Image
                   style={styles.modalOptionImage}
-                  //source={require('../../images/icons8-call-50.png')}
+                  source={require('../../images/icons8-call-male-100.png')}
                 />
                 <Text style={styles.modalOptionText}>Gọi điện</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => this.sendSMS(this.state.phone)}>
                 <Image
                   style={styles.modalOptionImage}
-                  //source={require('../../images/icons8-send-email-50.png')}
+                  source={require('../../images/icons8-sms-96.png')}
                 />
                 <Text style={styles.modalOptionText}>Nhắn tin</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => this.openMap(this.state.address)}>
-                <Image style={styles.modalOptionImage} />
+                <Image
+                  style={styles.modalOptionImage}
+                  source={require('../../images/icons8-address-100.png')}
+                />
                 <Text style={styles.modalOptionText}>Chỉ đường</Text>
               </TouchableOpacity>
             </View>
@@ -673,9 +676,6 @@ const styles = StyleSheet.create({
   modalOptionImage: {
     height: 70,
     width: 70,
-    borderRadius: 60,
-    borderWidth: 1.5,
-    borderColor: '#840505',
   },
   modalOptionText: {
     fontFamily: 'serif',

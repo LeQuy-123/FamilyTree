@@ -210,7 +210,7 @@ export default class DisplayGenealogy extends Component {
             <TouchableOpacity
               onPress={() =>
                 this.props.navigation.navigate('AddGenealogy', {
-                  authId: item._id,
+                  rootId: item._id,
                 })
               }>
               <View style={{flexDirection: 'row'}}>

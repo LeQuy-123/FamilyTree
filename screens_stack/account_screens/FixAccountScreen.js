@@ -102,7 +102,6 @@ export default class FixAccountScreen extends Component {
   }
   _postData = async () => {
     if (this.thirdTextInput.isValidNumber()) {
-      console.log(this.state.Gender);
       _RefreshToken(this.state.myEmail, this.state.myRefreshToken);
       let userData = await AsyncStorage.getItem('accessToken');
       try {
@@ -122,7 +121,6 @@ export default class FixAccountScreen extends Component {
         })
           .then(response => response.json())
           .then(json => {
-            console.log(json.message);
             this.props.navigation.goBack();
           });
       } catch (error) {
@@ -172,7 +170,7 @@ export default class FixAccountScreen extends Component {
       })
         .then(response => response.json())
         .then(json => {
-          if (this.state.Gender) {
+          if (json.user.sex) {
             this.setState({
               date: json.user.datebirth,
               Name: json.user.username,
@@ -262,7 +260,7 @@ export default class FixAccountScreen extends Component {
                       onChangeText={data => this.setState({Name: data})}>
                       {this.state.Name}
                     </TextInput>
-                    <Text style={styles.testTitle}>Họ:</Text>
+                    <Text style={styles.testTitle}>Biệt danh:</Text>
                     <TextInput
                       style={styles.inputText}
                       ref={input => {

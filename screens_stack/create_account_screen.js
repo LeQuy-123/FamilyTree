@@ -132,7 +132,9 @@ export default class Create extends Component {
                 onPress={() => this.props.navigation.navigate('Login')}>
                 <Text style={styleslogin.header_text1_2}> Đăng nhập </Text>
               </TouchableOpacity>
-              <Text style={styleslogin.header_text1_2Main}> Đăng kí </Text>
+              <View>
+                <Text style={styleslogin.header_text1_2Main}> Đăng kí </Text>
+              </View>
             </View>
             <View style={styleslogin.header2}>
               <Text style={styleslogin.header_text2_1}>
@@ -324,20 +326,20 @@ const styleslogin = StyleSheet.create({
   },
   header_text1_2: {
     paddingTop: 20,
-    paddingEnd: 20,
-    fontSize: 13,
+    marginEnd: 20,
+    fontSize: 15,
+    fontFamily: 'serif',
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  header_text1_2Main: {
+    paddingTop: 20,
+    marginEnd: 20,
+    fontSize: 15,
     fontFamily: 'serif',
     color: 'white',
     fontWeight: 'bold',
     borderBottomColor: 'white',
-  },
-  header_text1_2Main: {
-    paddingTop: 20,
-    paddingEnd: 20,
-    fontSize: 13,
-    fontFamily: 'serif',
-    color: 'white',
-    fontWeight: 'bold',
-    opacity: 0.5,
+    borderBottomWidth: 3,
   },
 });

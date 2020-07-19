@@ -117,8 +117,8 @@ export default class FixInfoNode extends Component {
             },
             body: JSON.stringify({
               authId: this.props.route.params.authId,
-	          spouseId: id,
-	          firstname: this.state.LeafSpouseEdit.firstname,
+              spouseId: id,
+              firstname: this.state.LeafSpouseEdit.firstname,
               lastname: this.state.LeafSpouseEdit.lastname,
               nickname: this.state.LeafSpouseEdit.nickname,
               sex: this.state.LeafSpouseEdit.sex,
@@ -131,7 +131,7 @@ export default class FixInfoNode extends Component {
           })
             .then(response => response.json())
             .then(json => {
-                this.props.navigation.goBack();
+              this.props.navigation.goBack();
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -140,8 +140,7 @@ export default class FixInfoNode extends Component {
       }
     });
   };
-  componentDidMount() {
-  }
+  componentDidMount() {}
   render() {
     return (
       <nativeBase.Root>
@@ -166,7 +165,9 @@ export default class FixInfoNode extends Component {
                 <Text style={styles.title}>Sửa thông tin</Text>
               </View>
               <View style={styles.infoGroup}>
-                <Text style={styles.titleGr}>Thông tin vợ/chồng người thân</Text>
+                <Text style={styles.titleGr}>
+                  Thông tin vợ/chồng người thân
+                </Text>
                 <View style={styles.info}>
                   <TouchableOpacity
                     style={styles.avatar}
@@ -202,8 +203,8 @@ export default class FixInfoNode extends Component {
                           firstname: data,
                         },
                       })
-                    }>
-                  </TextInput>
+                    }
+                  />
                   <Text style={styles.inputTitle}>Tên* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -214,8 +215,8 @@ export default class FixInfoNode extends Component {
                           lastname: data,
                         },
                       })
-                    }>
-                  </TextInput>
+                    }
+                  />
                   <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
                   <TextInput
                     style={styles.inputText}
@@ -226,8 +227,8 @@ export default class FixInfoNode extends Component {
                           nickname: data,
                         },
                       })
-                    }>
-                  </TextInput>
+                    }
+                  />
                   <Text style={styles.inputTitle}>Giới tính</Text>
                   <TextInput
                     style={styles.inputText}
@@ -238,8 +239,8 @@ export default class FixInfoNode extends Component {
                           sex: data,
                         },
                       })
-                    }>
-                  </TextInput>
+                    }
+                  />
                   <Text style={styles.inputTitle}>Nguyên quán</Text>
                   <TextInput
                     style={styles.inputText}
@@ -250,8 +251,8 @@ export default class FixInfoNode extends Component {
                           address: data,
                         },
                       })
-                    }>
-                  </TextInput>
+                    }
+                  />
                   <Text style={styles.inputTitle}>Ngày sinh</Text>
                   <DatePicker
                     style={{width: '90%', borderRadius: 50}}
@@ -326,8 +327,8 @@ export default class FixInfoNode extends Component {
                           dp: data,
                         },
                       })
-                    }>
-                  </TextInput>
+                    }
+                  />
                 </View>
               </View>
             </View>

@@ -163,38 +163,28 @@ export default class FixInfoGenealogy extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              if (this.state.sex) {
+              this.setState({
+                image: json.family.profileImage,
+                firstName: json.family.firstname,
+                middleName: json.family.middlename,
+                lastName: json.family.lastname,
+                email: json.family.email,
+                nickName: json.family.nickname,
+                phone: json.family.numphone,
+                address: json.family.address,
+                job: json.family.job,
+                yourself: json.family.yourself,
+                religion: json.family.religion,
+                date: json.family.datebirth,
+              });
+              if (json.family.sex) {
                 this.setState({
-                  image: json.family.profileImage,
-                  parentage: json.family.parentage,
-                  firstName: json.family.firstname,
-                  middleName: json.family.middlename,
-                  lastName: json.family.lastname,
-                  email: json.family.email,
-                  nickName: json.family.nickname,
-                  phone: json.family.numphone,
                   sex: json.family.sex,
-                  address: json.family.address,
-                  job: json.family.job,
-                  yourself: json.family.yourself,
-                  religion: json.family.religion,
-                  date: json.family.datebirth,
                 });
-              } else {
+              }
+              if (json.family.parentage) {
                 this.setState({
-                  image: json.family.profileImage,
                   parentage: json.family.parentage,
-                  firstName: json.family.firstname,
-                  middleName: json.family.middlename,
-                  lastName: json.family.lastname,
-                  email: json.family.email,
-                  nickName: json.family.nickname,
-                  phone: json.family.numphone,
-                  address: json.family.address,
-                  job: json.family.job,
-                  yourself: json.family.yourself,
-                  religion: json.family.religion,
-                  date: json.family.datebirth,
                 });
               }
             })
@@ -240,23 +230,22 @@ export default class FixInfoGenealogy extends Component {
                   <TouchableOpacity
                     style={styles.avatar}
                     onPress={() => this.onClickAddImages()}>
-                    {this.state.image === '' && (
-                      <Image
-                        source={require('../../images/avatar_default.png')}
-                        style={{
-                          width: 120,
-                          height: 120,
-                          borderRadius: 20,
-                        }}
-                      />
-                    )}
-                    {this.state.image !== '' && (
+                    {this.state.image ? (
                       <Image
                         source={{uri: this.state.image}}
                         style={{
+                          width: 120,
+                          height: 120,
+                          borderRadius: 60,
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={require('../../images/avatar_default.png')}
+                        style={{
                           width: 130,
                           height: 130,
-                          borderRadius: 65,
+                          borderRadius: 20,
                         }}
                       />
                     )}
@@ -322,7 +311,6 @@ export default class FixInfoGenealogy extends Component {
                     blurOnSubmit={false}
                     style={styles.inputText}
                     onChangeText={data => this.setState({nickName: data})}>
-                    {' '}
                     {this.state.nickName}
                   </TextInput>
                   <Text style={styles.inputTitle}>Số điện thoại </Text>

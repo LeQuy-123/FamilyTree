@@ -20,7 +20,7 @@ export default function MyTabs() {
         name="Event"
         component={EventStack}
         options={{
-          tabBarLabel: 'Event',
+          tabBarLabel: 'Sự kiện',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="calendar-check"
@@ -34,7 +34,7 @@ export default function MyTabs() {
         name="Family"
         component={FamilyStack}
         options={{
-          tabBarLabel: 'Family',
+          tabBarLabel: 'Gia đÌnh',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="account-group"
@@ -48,7 +48,7 @@ export default function MyTabs() {
         name="Genealogy"
         component={GenealogyStack}
         options={{
-          tabBarLabel: 'Genealogy',
+          tabBarLabel: 'Gia phả',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="file-tree"
@@ -62,7 +62,7 @@ export default function MyTabs() {
         name="NewsScreen"
         component={NewsScreen}
         options={{
-          tabBarLabel: 'News',
+          tabBarLabel: 'Tin tức',
           title: 'News',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
@@ -77,7 +77,7 @@ export default function MyTabs() {
         name="Account"
         component={AccountStack}
         options={{
-          tabBarLabel: 'Account',
+          tabBarLabel: 'Tài khoản',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons name="account" color={color} size={size} />
           ),

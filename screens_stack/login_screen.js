@@ -23,8 +23,8 @@ class Login extends Component {
     super(props);
     this.state = {
       message: '',
-      email: '',
-      password: '',
+      email: this.props.route.params?.emailOJB,
+      password: this.props.route.params?.passwordOJB2,
       baseUrl: 'https://familytree1.herokuapp.com/api/auth/login',
       refreshToken: '',
       accessToken: null,
@@ -215,7 +215,9 @@ class Login extends Component {
                   }}
                 />
                 <Text style={styleslogin.header_text1_1}> Gia Phả </Text>
-                <Text style={styleslogin.header_text1_2Main}> Đăng nhập </Text>
+                <View>
+                  <Text style={styleslogin.header_text1_2Main}>Đăng nhập</Text>
+                </View>
                 <TouchableOpacity
                   onPress={() => this.props.navigation.navigate('Create')}>
                   <Text style={styleslogin.header_text1_2}> Đăng kí </Text>
@@ -445,21 +447,21 @@ const styleslogin = StyleSheet.create({
   },
   header_text1_2: {
     paddingTop: 20,
-    paddingEnd: 20,
-    fontSize: 13,
+    marginEnd: 20,
+    fontSize: 15,
+    fontFamily: 'serif',
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  header_text1_2Main: {
+    paddingTop: 20,
+    marginEnd: 20,
+    fontSize: 15,
     fontFamily: 'serif',
     color: 'white',
     fontWeight: 'bold',
     borderBottomColor: 'white',
-  },
-  header_text1_2Main: {
-    paddingTop: 20,
-    paddingEnd: 20,
-    fontSize: 13,
-    fontFamily: 'serif',
-    color: 'white',
-    fontWeight: 'bold',
-    opacity: 0.5,
+    borderBottomWidth: 3,
   },
 });
 export default Login;

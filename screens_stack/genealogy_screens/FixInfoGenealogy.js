@@ -41,7 +41,7 @@ export default class FixInfoGenealogy extends Component {
     }
   }
   checkdata(data) {
-    if(data.authId || data.firstname || data.lastname) {
+    if (data.authId || data.firstname || data.lastname) {
       return true;
     } else {
       return false;
@@ -51,12 +51,12 @@ export default class FixInfoGenealogy extends Component {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     if (!this.state.LeafData.isSpouse && this.props.route.params.expand !== 1) {
       if (this.state.expanded) {
-        this.setState({ expanded: false });
+        this.setState({expanded: false});
       } else {
-        this.setState({ expanded: true });
+        this.setState({expanded: true});
       }
-    } 
-  }
+    }
+  };
   chosePhotoFromLibrary(i) {
     ImagePicker.openPicker({
       width: 300,
@@ -347,8 +347,8 @@ export default class FixInfoGenealogy extends Component {
             },
             body: JSON.stringify({
               authId: this.props.route.params.authId,
-	            spouseId: id,
-	            firstname: this.state.LeafSpouseEdit.firstname,
+              spouseId: id,
+              firstname: this.state.LeafSpouseEdit.firstname,
               lastname: this.state.LeafSpouseEdit.lastname,
               nickname: this.state.LeafSpouseEdit.nickname,
               sex: this.state.LeafSpouseEdit.sex,
@@ -360,9 +360,7 @@ export default class FixInfoGenealogy extends Component {
             }),
           })
             .then(response => response.json())
-            .then(json => {
-              console.log(this.state.LeafSpouseEdit.image);
-            })
+            .then(json => {})
             .catch(error => console.log(error));
         } catch (error) {
           console.error(error);
@@ -371,7 +369,6 @@ export default class FixInfoGenealogy extends Component {
     });
   };
   componentDidMount() {
-    //console.log(this.props.route.params.authId);
     if (!this.props.route.params.authId) {
       this.loadOneLeaf(this.state.leafId);
     }
@@ -512,7 +509,6 @@ export default class FixInfoGenealogy extends Component {
                       dateInput: {
                         marginLeft: 36,
                       },
-                      // ... You can check the source to find the other keys.
                     }}
                     onDateChange={date => {
                       this.setState({
@@ -544,7 +540,6 @@ export default class FixInfoGenealogy extends Component {
                       dateInput: {
                         marginLeft: 36,
                       },
-                      // ... You can check the source to find the other keys.
                     }}
                     onDateChange={date => {
                       this.setState({
@@ -568,40 +563,60 @@ export default class FixInfoGenealogy extends Component {
                     }>
                     {this.state.LeafData.burialplace}
                   </TextInput>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingRight: 35 }}> 
-                    <Text style={{
-                      left: 19,
-                      fontWeight: 'bold',
-                      fontSize: 18}}>Có vợ hoặc chồng </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingRight: 35,
+                    }}>
+                    <Text
+                      style={{
+                        left: 19,
+                        fontWeight: 'bold',
+                        fontSize: 18,
+                      }}>
+                      Có vợ hoặc chồng{' '}
+                    </Text>
                     <TouchableOpacity onPress={this.changeLayout}>
-                    {this.state.expanded ? (
-                        <Image style={{ width: 30, height: 30 }}
-                          source={require('../../images/icons8-expand-arrow-64.png')} />
-                    ):(
-                          <Image style={{ width: 30, height: 30 }}
-                            source={require('../../images/icons8-collapse-arrow-64.png')} />
-                    )}
+                      {this.state.expanded ? (
+                        <Image
+                          style={{width: 30, height: 30}}
+                          source={require('../../images/icons8-expand-arrow-64.png')}
+                        />
+                      ) : (
+                        <Image
+                          style={{width: 30, height: 30}}
+                          source={require('../../images/icons8-collapse-arrow-64.png')}
+                        />
+                      )}
                     </TouchableOpacity>
                   </View>
                 </View>
               </View>
             </View>
-            <View style={{
-              height: this.state.expanded ? null : 0, overflow: 'hidden',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: '#FBBD00',
-              width: '100%',
-              paddingHorizontal: 10}}>
-              <View style={{
-                top: 15,
-                height: 740,
+            <View
+              style={{
+                height: this.state.expanded ? null : 0,
+                overflow: 'hidden',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: '#FBBD00',
                 width: '100%',
-                backgroundColor: '#00B2BF',
-                borderRadius: 30,
-                marginBottom: 15,
-                justifyContent: 'flex-end'}}>
-                <Text style={styles.titleGr}>Thông tin vợ\chồng (cả) người thân</Text>
+                paddingHorizontal: 10,
+              }}>
+              <View
+                style={{
+                  top: 15,
+                  height: 740,
+                  width: '100%',
+                  backgroundColor: '#00B2BF',
+                  borderRadius: 30,
+                  marginBottom: 15,
+                  justifyContent: 'flex-end',
+                }}>
+                <Text style={styles.titleGr}>
+                  Thông tin vợ\chồng (cả) người thân
+                </Text>
                 <View style={styles.infoExpand}>
                   <TouchableOpacity
                     style={styles.avatar}
@@ -616,15 +631,15 @@ export default class FixInfoGenealogy extends Component {
                         }}
                       />
                     ) : (
-                        <Image
-                          source={{ uri: this.state.LeafSpouseEdit.image }}
-                          style={{
-                            width: 130,
-                            height: 130,
-                            borderRadius: 65,
-                          }}
-                        />
-                      )}
+                      <Image
+                        source={{uri: this.state.LeafSpouseEdit.image}}
+                        style={{
+                          width: 130,
+                          height: 130,
+                          borderRadius: 65,
+                        }}
+                      />
+                    )}
                     <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
                   </TouchableOpacity>
                   <Text style={styles.inputTitle}>Họ* </Text>
@@ -694,7 +709,7 @@ export default class FixInfoGenealogy extends Component {
                   </TextInput>
                   <Text style={styles.inputTitle}>Ngày sinh</Text>
                   <DatePicker
-                    style={{ width: '90%', borderRadius: 50 }}
+                    style={{width: '90%', borderRadius: 50}}
                     date={this.state.LeafSpouseEdit.dob}
                     mode="date"
                     placeholder="select date"
@@ -726,7 +741,7 @@ export default class FixInfoGenealogy extends Component {
                   />
                   <Text style={styles.inputTitle}>Ngày giỗ</Text>
                   <DatePicker
-                    style={{ width: '90%', borderRadius: 50 }}
+                    style={{width: '90%', borderRadius: 50}}
                     date={this.state.LeafSpouseEdit.dod}
                     mode="date"
                     placeholder="select date"
@@ -776,14 +791,15 @@ export default class FixInfoGenealogy extends Component {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  // console.log(this.checkdata(this.state.LeafSpouseEdit));
-                  // console.log(this.checkdata(this.state.leafInfoEdit));
                   if (this.props.route.params.authId) {
-                    if (this.checkdata(this.state.LeafSpouseEdit) && this.checkdata(this.state.leafInfoEdit)) {
+                    if (this.checkdata(this.state.leafInfoEdit)) {
                       this.createLeaf(this.state.leafId);
                     } else {
-                      Alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin yêu cầu (các ô có dấu *)');
-                    }               
+                      Alert.alert(
+                        'Thông báo',
+                        'Vui lòng nhập đầy đủ thông tin yêu cầu (các ô có dấu *)',
+                      );
+                    }
                   } else {
                     this.updateLeaf(this.state.leafId);
                   }
@@ -802,7 +818,7 @@ export default class FixInfoGenealogy extends Component {
                 disabled={!this.props.route.params.isFinalLeaf}
                 onPress={() => {
                   console.log(this.state.leafId);
-                    this.deleteLeaf(this.state.leafId);
+                  this.deleteLeaf(this.state.leafId);
                 }}>
                 <Text
                   style={{
