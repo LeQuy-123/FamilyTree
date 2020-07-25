@@ -91,7 +91,7 @@ export default class FixInfoGenealogy extends Component {
   }
   _postDataFamily = async () => {
     console.log(this.state.phone);
-    if (this.TextInput5.isValidNumber() || this.state.phone === undefined) {
+    if (this.TextInput5.isValidNumber() || !this.state.phone) {
       if (this.state.firstName !== '' || this.state.lastName !== '') {
         let refreshToken = await AsyncStorage.getItem('tokenRefresh');
         let email = await AsyncStorage.getItem('email');
@@ -195,8 +195,47 @@ export default class FixInfoGenealogy extends Component {
       }
     });
   };
+  createFamily = async () => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      var URL = url + '/api/user/family';
+      try {
+        fetch(URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + data,
+          },
+          body: JSON.stringify({
+            firstname: this.state.firstName,
+            middlename: this.state.middleName,
+            lastname: this.state.lastName,
+            email: this.state.email,
+            nickname: this.state.nickName,
+            numphone: this.state.phone,
+            sex: this.state.sex,
+            datebirth: this.state.date,
+            address: this.state.address,
+            job: this.state.job,
+            parentage: this.state.parentage,
+            yourself: this.state.yourself,
+            religion: this.state.religion,
+            profileImage: this.state.image,
+          }),
+        })
+          .then(response => response.json())
+          .then(json => {
+            console.log(JSON.stringify(json));
+            this.props.navigation.navigate('FamilyScreen');
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
   componentDidMount() {
-    if (this.props.route.params.id) {
+    if (this.props.route.params.id !== 0) {
       this.loadOneFamily(this.props.route.params.id);
     }
   }
@@ -438,7 +477,15 @@ export default class FixInfoGenealogy extends Component {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  this._postDataFamily();
+                  if (this.state.id === 0) {
+                    if (this.state.firstName && this.state.lastName) {
+                      this.createFamily();
+                    } else {
+                      Alert.alert('Vui lòng nhập đầy đủ tên và họ người thân');
+                    }
+                  } else {
+                    this._postDataFamily();
+                  }
                 }}>
                 <Text
                   style={{

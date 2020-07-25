@@ -30,7 +30,6 @@ export default class FixAccountScreen extends Component {
     this.state = {
       myEmail: '',
       image: '',
-      imageType: '',
       Name: '',
       NickName: '',
       Number: '',
@@ -117,6 +116,7 @@ export default class FixAccountScreen extends Component {
             sex: this.state.Gender,
             datebirth: this.state.date,
             address: this.state.Address,
+            profileImage: this.state.image,
           }),
         })
           .then(response => response.json())
@@ -227,7 +227,7 @@ export default class FixAccountScreen extends Component {
                     <TouchableOpacity
                       style={styles.avatar}
                       onPress={() => this.onClickAddImages()}>
-                      {this.state.image === '' && (
+                      {!this.state.image ? (
                         <Image
                           source={require('./avatar_default.png')}
                           style={{
@@ -236,8 +236,7 @@ export default class FixAccountScreen extends Component {
                             borderRadius: 20,
                           }}
                         />
-                      )}
-                      {this.state.image !== '' && (
+                      ) : (
                         <Image
                           source={{uri: this.state.image}}
                           style={{

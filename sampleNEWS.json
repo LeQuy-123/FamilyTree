@@ -1,453 +1,97 @@
 {
-    "request_info": {
-        "success": true,
-        "credits_used": 2,
-        "credits_remaining": 98
-    },
-    "request_metadata": {
-        "created_at": "2020-06-28T04:33:19.070Z",
-        "processed_at": "2020-06-28T04:33:41.790Z",
-        "total_time_taken": 22.72,
-        "total_results": 20,
-        "timing": [
-            "global_init - 0ms (total 0ms)",
-            "auth_apikey - 844ms (total 844ms)",
-            "auth_retrieve_plan - 56ms (total 901ms)",
-            "auth_retrieve_credit_usage - 129ms (total 1030ms)",
-            "processing_invoking_worker - 2ms (total 1033ms)",
-            "processing_execution_complete - 22720ms (total 23753ms)",
-            "auth_credit_usage_reconcile - 99ms (total 23853ms)",
-            "global_end - 0ms (total 23853ms)"
-        ]
-    },
-    "request_parameters": {
-        "q": "Lịch sử Việt Nam",
-        "type": "headlines",
-        "locale": "vi-VN",
-        "output": "json"
-    },
+    "status": "ok",
+    "totalResults": 112,
     "articles": [
         {
-            "link": "https://zingnews.vn/nhung-cuon-sach-tranh-hap-dan-ve-lich-su-viet-nam-post1096410.html",
-            "title": "Những cuốn sách tranh hấp dẫn về lịch sử Việt Nam",
-            "snippet": "Nhằm truyền tải đến các em thiếu nhi một nền lịch sử hào hùng của nước nhà, các bộ sách tranh dưới đây được trình bày bắt mắt, sinh động và dễ hiểu qua nét ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/ABEDB9F0210246F5B71B6C7C11A839CA",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/ABEDB9F0210246F5B71B6C7C11A839CA"
-            ],
-            "date_published": "2020-06-16T07:00:00.000Z",
             "source": {
-                "id": "zing-vn",
-                "domain": "zingnews.vn",
-                "name": "Zing.vn",
-                "logo": "https://api.breakingapi.com/download/logos/zing-vn.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
+                "id": null,
+                "name": "GQ Magazine"
+            },
+            "author": "Yusef Komunyakaa",
+            "title": "On Spike Lee’s \"Da 5 Bloods\"—and My Own Return to Vietnam",
+            "description": "Twenty years after his service in the infamous Americal Division, Pulitzer Prize–winning poet Yusef Komunyakaa went back to Hanoi with his own group of veterans to reckon with their former enemies.",
+            "url": "https://www.gq.com/story/yusef-komunyakaa-on-spike-lee-and-vietnam",
+            "urlToImage": "https://media.gq.com/photos/5f0c8948ffada325b0c49ce3/16:9/w_1280,c_limit/Spike%2520Lee%25E2%2580%2599s%2520Da%25205%2520Bloods%2520Return%2520to%2520Vietnam%2520Yusef%2520Komunyakaa%2520gq%2520july%25202020.jpg",
+            "publishedAt": "2020-07-13T18:29:46Z",
+            "content": "Finally, I couldnt wait. Here was a question that lingered in my psyche for decades. I said, General Giap, was Black Lang real or myth?\r\nThe general said, He is real. And he is alive.\r\nNguyen Quang T… [+4415 chars]"
         },
         {
-            "link": "https://khoahocphattrien.vn/khoa-hoc/nien-bieu-lich-su-viet-nam-khong-the-chi-dua-tren-mot-bo-su/2020062510457999p1c160.htm",
-            "title": "Niên biểu lịch sử Việt Nam không thể chỉ dựa trên một bộ sử",
-            "snippet": "Từ trước đến nay, các niên biểu ở Việt Nam hầu như đều chỉ được lập dựa trên “Đại Việt sử ký toàn thư” hay “Khâm định Việt sử thông giám cương mục” mà ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/E75B7D4E546A42608774BBAFD9FFB8D4",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/E75B7D4E546A42608774BBAFD9FFB8D4"
-            ],
-            "date_published": "2020-06-28T00:06:00.000Z",
             "source": {
-                "id": "bao-khoa-hoc-va-phat-trien",
-                "domain": "khoahocphattrien.vn",
-                "name": "Báo Khoa học và Phát triển",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
+                "id": null,
+                "name": "Nakedcapitalism.com"
+            },
+            "author": "Lambert Strether",
+            "title": "Links 6/23/2020",
+            "description": "Our popular daily links",
+            "url": "https://www.nakedcapitalism.com/2020/06/links-6-23-2020.html",
+            "urlToImage": "https://www.nakedcapitalism.com/wp-content/uploads/2020/06/heron_2.jpeg",
+            "publishedAt": "2020-06-23T10:55:28Z",
+            "content": "First rescued snow leopard cub in India returns to mother Third Pole\r\nJune snow in Siberia’s south as highest-ever Arctic heat is recorded in Russia’s coldest region Siberian Times\r\nUS dollar funding… [+6908 chars]"
         },
         {
-            "link": "http://baochinhphu.vn/Thoi-su/Pho-Thu-tuong-nghe-bao-cao-tien-do-bien-soan-Quoc-su-Quoc-chi/398319.vgp",
-            "title": "Phó Thủ tướng nghe báo cáo tiến độ biên soạn Quốc sử, Quốc chí",
-            "snippet": "(Chinhphu.vn) – Chiều 17/6, Phó Thủ tướng Vũ Đức Đam làm việc với Ban Chủ nhiệm Đề án Nghiên cứu, biên soạn bộ Lịch sử Việt Nam (Quốc sử); tiến độ ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/90FC02E6912A4C3AA730D44B568D69F7",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/90FC02E6912A4C3AA730D44B568D69F7"
-            ],
-            "date_published": "2020-06-17T11:30:00.000Z",
             "source": {
-                "id": "online-newspaper-of-the-government-of-the-socialist-republic-of-viet-nam",
-                "domain": "baochinhphu.vn",
-                "name": "ONLINE NEWSPAPER OF THE GOVERNMENT OF THE SOCIALIST REPUBLIC OF VIET NAM",
-                "logo": "https://api.breakingapi.com/download/logos/online-newspaper-of-the-government-of-the-socialist-republic-of-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
+                "id": null,
+                "name": "Forbes"
+            },
+            "author": "Russell Flannery, Forbes Staff, Russell Flannery, Forbes Staffhttps://www.forbes.com/sites/russellflannery/",
+            "title": "APEC Deepens Projected 2020 GDP Loss From Pandemic To 3.7% From 2.7%",
+            "description": "APEC members include the U.S. and China, the world's largest two economies.",
+            "url": "https://www.forbes.com/sites/russellflannery/2020/07/06/apec-deepens-projected-2020-gdp-loss-from-pandemic-to-37-from-27/",
+            "urlToImage": "https://thumbor.forbes.com/thumbor/fit-in/1200x0/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F34227141%2F0x0.jpg",
+            "publishedAt": "2020-07-06T07:09:52Z",
+            "content": "The APEC regions economic growth is now expected to decline by 3.7 percent in 2020, down from its initial forecast a 2.7% shrinkage announced in April, the APEC Policy Support Unit said today.\r\nThese… [+1731 chars]"
         },
         {
-            "link": "https://vov.vn/van-hoa-giai-tri/hoc-lich-su-viet-bang-truyen-tranh-1055411.vov",
-            "title": "Học lịch sử Việt bằng truyện tranh",
-            "snippet": "Môn lịch sử Việt Nam đang là một môn “khó” trong nhà trường và càng “nan giải” hơn với lứa tuổi thiếu niên nhi đồng.",
-            "primary_image_link": "https://api.breakingapi.com/download/images/0D82C093180645619A97BA2D13439376",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/0D82C093180645619A97BA2D13439376"
-            ],
-            "date_published": "2020-06-04T07:00:00.000Z",
             "source": {
-                "id": "djai-tieng-noi-viet-nam",
-                "domain": "vov.vn",
-                "name": "Đài Tiếng Nói Việt Nam",
-                "logo": "https://api.breakingapi.com/download/logos/djai-tieng-noi-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
+                "id": null,
+                "name": "Tinhte.vn"
+            },
+            "author": "khuyenmai_tinhte@gmail.com (TTKM), TTKM",
+            "title": "[QC] Khởi động cuộc thi tìm kiếm giải pháp chuyển đổi số Việt Nam Viet Solutions",
+            "description": "Viet Solutions 2020 là cuộc thi tìm kiếm giải pháp chuyển đổi số quốc gia dành cho các cá nhân, doanh nghiệp trên toàn cầu do Bộ TT&TT và Tập đoàn Công nghiệp - Viễn thông Quân đội (Viettel) phối...",
+            "url": "https://tinhte.vn/thread/qc-khoi-dong-cuoc-thi-tim-kiem-giai-phap-chuyen-doi-so-viet-nam-viet-solutions.3158289/",
+            "urlToImage": "https://photo2.tinhte.vn/data/attachment-files/2020/07/5071202_CV.jpg",
+            "publishedAt": "2020-07-09T07:05:20Z",
+            "content": "Viet Solutions 2020 là cuc thi tìm kim gii pháp chuyn i s quc gia dành cho các cá nhân, doanh nghip trên toàn cu do B TT&amp;TT và Tp oàn Công nghip - Vin thông Quân i (Viettel) phi hp t chc. L phát … [+3462 chars]"
         },
         {
-            "link": "https://tiasang.com.vn/khoa-hoc-cong-nghe/Luoc-su-ve-cu-dan-thoi-tien-Dai-Viet-25315",
-            "title": "Lược sử về cư dân thời tiền Đại Việt",
-            "snippet": "LTS: Mười thế kỷ đầu Công nguyên được cho là giai đoạn quan trọng- vốn không chỉ có những cuộc kháng chiến giành độc lập mà còn có những bước phát ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/A1AED9418C2F447C9B791053184F695A",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/A1AED9418C2F447C9B791053184F695A"
-            ],
-            "date_published": "2020-06-27T00:25:00.000Z",
             "source": {
-                "id": "tia-sang",
-                "domain": "tiasang.com.vn",
-                "name": "Tia Sáng",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
+                "id": null,
+                "name": "Tinhte.vn"
+            },
+            "author": "trug.dt@gmail.com (Minh Dự.), Minh Dự.",
+            "title": "Tổng hợp deal khuyến mãi 15/07",
+            "description": "Mời anh em chia sẻ thêm những ưu đãi giảm giá từ các trang thương mại điện tử lớn tại Việt Nam. Những deal nổi bật được cập nhật hàng ngày có giá trị theo giờ, theo ngày hoặc đến khi hết sản phẩm...",
+            "url": "https://tinhte.vn/thread/tong-hop-deal-khuyen-mai-15-07.3160746/",
+            "urlToImage": "https://photo2.tinhte.vn/data/attachment-files/2020/07/5076234_cover15072020.jpg",
+            "publishedAt": "2020-07-15T08:15:13Z",
+            "content": "Mi anh em chia s thêm nhng u ãi gim giá t các trang thng mi in t ln ti Vit Nam. Nhng deal ni bt c cp nht hàng ngày có giá tr theo gi, theo ngày hoc n khi ht sn phmGiá niêm yt 4.190.000 ; Giá khuyn mã… [+6519 chars]"
         },
         {
-            "link": "https://www.nhandan.com.vn/chinhtri/dang-va-cuoc-song/item/45002502-dang-cong-san-viet-nam-san-pham-cua-lich-su-trong-trach-truoc-lich-su.html",
-            "title": "Đảng Cộng sản Việt Nam - Sản phẩm của lịch sử, trọng trách trước lịch sử",
-            "snippet": "Ngày 26-6, tại TP Hồ Chí Minh, Đại học Quốc gia TP Hồ Chí Minh tổ chức Hội thảo cấp quốc gia: “Đảng Cộng sản Việt Nam - Sản phẩm của lịch sử, trọng trách ...",
-            "date_published": "2020-06-26T18:40:30.000Z",
             "source": {
-                "id": "nhan-dan",
-                "domain": "nhandan.com.vn",
-                "name": "Nhân Dân",
-                "logo": "https://api.breakingapi.com/download/logos/nhan-dan.png",
-                "locales": [
-                    "vi-VN"
-                ],
-                "description": "Nhân Dân is the official newspaper of the Communist Party of Vietnam. According to the newspaper, it is “the voice of the Party, the State and the people of Vietnam.”\nIt has a daily circulation of 180,000 copies."
-            }
+                "id": null,
+                "name": "UN Environment"
+            },
+            "author": null,
+            "title": "Report: Consumers and business concerned about plastic waste but expect governments to do more - UN Environment",
+            "description": "The United Nations Environment Programme (UNEP) and Food Industry Asia (FIA) today released a regional survey of consumers and food and beverage businesses across South-East Asia that shows a significant disconnect between expectation and action on reducing p…",
+            "url": "https://www.unenvironment.org/news-and-stories/press-release/report-consumers-and-business-concerned-about-plastic-waste-expect",
+            "urlToImage": "https://assets.unenvironment.org/styles/topics_content_promo/s3/2020-06/pollution-4855507_1920.jpg?null&itok=wFLcdD0C",
+            "publishedAt": "2020-06-23T02:06:18Z",
+            "content": "Bangkok, 23 June 2020 The United Nations Environment Programme (UNEP) and Food Industry Asia (FIA) today released a regional survey of consumers and food and beverage businesses across South-East Asi… [+7336 chars]"
         },
         {
-            "link": "https://www.qdnd.vn/van-hoa-giao-duc/doi-song-van-hoa/ke-chuyen-lich-su-bao-chi-viet-nam-bang-hien-vat-623146",
-            "title": "Kể chuyện lịch sử báo chí Việt Nam bằng hiện vật",
-            "snippet": "QĐND Online – Bước vào không gian còn vương mùi sơn, từng chiếc máy ảnh, máy quay phim, mỗi tờ báo đã phai màu vì thời gian được trưng bày trang trọng ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/AD8F9A2EF9E54D20988BADEA3A16A0B0",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/AD8F9A2EF9E54D20988BADEA3A16A0B0"
-            ],
-            "date_published": "2020-06-18T07:00:00.000Z",
             "source": {
-                "id": "bao-djien-tu-quan-djoi-nhan-dan",
-                "domain": "www.qdnd.vn",
-                "name": "Báo điện tử Quân đội nhân dân",
-                "logo": "https://api.breakingapi.com/download/logos/bao-djien-tu-quan-djoi-nhan-dan.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://tuoitre.vn/mot-cai-nhin-tu-ke-khac-ve-vua-gia-long-va-su-viet-20200613160927201.htm",
-            "title": "Một cái nhìn từ 'kẻ khác' về vua Gia Long và sử Việt",
-            "snippet": "TTO - Đó là nhận định của PGS.TS Bửu Nam về cuốn sách “Vua Gia Long” - công trình biên khảo của một người Pháp - Marcel Gaultier, nhà văn đồng thời là ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/F2CF968282C74A9A98CD0C1859405116",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/F2CF968282C74A9A98CD0C1859405116"
-            ],
-            "date_published": "2020-06-13T07:00:00.000Z",
-            "source": {
-                "id": "tuoi-tre-online",
-                "domain": "tuoitre.vn",
-                "name": "Tuổi Trẻ Online",
-                "logo": "https://api.breakingapi.com/download/logos/tuoi-tre-online.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://vietnam.vnanet.vn/vietnamese/tim-hieu-lich-su-van-hoa-dan-toc-tu-hao-viet-nam-tinh-son-la/449538.html",
-            "title": "Tìm hiểu lịch sử, văn hóa dân tộc “Tự hào Việt Nam” tỉnh Sơn La",
-            "snippet": "Ngày 21/6, Tỉnh đoàn Sơn La phối hợp với Hội Sinh viên Việt Nam tỉnh tổ chức Hội thi tìm hiểu lịch sử, văn hóa dân tộc “Tự hào Việt Nam” lần thứ II năm 2020.",
-            "primary_image_link": "https://api.breakingapi.com/download/images/04E1E9A7135746E6B0DE84CB0B2CD600",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/04E1E9A7135746E6B0DE84CB0B2CD600"
-            ],
-            "date_published": "2020-06-22T02:23:00.000Z",
-            "source": {
-                "id": "bao-anh-viet-nam",
-                "domain": "vietnam.vnanet.vn",
-                "name": "Báo ảnh Việt Nam",
-                "logo": "https://api.breakingapi.com/download/logos/bao-anh-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "http://baochinhphu.vn/Kinh-te/Thoi-diem-ly-tuong-cho-Viet-Nam-va-Ha-Noi-thu-hut-dau-tu/399169.vgp",
-            "title": "Thời điểm lý tưởng cho Việt Nam và Hà Nội thu hút đầu tư",
-            "snippet": "(Chinhphu.vn) - Đại diện nhiều doanh nghiệp cho rằng Việt Nam nói chung và Hà Nội nói riêng đã trở thành điểm đến hấp dẫn hơn đối với du lịch và đầu tư.",
-            "primary_image_link": "https://api.breakingapi.com/download/images/867EFA4836DF472890C1683B0D5C84F8",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/867EFA4836DF472890C1683B0D5C84F8"
-            ],
-            "date_published": "2020-06-27T08:47:00.000Z",
-            "source": {
-                "id": "online-newspaper-of-the-government-of-the-socialist-republic-of-viet-nam",
-                "domain": "baochinhphu.vn",
-                "name": "ONLINE NEWSPAPER OF THE GOVERNMENT OF THE SOCIALIST REPUBLIC OF VIET NAM",
-                "logo": "https://api.breakingapi.com/download/logos/online-newspaper-of-the-government-of-the-socialist-republic-of-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://baotintuc.vn/thoi-su/tuyen-truyen-ve-bien-dao-viet-nam-va-lich-su-vung-dat-nam-bo-20200626120247535.htm",
-            "title": "Tuyên truyền về biển, đảo Việt Nam và lịch sử vùng đất Nam bộ",
-            "snippet": "Sở Thông tin và Truyền thông tỉnh Kiên Giang tổ chức Hội nghị thông tin công tác tuyên truyền biển, đảo Việt Nam và lịch sử hình thành, phát triển vùng đất Nam ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/A2C8900F66A14060BF46A2AAF95045B2",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/A2C8900F66A14060BF46A2AAF95045B2"
-            ],
-            "date_published": "2020-06-26T05:02:00.000Z",
-            "source": {
-                "id": "baotintuc-vn",
-                "domain": "baotintuc.vn",
-                "name": "baotintuc.vn",
-                "logo": "https://api.breakingapi.com/download/logos/baotintuc-vn.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://www.nhandan.com.vn/chinhtri/item/45013602-hoi-nghi-cap-cao-asean-lan-thu-36-la-su-kien-lich-su.html",
-            "title": "Hội nghị cấp cao ASEAN lần thứ 36 là sự kiện lịch sử",
-            "snippet": "Theo tin nước ngoài và TTXVN, Hãng thông tấn Ma-lai-xi-a (Bernama) có bài viết với tựa đề “Hội nghị cấp cao ASEAN lần thứ 36 đi vào lịch sử trong bối cảnh ...",
-            "date_published": "2020-06-27T18:14:24.000Z",
-            "source": {
-                "id": "nhan-dan",
-                "domain": "nhandan.com.vn",
-                "name": "Nhân Dân",
-                "logo": "https://api.breakingapi.com/download/logos/nhan-dan.png",
-                "locales": [
-                    "vi-VN"
-                ],
-                "description": "Nhân Dân is the official newspaper of the Communist Party of Vietnam. According to the newspaper, it is “the voice of the Party, the State and the people of Vietnam.”\nIt has a daily circulation of 180,000 copies."
-            }
-        },
-        {
-            "link": "https://www.nhandan.com.vn/vanhoa/nghe-doc-xem/item/44990102-noi-luu-giu-lich-su-bao-chi-viet-nam.html",
-            "title": "Nơi lưu giữ lịch sử báo chí Việt Nam",
-            "snippet": "Một sự kiện được quan tâm trong dịp kỷ niệm 95 năm Ngày Báo chí cách mạng Việt Nam (21-6) là việc khai trương hoạt động trưng bày của Bảo tàng Báo chí ...",
-            "date_published": "2020-06-25T21:06:56.000Z",
-            "source": {
-                "id": "nhan-dan",
-                "domain": "nhandan.com.vn",
-                "name": "Nhân Dân",
-                "logo": "https://api.breakingapi.com/download/logos/nhan-dan.png",
-                "locales": [
-                    "vi-VN"
-                ],
-                "description": "Nhân Dân is the official newspaper of the Communist Party of Vietnam. According to the newspaper, it is “the voice of the Party, the State and the people of Vietnam.”\nIt has a daily circulation of 180,000 copies."
-            }
-        },
-        {
-            "link": "http://baochinhphu.vn/Van-hoa/Hoi-uc-lich-su-qua-tranh-co-dong/398793.vgp",
-            "title": "Hồi ức lịch sử qua tranh cổ động",
-            "snippet": "(Chinhphu.vn) - Tranh cổ động thể hiện được một phần của lịch sử phát triển của cách mạng Việt Nam từ những ngày đầu đấu tranh giành độc lập dân tộc, ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/4A65AEE91461447FAEB9B4525EE803AF",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/4A65AEE91461447FAEB9B4525EE803AF"
-            ],
-            "date_published": "2020-06-24T09:13:00.000Z",
-            "source": {
-                "id": "online-newspaper-of-the-government-of-the-socialist-republic-of-viet-nam",
-                "domain": "baochinhphu.vn",
-                "name": "ONLINE NEWSPAPER OF THE GOVERNMENT OF THE SOCIALIST REPUBLIC OF VIET NAM",
-                "logo": "https://api.breakingapi.com/download/logos/online-newspaper-of-the-government-of-the-socialist-republic-of-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://www.bbc.com/vietnamese/sport-53187955",
-            "title": "Premier League: Liverpool và chiếc cúp lịch sử",
-            "snippet": "Việc Manchester City không thể đánh bại Chelsea trong trận đấu muộn nhất vòng 31 đã giúp Liverpool lên ngôi vô địch Premier League sớm 7 vòng đấu.",
-            "primary_image_link": "https://api.breakingapi.com/download/images/AE0276E53A5A4AF0A85E14E2E715B056",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/AE0276E53A5A4AF0A85E14E2E715B056"
-            ],
-            "date_published": "2019-06-01T07:00:00.000Z",
-            "source": {
-                "id": "bbc-news",
-                "domain": "www.bbc.com",
-                "name": "BBC News",
-                "logo": "https://api.breakingapi.com/download/logos/bbc-news.png",
-                "locales": [
-                    "en-AU",
-                    "en-US",
-                    "zh-TW",
-                    "ar-AE",
-                    "en-CA",
-                    "zh-CN",
-                    "en-IN",
-                    "en-GB",
-                    "uk-UA",
-                    "hi-IN",
-                    "ar-LB",
-                    "zh-HK",
-                    "en-ET",
-                    "en-IE",
-                    "en-BW",
-                    "ar-EG",
-                    "en-GH",
-                    "mr-IN",
-                    "en-ID",
-                    "en-IL",
-                    "ja-JP",
-                    "en-KE",
-                    "en-LV",
-                    "en-MY",
-                    "fr-MA",
-                    "en-NA",
-                    "en-NZ",
-                    "en-NG",
-                    "en-PK",
-                    "pt-PT",
-                    "ru-RU",
-                    "ar-SA",
-                    "fr-SN",
-                    "en-SG",
-                    "en-ZA",
-                    "en-TZ",
-                    "th-TH",
-                    "tr-TR",
-                    "en-UG",
-                    "vi-VN",
-                    "en-ZW",
-                    "en-PH",
-                    "bn-BD",
-                    "en-il",
-                    "en-ke",
-                    "en-us",
-                    "en-Ke",
-                    "es-VE",
-                    "es-MX",
-                    "ta-IN",
-                    "pt-BR",
-                    "te-IN",
-                    "ko-KR"
-                ],
-                "description": "BBC News is a British free-to-air television news channel. It was launched as BBC News 24 on 9 November 1997 at 5:30 pm as part of the BBC's foray into digital domestic television channels, becoming the first competitor to Sky News, which had been running since 1989."
-            }
-        },
-        {
-            "link": "https://zingnews.vn/chuyen-ngay-xua-cua-bao-tang-lich-su-thua-thien-hue-post1100466.html",
-            "title": "Chuyện ngày xưa của Bảo tàng Lịch sử Thừa Thiên - Huế",
-            "snippet": "Một sáng giữa tháng 6 nắng đẹp, tôi đang lặng nhìn những vũ khí chiến lợi phẩm từ sân Quốc Tử Giám Huế, chợt nghĩ đến câu chuyện 75 năm về trước đã diễn ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/7E6DBA3A5FB24EA98AF96887658BB5D4",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/7E6DBA3A5FB24EA98AF96887658BB5D4"
-            ],
-            "date_published": "2020-06-28T00:00:17.000Z",
-            "source": {
-                "id": "zing-vn",
-                "domain": "zingnews.vn",
-                "name": "Zing.vn",
-                "logo": "https://api.breakingapi.com/download/logos/zing-vn.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://vietnam.vnanet.vn/vietnamese/that-chat-tinh-huu-nghi-giua-nhan-dan-viet-nam-lien-bang-nga/450009.html",
-            "title": "Thắt chặt tình hữu nghị giữa nhân dân Việt Nam-Liên bang Nga",
-            "snippet": "Ngày 27/6, Lễ kỷ niệm 70 năm ngày thành lập Hội hữu nghị Việt Nam - Liên Xô/Ngày truyền thống Hội hữu nghị Việt Nam - Liên bang Nga (23/5/1950 ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/4602494434EC49E6A72F70BC55B753CE",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/4602494434EC49E6A72F70BC55B753CE"
-            ],
-            "date_published": "2020-06-28T03:27:00.000Z",
-            "source": {
-                "id": "bao-anh-viet-nam",
-                "domain": "vietnam.vnanet.vn",
-                "name": "Báo ảnh Việt Nam",
-                "logo": "https://api.breakingapi.com/download/logos/bao-anh-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://vietnam.vnanet.vn/vietnamese/hoi-thao-quoc-gia-ao-dai-viet-nam-nhan-dien-tap-quan-gia-tri-va-ban-sac/449945.html",
-            "title": "Hội thảo quốc gia “Áo dài Việt Nam: Nhận diện, tập quán, giá trị và bản sắc”",
-            "snippet": "Ngày 26/6, tại Hà Nội, Bộ Văn hóa, Thể thao và Du lịch, Hội Liên hiệp Phụ nữ Việt Nam phối hợp với Viện Văn hóa Nghệ thuật Quốc gia Việt Nam, Bảo tàng ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/5880D4D9CC534E7A940B944491BCCB42",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/5880D4D9CC534E7A940B944491BCCB42"
-            ],
-            "date_published": "2020-06-27T02:50:00.000Z",
-            "source": {
-                "id": "bao-anh-viet-nam",
-                "domain": "vietnam.vnanet.vn",
-                "name": "Báo ảnh Việt Nam",
-                "logo": "https://api.breakingapi.com/download/logos/bao-anh-viet-nam.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://baoquocte.vn/lam-moi-dong-phim-lich-su-mo-ve-noi-xa-lam-116878.html",
-            "title": "Làm mới dòng phim lịch sử: \"Mơ về nơi xa lắm\"?",
-            "snippet": "Phim lịch sử Làm Phượng Khấu là sự trả lại công bằng cho lịch sử, giúp lịch sử đến với mọi người một cách tươi tắn, sinh động...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/302E7AAE10534C0B97F44EDF38A7BFB2",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/302E7AAE10534C0B97F44EDF38A7BFB2"
-            ],
-            "date_published": "2020-06-12T07:00:00.000Z",
-            "source": {
-                "id": "bao-tgvn",
-                "domain": "baoquocte.vn",
-                "name": "Báo TGVN",
-                "logo": "https://api.breakingapi.com/download/logos/bao-tgvn.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
-        },
-        {
-            "link": "https://baodautu.vn/chu-de-cua-ngay-gia-dinh-viet-nam-nam-2020-la-gi-d124865.html",
-            "title": "Chủ đề của ngày Gia đình Việt Nam năm 2020 là gì?",
-            "snippet": "Ngày Gia đình Việt Nam 28/6/2020 là ngày để những con người đất Việt hướng về cội nguồn, về người thân, qua đó nuôi dưỡng những tình cảm đẹp, những ...",
-            "primary_image_link": "https://api.breakingapi.com/download/images/81FF30142BFE4B339FF40085E5D5DDF5",
-            "image_links": [
-                "https://api.breakingapi.com/download/images/81FF30142BFE4B339FF40085E5D5DDF5"
-            ],
-            "date_published": "2020-06-27T13:35:00.000Z",
-            "source": {
-                "id": "bao-djau-tu",
-                "domain": "baodautu.vn",
-                "name": "Báo Đầu Tư",
-                "logo": "https://api.breakingapi.com/download/logos/bao-djau-tu.png",
-                "locales": [
-                    "vi-VN"
-                ]
-            }
+                "id": null,
+                "name": "ReliefWeb"
+            },
+            "author": null,
+            "title": "Tech giants partner with UN Women to provide life-saving information to survivors of domestic violence during COVID-19 - World - ReliefWeb",
+            "description": "English News and Press Release on World about Protection and Human Rights, Children, Women and Epidemic; published on 24 Jun 2020 by UN Women",
+            "url": "https://reliefweb.int/report/world/tech-giants-partner-un-women-provide-life-saving-information-survivors-domestic",
+            "urlToImage": "https://reliefweb.int/profiles/reliefweb/themes/kobe/images/metatag/disaster-type/epidemic.png",
+            "publishedAt": "2020-06-25T01:18:53Z",
+            "content": "As billions of people are still under COVID-19 lockdown, the shadow pandemic of violence against women has been growing within homes around the world.\r\nEven before the COVID-19 pandemic, violence aga… [+4112 chars]"
         }
     ]
 }

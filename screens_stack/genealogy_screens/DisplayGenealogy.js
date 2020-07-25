@@ -100,161 +100,162 @@ export default class DisplayGenealogy extends Component {
     });
   };
   _renderItem = ({item}) => (
-    <TouchableOpacity>
-      <View style={styles.item}>
-        <View style={{flexDirection: 'row', bottom: 5}}>
-          {item.profileImage ? (
-            <Image
-              style={{
-                height: 80,
-                width: 80,
-                borderRadius: 60,
-                left: 5,
-              }}
-              source={{uri: item.profileImage}}
-            />
-          ) : (
-            <Image
-              style={{
-                height: 80,
-                width: 80,
-                borderRadius: 60,
-                left: 5,
-                borderColor: 'black',
-                borderWidth: 1.5,
-              }}
-              source={require('../../images/icons8-user-96.png')}
-            />
-          )}
-          <View>
-            <View style={{flexDirection: 'row'}}>
-              <Image
-                style={{
-                  height: 22,
-                  width: 22,
-                  left: 15,
-                }}
-                source={require('../../images/icons8-contact-24.png')}
-              />
-              <Text style={{fontSize: 16, paddingLeft: 20}}>
-                {item.treename}
-              </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-              }}>
-              <Image
-                style={{
-                  height: 22,
-                  width: 22,
-                  left: 15,
-                }}
-                source={require('../../images/icons8-maintenance-date-24.png')}
-              />
-              <Text style={{fontSize: 16, paddingLeft: 20}}>
-                {moment(new Date(item.updatedAt)).format('YYYY-MM-DD')}
-              </Text>
-            </View>
-            <View style={{flexDirection: 'row'}}>
-              <Image
-                style={{
-                  height: 22,
-                  width: 22,
-                  left: 15,
-                }}
-                source={require('../../images/icons8-add-user-male-24.png')}
-              />
-              <Text style={{fontSize: 16, paddingLeft: 20}}>{item.author}</Text>
-            </View>
-          </View>
-        </View>
-        <Svg height="5" width="100%">
-          <Line
-            x1="1%"
-            y1="50%"
-            x2="99%"
-            y2="50%"
-            stroke="black"
-            strokeWidth="2"
+    <View style={styles.item}>
+      <View style={{flexDirection: 'row'}}>
+        {item.profileImage ? (
+          <Image
+            style={{
+              height: 80,
+              width: 80,
+              borderRadius: 60,
+              left: 5,
+            }}
+            source={{uri: item.profileImage}}
           />
-        </Svg>
-        <View style={{alignItems: 'flex-end'}}>
+        ) : (
+          <Image
+            style={{
+              height: 80,
+              width: 80,
+              borderRadius: 60,
+              left: 5,
+              borderColor: 'black',
+              borderWidth: 1.5,
+            }}
+            source={require('../../images/icons8-user-96.png')}
+          />
+        )}
+        <View>
           <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate('Genealogy', {
-                  data: item._id,
-                  name: item.treename,
-                });
-              }}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  style={{
-                    height: 25,
-                    width: 25,
-                    right: 6,
-                  }}
-                  source={require('../../images/icons8-eye-24.png')}
-                />
-                <Text
-                  style={{
-                    fontSize: 15,
-                    paddingRight: 20,
-                  }}>
-                  Xem
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                this.props.navigation.navigate('AddGenealogy', {
-                  rootId: item._id,
-                })
-              }>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  style={{
-                    top: 2,
-                    height: 22,
-                    width: 22,
-                    right: 6,
-                  }}
-                  source={require('../../images/icons8-edit-property-26.png')}
-                />
-                <Text
-                  style={{
-                    fontSize: 15,
-                    paddingRight: 15,
-                  }}>
-                  Sửa
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.deleteTree(item._id)}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  style={{
-                    height: 22,
-                    width: 22,
-                    right: 6,
-                  }}
-                  source={require('../../images/icons8-trash-26.png')}
-                />
-                <Text
-                  style={{
-                    fontSize: 15,
-                    paddingRight: 15,
-                  }}>
-                  Xóa
-                </Text>
-              </View>
-            </TouchableOpacity>
+            <Image
+              style={{
+                height: 20,
+                width: 22,
+                left: 15,
+              }}
+              source={require('../../images/family-tree.png')}
+            />
+            <Text style={{fontSize: 16, paddingLeft: 20}}>{item.treename}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+            }}>
+            <Image
+              style={{
+                height: 20,
+                width: 22,
+                left: 15,
+              }}
+              source={require('../../images/icons8-maintenance-date-24.png')}
+            />
+            <Text style={{fontSize: 16, paddingLeft: 20}}>
+              {moment(new Date(item.updatedAt)).format('YYYY-MM-DD')}
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Image
+              style={{
+                height: 20,
+                width: 22,
+                left: 15,
+              }}
+              source={require('../../images/icons8-contact-24.png')}
+            />
+            <Text style={{fontSize: 16, paddingLeft: 20}}>{item.author}</Text>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={{fontSize: 16, left: 15}}>
+              Số lượng thành viên: {item.numMem}
+            </Text>
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+      <Svg height="5" width="100%">
+        <Line
+          x1="1%"
+          y1="50%"
+          x2="99%"
+          y2="50%"
+          stroke="black"
+          strokeWidth="2"
+        />
+      </Svg>
+      <View style={{alignItems: 'flex-end'}}>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate('Genealogy', {
+                data: item._id,
+                name: item.treename,
+              });
+            }}>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={{
+                  height: 25,
+                  width: 25,
+                  right: 6,
+                }}
+                source={require('../../images/icons8-eye-24.png')}
+              />
+              <Text
+                style={{
+                  fontSize: 15,
+                  paddingRight: 20,
+                }}>
+                Xem
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              this.props.navigation.navigate('AddGenealogy', {
+                rootId: item._id,
+              })
+            }>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={{
+                  top: 2,
+                  height: 22,
+                  width: 22,
+                  right: 6,
+                }}
+                source={require('../../images/icons8-edit-property-26.png')}
+              />
+              <Text
+                style={{
+                  fontSize: 15,
+                  paddingRight: 15,
+                }}>
+                Sửa
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.deleteTree(item._id)}>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={{
+                  height: 22,
+                  width: 22,
+                  right: 6,
+                }}
+                source={require('../../images/icons8-trash-26.png')}
+              />
+              <Text
+                style={{
+                  fontSize: 15,
+                  paddingRight: 15,
+                }}>
+                Xóa
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
   componentDidMount() {
     const {navigation} = this.props;
@@ -376,7 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 15,
     marginHorizontal: 30,
-    paddingVertical: 10,
+    justifyContent: 'center',
   },
   listGenealogyBackground: {
     flex: 7,

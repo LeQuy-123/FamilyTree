@@ -200,7 +200,7 @@ export default class AddGenealogyScreen extends Component {
               treename: this.state.genoInfo.genoName,
               author: this.state.genoInfo.create,
               address: this.state.genoInfo.info,
-              imgauth: this.state.genoInfo.image,
+              profileImage: this.state.genoInfo.image,
             }),
           })
             .then(response => response.json())

@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -17,6 +18,7 @@ import {
 } from 'react-native';
 import _RefreshToken from '../components/refresh_Token';
 import {Icon} from 'native-base';
+import {LoginButton, AccessToken} from 'react-native-fbsdk';
 
 class Login extends Component {
   constructor(props) {
@@ -53,10 +55,12 @@ class Login extends Component {
     }
   };
   checkMail = text => {
-    if (this.validate(this.state.email.trim())) {
-      this._postData();
-    } else {
-      Alert.alert('Vui lòng nhập email hợp lệ');
+    if (this.state.email) {
+      if (this.validate(this.state.email.trim())) {
+        this._postData();
+      } else {
+        Alert.alert('Vui lòng nhập email hợp lệ');
+      }
     }
   };
   _postData = async () => {
@@ -298,13 +302,24 @@ class Login extends Component {
                   <Text style={{opacity: 0.4, fontSize: 13}}>
                     - - - Hoặc bạn có thể - - -
                   </Text>
-                  <TouchableOpacity
-                    style={styleslogin.buttonContainerGoogle}
-                    onPress={() => console.log('press')}>
-                    <Text style={styleslogin.text_in_buttonGoogle}>
-                      Đăng nhập bằng Google
-                    </Text>
-                  </TouchableOpacity>
+                  <View>
+                    <LoginButton
+                      publishPermissions={['email']}
+                      onLoginFinished={(error, result) => {
+                        if (error) {
+                          alert('Login failed with error: ' + error.message);
+                        } else if (result.isCancelled) {
+                          alert('Login was cancelled');
+                        } else {
+                          console.log('thanh cong');
+                          AccessToken.getCurrentAccessToken().then(data => {
+                            alert('Login failed with error: ' + data);
+                          });
+                        }
+                      }}
+                      onLogoutFinished={() => alert('User logged out')}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
@@ -396,28 +411,6 @@ const styleslogin = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 18,
-    opacity: 0.8,
-  },
-  buttonContainerGoogle: {
-    width: '100%',
-    height: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    backgroundColor: 'white',
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 1,
-      height: 12,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 5.0,
-    elevation: 10,
-  },
-  text_in_buttonGoogle: {
-    color: '#00B2BF',
-    //fontWeight: 'bold',
-    fontSize: 15,
     opacity: 0.8,
   },
   header_text2_1: {

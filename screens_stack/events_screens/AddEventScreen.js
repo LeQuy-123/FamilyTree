@@ -169,8 +169,6 @@ export default class FixAccountScreen extends Component {
       time: date,
       showTimePicker: false,
     });
-    console.log('----------------------------------');
-    console.log(this.state.time);
   };
   componentDidMount() {
     this.getData().then(() => {

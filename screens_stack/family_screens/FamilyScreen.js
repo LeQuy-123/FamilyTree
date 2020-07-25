@@ -102,7 +102,7 @@ export default class FamilyScreen extends Component {
               Authorization: 'Bearer ' + data,
             },
             body: JSON.stringify({
-              name: name,
+              name: name.trim(),
             }),
           })
             .then(response => response.json())
@@ -110,6 +110,7 @@ export default class FamilyScreen extends Component {
               this.setState({
                 dataFamily: json.result,
               });
+              console.log(JSON.stringify(json));
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -252,32 +253,6 @@ export default class FamilyScreen extends Component {
       </View>
     </TouchableOpacity>
   );
-  createFamily = async () => {
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    let userEmail = await AsyncStorage.getItem('email');
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      var URL = url + '/api/user/family';
-      try {
-        fetch(URL, {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + data,
-          },
-        })
-          .then(response => response.json())
-          .then(json => {
-            this.setState({
-              id: json.family._id,
-            });
-            this.props.navigation.navigate('AddFamilyScreen', {
-              id: this.state.id,
-            });
-          });
-      } catch (error) {
-        console.error(error);
-      }
-    });
-  };
   loadFamilyId(id) {
     this.props.navigation.navigate('AddFamilyScreen', {
       id: id,
@@ -341,7 +316,7 @@ export default class FamilyScreen extends Component {
               onSubmitEditing={() => this.findFamily(this.state.srName)}
             />
           </View>
-          {this.state.dataFamily.length !== 0 ? (
+          {this.state.dataFamily.length > 0 ? (
             <View style={styles.listFamily}>
               <Text style={styles.titleList}>Danh sách người thân</Text>
               <View style={styles.list}>
@@ -396,7 +371,9 @@ export default class FamilyScreen extends Component {
           <View style={styles.buttonAdd}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => this.createFamily()}>
+              onPress={() =>
+                this.props.navigation.navigate('AddFamilyScreen', {id: 0})
+              }>
               <Text style={styles.buttonText}>Thêm người thân</Text>
             </TouchableOpacity>
           </View>
@@ -412,13 +389,12 @@ export default class FamilyScreen extends Component {
           style={styles.view}>
           <View style={styles.modal}>
             <View style={styles.modalTitle}>
-              {this.state.image === undefined && (
+              {!this.state.image ? (
                 <Image
                   source={require('../../images/avatar_default.png')}
                   style={styles.modalTitleImage}
                 />
-              )}
-              {this.state.image !== undefined && (
+              ) : (
                 <Image
                   source={{uri: this.state.image}}
                   style={styles.modalTitleImage}

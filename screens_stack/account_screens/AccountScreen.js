@@ -140,9 +140,7 @@ class AccountScreen extends Component {
                 <Image
                   style={styles.images}
                   source={{
-                    uri:
-                      'https://familytree1.herokuapp.com/api/normal/image/' +
-                      this.state.image,
+                    uri: this.state.image,
                   }}
                 />
               ) : (
