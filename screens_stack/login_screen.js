@@ -42,25 +42,24 @@ class Login extends Component {
   }
   //kiểm tra email
   validate = text => {
-    console.log(text);
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(text) === false) {
-      console.log('Email is Not Correct');
       this.setState({email: text});
       return false;
     } else {
       this.setState({email: text});
-      console.log('Email is Correct');
       return true;
     }
   };
   checkMail = text => {
-    if (this.state.email) {
+    if (this.state.email && this.state.password) {
       if (this.validate(this.state.email.trim())) {
         this._postData();
       } else {
         Alert.alert('Vui lòng nhập email hợp lệ');
       }
+    } else {
+      Alert.alert('Vui lòng nhập email và password');
     }
   };
   _postData = async () => {
@@ -88,23 +87,11 @@ class Login extends Component {
           AsyncStorage.setItem('accessToken', this.state.accessToken);
           AsyncStorage.setItem('tokenRefresh', this.state.refreshToken);
           AsyncStorage.setItem('email', this.state.email);
-          if (this.state.message !== undefined) {
-            console.log(this.state.message);
+          console.log(JSON.stringify(json));
+          if (json.msg !== undefined) {
             Alert.alert(
               'Đăng nhập thất bại',
-              this.state.message,
-              [
-                {
-                  text: 'OK',
-                  style: 'cancel',
-                },
-              ],
-              {cancelable: false},
-            );
-          } else if (this.state.email === '' || this.state.password === '') {
-            Alert.alert(
-              'Vui lòng nhập đầy đủ email và mật khẩu',
-              this.state.message,
+              json.msg,
               [
                 {
                   text: 'OK',
@@ -307,14 +294,16 @@ class Login extends Component {
                       publishPermissions={['email']}
                       onLoginFinished={(error, result) => {
                         if (error) {
-                          alert('Login failed with error: ' + error.message);
+                          Alert.alert(
+                            'Login failed with error: ' + error.message,
+                          );
                         } else if (result.isCancelled) {
-                          alert('Login was cancelled');
+                          Alert.alert('Login was cancelled');
                         } else {
-                          console.log('thanh cong');
-                          AccessToken.getCurrentAccessToken().then(data => {
-                            alert('Login failed with error: ' + data);
-                          });
+                          Alert.alert(
+                            'Login was successful with permissions: ' +
+                              result.grantedPermissions,
+                          );
                         }
                       }}
                       onLogoutFinished={() => alert('User logged out')}

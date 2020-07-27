@@ -17,6 +17,7 @@ import {
 import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
 import Modal from 'react-native-modal';
+import Svg, {Line} from 'react-native-svg';
 
 export default class FamilyScreen extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ export default class FamilyScreen extends Component {
       id: '',
       currentID: '',
       isModalVisible: false,
+      isModalVisible2: false,
       image: '',
       parentage: 'Họ nội',
       firstName: '',
@@ -43,11 +45,17 @@ export default class FamilyScreen extends Component {
       yourself: '',
       religion: '',
       date: '',
+      friend: [],
     };
   }
   toggleModal = () => {
     this.setState({
       isModalVisible: !this.state.isModalVisible,
+    });
+  };
+  toggleModal2 = () => {
+    this.setState({
+      isModalVisible2: !this.state.isModalVisible2,
     });
   };
   loadFamily = async () => {
@@ -80,6 +88,7 @@ export default class FamilyScreen extends Component {
           console.error(error);
         }
       }
+      this._getFriend(data);
     });
   };
   findFamily = async name => {
@@ -110,7 +119,6 @@ export default class FamilyScreen extends Component {
               this.setState({
                 dataFamily: json.result,
               });
-              console.log(JSON.stringify(json));
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -178,6 +186,12 @@ export default class FamilyScreen extends Component {
     });
     this.toggleModal();
   }
+  // modalOff() {
+  //   this.setState({
+  //     isModalVisible: false,
+  //     isModalVisible2: false,
+  //   });
+  // }
   componentDidMount() {
     const {navigation} = this.props;
     navigation.addListener('focus', async () => {
@@ -292,6 +306,111 @@ export default class FamilyScreen extends Component {
       dataFamily: this.state.dataFamily.filter(x => x._id !== id),
     });
   };
+  _getFriend = async token => {
+    var URL = url + '/api/user/friends';
+    try {
+      await fetch(URL, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token,
+        },
+      })
+        .then(response => response.json())
+        .then(json => {
+          var friend = [];
+          json.friends.forEach(function(item, index) {
+            friend.push(item.userId);
+          });
+          this.setState({friend: friend});
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  _renderItem2 = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        this.props.navigation.navigate('Geno', {id: item._id});
+      }}>
+      <View>
+        <View style={styles.item2}>
+          <View style={{flexDirection: 'row'}}>
+            {item.profileImage !== '' && (
+              <Image
+                style={styles.imageOnList2}
+                source={{uri: item.profileImage}}
+              />
+            )}
+            {item.profileImage === '' && (
+              <Image
+                style={styles.imageOnList2}
+                source={require('../../images/icons8-user-96.png')}
+              />
+            )}
+            <View
+              style={{
+                alignItems: 'flex-start',
+                left: -20,
+                justifyContent: 'flex-start',
+              }}>
+              <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                <Image
+                  style={{
+                    height: 19,
+                    width: 19,
+                  }}
+                  source={require('../../images/icons8-contact-24.png')}
+                />
+                <Text style={styles.textStyle}>{item.username}</Text>
+              </View>
+              {item.email !== '' && item.email !== undefined && (
+                <View
+                  style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
+                  <Image
+                    style={styles.iconOnList}
+                    source={require('../../images/icons8-family-32.png')}
+                  />
+                  <Text style={styles.textStyle}>{item.email}</Text>
+                </View>
+              )}
+              {item.numphone !== '' && item.numphone !== undefined && (
+                <View
+                  style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
+                  <Image
+                    style={styles.iconOnList}
+                    source={require('../../images/icons8-number-pad-32.png')}
+                  />
+                  <Text style={styles.textStyle}>{item.numphone}</Text>
+                </View>
+              )}
+              {item.address !== '' && item.address !== undefined && (
+                <View
+                  style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
+                  <Image
+                    style={styles.iconOnList}
+                    source={require('../../images/icons8-address-24.png')}
+                  />
+                  <Text style={styles.textStyle}>{item.address}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
+        <Svg height="10" width="100%">
+          <Line
+            x1="15%"
+            y1="0%"
+            x2="85%"
+            y2="0%"
+            stroke="black"
+            strokeWidth="3"
+          />
+        </Svg>
+      </View>
+    </TouchableOpacity>
+  );
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -303,6 +422,15 @@ export default class FamilyScreen extends Component {
           }}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}> GIA ĐÌNH</Text>
+            <TouchableOpacity
+              onPress={() =>
+                this.props.navigation.navigate('AddFamilyScreen', {id: 0})
+              }>
+              <Image
+                style={{top: 5}}
+                source={require('../../images/icons8-add-40.png')}
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.searchText}>
             <Image
@@ -363,21 +491,86 @@ export default class FamilyScreen extends Component {
                     fontFamily: 'serif',
                   }}>
                   Bạn chưa có thông tin của người thân nào trong danh sách, bắt
-                  đầu chép thông tin người thân gia đình ngay thôi!
+                  đầu chép thông tin người thân bằng cách nhấn vào nút dấu (+)
+                  phía dưới ngay thôi!
                 </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate('AddFamilyScreen', {id: 0})
+                  }
+                  style={styles.buttonContainer}>
+                  <Image
+                    style={{}}
+                    source={require('../../images/icons8-add-40.png')}
+                  />
+                  <Text
+                    style={{
+                      left: 15,
+                      textAlign: 'center',
+                      fontSize: 18,
+                      fontFamily: 'serif',
+                    }}>
+                    Thêm người thân
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
           <View style={styles.buttonAdd}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() =>
-                this.props.navigation.navigate('AddFamilyScreen', {id: 0})
-              }>
-              <Text style={styles.buttonText}>Thêm người thân</Text>
+              onPress={() => this.toggleModal2()}>
+              <Text style={styles.buttonText}>XEM CHIA SẺ</Text>
             </TouchableOpacity>
           </View>
         </View>
+        <Modal
+          backdropOpacity={0.6}
+          coverScreen={false}
+          isVisible={this.state.isModalVisible2}
+          onSwipeComplete={this.toggleModal2}
+          onBackButtonPress={this.toggleModal2}
+          swipeThreshold={200}
+          swipeDirection={['left', 'right', 'down']}
+          style={{alignItems: 'center', justifyContent: 'center'}}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              width: '95%',
+              height: '80%',
+              borderRadius: 30,
+              top: 20,
+            }}>
+            <Text
+              style={{
+                fontFamily: 'serif',
+                height: '5%',
+                fontSize: 20,
+                left: 15,
+                top: 10,
+                fontWeight: 'bold',
+              }}>
+              Danh sách chia sẻ
+            </Text>
+            <Svg height="15" width="100%">
+              <Line
+                x1="5%"
+                y1="100%"
+                x2="95%"
+                y2="100%"
+                stroke="black"
+                strokeWidth="5"
+              />
+            </Svg>
+            <FlatList
+              style={{width: '100%', height: '100%', top: 10}}
+              data={this.state.friend}
+              renderItem={this._renderItem2}
+              keyExtractor={item => item._id}
+              extraData={this.state.friend}
+            />
+          </View>
+        </Modal>
         <Modal
           backdropOpacity={0.6}
           coverScreen={false}
@@ -564,6 +757,14 @@ const styles = StyleSheet.create({
     bottom: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 1,
+      height: 12,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5.0,
+    elevation: 10,
   },
   buttonText: {
     color: '#840505',
@@ -585,11 +786,19 @@ const styles = StyleSheet.create({
     height: 80,
     width: '80%',
     marginTop: 25,
-    marginBottom: 10,
     marginHorizontal: 70,
     backgroundColor: 'white',
     borderRadius: 20,
     right: 20,
+    flexDirection: 'row',
+  },
+  item2: {
+    height: 80,
+    width: '80%',
+    marginBottom: 10,
+    backgroundColor: 'white',
+    left: 40,
+    borderRadius: 20,
     flexDirection: 'row',
   },
   textStyle: {
@@ -608,6 +817,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#AEECEF',
     right: 30,
     bottom: 25,
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  imageOnList2: {
+    height: 80,
+    width: 80,
+    borderRadius: 50,
+    backgroundColor: '#AEECEF',
+    right: 30,
     borderWidth: 1,
     borderColor: 'white',
   },
@@ -690,5 +908,23 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontSize: 18,
     color: '#840505',
+  },
+  buttonContainer: {
+    width: '60%',
+    flexDirection: 'row',
+    height: 50,
+    top: 10,
+    alignItems: 'center',
+    borderRadius: 17,
+    paddingHorizontal: 20,
+    backgroundColor: '#AEECEF',
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 1,
+      height: 12,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5.0,
+    elevation: 10,
   },
 });

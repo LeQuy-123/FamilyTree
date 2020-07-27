@@ -112,109 +112,131 @@ class AccountScreen extends Component {
   };
   render() {
     return (
-      <ScrollView style={{paddingVertical: 0}}>
-        <View style={styles.container}>
-          <View style={styles.titlecontainer}>
-            <View
-              style={{
-                width: '100%',
-                height: '40%',
-                flexDirection: 'row',
-                paddingEnd: 20,
-                paddingTop: 20,
-              }}>
-              <Text style={styles.title}>TÀI KHOẢN</Text>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Fix')}>
-                <Image
-                  style={{
-                    height: 40,
-                    width: 40,
-                  }}
-                  source={require('./icons8-edit-account-50.png')}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.infocontainer}>
-              {this.state.image ? (
-                <Image
-                  style={styles.images}
-                  source={{
-                    uri: this.state.image,
-                  }}
-                />
-              ) : (
-                <Image
-                  style={styles.images}
-                  source={require('./avatar_default.png')}
-                />
-              )}
-              <View style={styles.info}>
-                <Text style={styles.infoText}>{this.state.Name}</Text>
-                {this.state.NickName ? (
-                  <Text style={styles.infoText}>{this.state.NickName}</Text>
-                ) : (
-                  <View />
-                )}
-              </View>
-            </View>
-          </View>
-          <View style={styles.inputcontainer}>
-            <View style={styles.inputs}>
-              <Text style={styles.baseText}> Email </Text>
-              <Text style={styles.input}>{this.state.email}</Text>
-              <Text style={styles.baseText}> Số điện thoại </Text>
-              <Text style={styles.input}>{this.state.Number}</Text>
-              <Text style={styles.baseText}> Giới tính </Text>
-              <Text style={styles.input}>{this.state.Gender}</Text>
-              <Text style={styles.baseText}> Ngày sinh </Text>
-              <Text style={styles.input}>{this.state.date}</Text>
-              <Text style={styles.baseText}> Địa chỉ </Text>
-              <Text style={styles.input}>{this.state.Address}</Text>
-            </View>
-            <TouchableOpacity onPress={() => this.LogOut()}>
-              <Text
+      <View style={styles.container}>
+        <View style={styles.titlecontainer}>
+          <View
+            style={{
+              width: '100%',
+              height: 80,
+              flexDirection: 'row',
+              paddingRight: 15,
+              paddingTop: 10,
+              justifyContent: 'space-between',
+            }}>
+            <Text style={styles.title}>TÀI KHOẢN</Text>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Fix')}>
+              <Image
                 style={{
-                  color: 'white',
-                  fontSize: 20,
-                  bottom: 15,
-                }}>
-                Đăng xuất
-              </Text>
+                  height: 40,
+                  width: 40,
+                }}
+                source={require('./icons8-edit-account-50.png')}
+              />
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+        <View style={styles.inputcontainer}>
+          <View style={styles.infocontainer}>
+            {this.state.image ? (
+              <Image
+                style={styles.images}
+                source={{
+                  uri: this.state.image,
+                }}
+              />
+            ) : (
+              <Image
+                style={styles.images}
+                source={require('./avatar_default.png')}
+              />
+            )}
+            <View style={styles.info}>
+              {this.state.NickName ? (
+                <View
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'space-around',
+                  }}>
+                  <Text style={styles.infoText}>{this.state.Name}</Text>
+                  <Text style={styles.infoText}>{this.state.NickName}</Text>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    width: '100%',
+                    height: '50%',
+                    top: 40,
+                  }}>
+                  <Text style={styles.infoText}>{this.state.Name}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+          <View style={styles.inputs}>
+            <Text style={styles.baseText}> Email </Text>
+            <Text style={styles.input}>{this.state.email}</Text>
+            <Text style={styles.baseText}> Số điện thoại </Text>
+            <Text style={styles.input}>{this.state.Number}</Text>
+            <Text style={styles.baseText}> Giới tính </Text>
+            <Text style={styles.input}>{this.state.Gender}</Text>
+            <Text style={styles.baseText}> Ngày sinh </Text>
+            <Text style={styles.input}>{this.state.date}</Text>
+            <Text style={styles.baseText}> Địa chỉ </Text>
+            <Text style={styles.input}>{this.state.Address}</Text>
+          </View>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              bottom: 15,
+            }}
+            onPress={() => this.LogOut()}>
+            <Image
+              style={{
+                height: 30,
+                width: 30,
+                right: 10,
+              }}
+              source={require('../../images/logout.png')}
+            />
+            <Text
+              style={{
+                fontSize: 20,
+              }}>
+              Đăng xuất
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: 800,
+    height: '100%',
     backgroundColor: '#00B2BF',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   inputcontainer: {
     width: '100%',
-    height: '66%',
+    height: '68%',
     backgroundColor: '#FBBD00',
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    position: 'absolute',
-    zIndex: 1,
-    bottom: 0,
   },
   titlecontainer: {
     width: '100%',
-    height: '35%',
-    //backgroundColor: '#00B2BF',
-    position: 'absolute',
-    zIndex: 2,
+    height: '32%',
+    backgroundColor: '#00B2BF',
   },
   title: {
-    flex: 1,
     fontSize: 35,
     fontFamily: 'serif',
     paddingStart: 20,
@@ -222,18 +244,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   infocontainer: {
-    flex: 2,
+    height: 200,
+    width: '100%',
+    bottom: 50,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingStart: 0,
-    paddingEnd: 10,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
   info: {
-    flex: 1,
-    justifyContent: 'space-around',
+    height: 120,
+    width: '45%',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingTop: 40,
+    justifyContent: 'space-around',
   },
   images: {
     height: 200,
@@ -242,7 +265,6 @@ const styles = StyleSheet.create({
     borderRadius: 115,
     borderWidth: 1,
     borderColor: 'white',
-    marginLeft: 10,
   },
   inputs: {
     width: '90%',
@@ -263,7 +285,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#AEECEF',
     borderRadius: 15,
     paddingStart: 10,
-    left: 5,
   },
   input: {
     borderBottomColor: 'black',
