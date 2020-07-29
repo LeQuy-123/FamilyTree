@@ -79,34 +79,11 @@ export default class EventScreen extends Component {
   }
 
   createEvent = async day => {
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    let userEmail = await AsyncStorage.getItem('email');
-    if (day) {
-      _RefreshToken(userEmail, refreshToken).then(data => {
-        var URL = url + '/api/user/event';
-        try {
-          fetch(URL, {
-            method: 'POST',
-            headers: {
-              Authorization: 'Bearer ' + data,
-            },
-          })
-            .then(response => response.json())
-            .then(json => {
-              this.setState({
-                id: json.event._id,
-              });
-
-              this.props.navigation.navigate('AddEvent', {
-                date: day,
-                id: this.state.id,
-              });
-            });
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    }
+    console.log(this.state.day);
+    this.props.navigation.navigate('AddEvent', {
+      date: this.state.day,
+      id: '',
+    });
   };
   loadEvent = async () => {
     let accessToken = await AsyncStorage.getItem('accessToken');
@@ -140,14 +117,7 @@ export default class EventScreen extends Component {
     );
   }
   loadOneEvent = async id => {
-    _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
-      var URL = url + '/api/user/eventshowone';
-      if (data === null) {
-        this.props.navigation.navigate('Login');
-      } else {
-        this.props.navigation.navigate('AddEvent', {id: id});
-      }
-    });
+    this.props.navigation.navigate('AddEvent', {id: id});
   };
 
   componentDidMount() {
@@ -163,6 +133,7 @@ export default class EventScreen extends Component {
     this.setState({
       refreshToken: refreshToken,
       email: userEmail,
+      day: this.state.markedDate,
     });
   }
   _deleteEvent = async id => {

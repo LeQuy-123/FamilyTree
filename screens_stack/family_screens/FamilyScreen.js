@@ -18,6 +18,7 @@ import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
 import Modal from 'react-native-modal';
 import Svg, {Line} from 'react-native-svg';
+import {Icon} from 'native-base';
 
 export default class FamilyScreen extends Component {
   constructor(props) {
@@ -330,86 +331,110 @@ export default class FamilyScreen extends Component {
     }
   };
   _renderItem2 = ({item}) => (
-    <TouchableOpacity
-      onPress={() => {
-        this.props.navigation.navigate('Geno', {id: item._id});
-      }}>
-      <View>
-        <View style={styles.item2}>
-          <View style={{flexDirection: 'row'}}>
-            {item.profileImage !== '' && (
+    <View>
+      <View style={styles.item2}>
+        <View style={{flexDirection: 'row'}}>
+          {item.profileImage !== '' && (
+            <Image
+              style={styles.imageOnList2}
+              source={{uri: item.profileImage}}
+            />
+          )}
+          {item.profileImage === '' && (
+            <Image
+              style={styles.imageOnList2}
+              source={require('../../images/icons8-user-96.png')}
+            />
+          )}
+          <View
+            style={{
+              alignItems: 'flex-start',
+              left: -20,
+              justifyContent: 'flex-start',
+            }}>
+            <View style={{justifyContent: 'center', flexDirection: 'row'}}>
               <Image
-                style={styles.imageOnList2}
-                source={{uri: item.profileImage}}
+                style={{
+                  height: 19,
+                  width: 19,
+                }}
+                source={require('../../images/icons8-contact-24.png')}
               />
+              <Text style={styles.textStyle}>{item.username}</Text>
+            </View>
+            {item.email !== '' && item.email !== undefined && (
+              <View
+                style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
+                <Image
+                  style={styles.iconOnList}
+                  source={require('../../images/icons8-family-32.png')}
+                />
+                <Text style={styles.textStyle}>{item.email}</Text>
+              </View>
             )}
-            {item.profileImage === '' && (
-              <Image
-                style={styles.imageOnList2}
-                source={require('../../images/icons8-user-96.png')}
-              />
+            {item.numphone !== '' && item.numphone !== undefined && (
+              <View
+                style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
+                <Image
+                  style={styles.iconOnList}
+                  source={require('../../images/icons8-number-pad-32.png')}
+                />
+                <Text style={styles.textStyle}>{item.numphone}</Text>
+              </View>
             )}
             <View
               style={{
-                alignItems: 'flex-start',
-                left: -20,
-                justifyContent: 'flex-start',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-              <View style={{justifyContent: 'center', flexDirection: 'row'}}>
-                <Image
-                  style={{
-                    height: 19,
-                    width: 19,
-                  }}
-                  source={require('../../images/icons8-contact-24.png')}
-                />
-                <Text style={styles.textStyle}>{item.username}</Text>
-              </View>
-              {item.email !== '' && item.email !== undefined && (
-                <View
-                  style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
-                  <Image
-                    style={styles.iconOnList}
-                    source={require('../../images/icons8-family-32.png')}
-                  />
-                  <Text style={styles.textStyle}>{item.email}</Text>
-                </View>
-              )}
-              {item.numphone !== '' && item.numphone !== undefined && (
-                <View
-                  style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
-                  <Image
-                    style={styles.iconOnList}
-                    source={require('../../images/icons8-number-pad-32.png')}
-                  />
-                  <Text style={styles.textStyle}>{item.numphone}</Text>
-                </View>
-              )}
-              {item.address !== '' && item.address !== undefined && (
-                <View
-                  style={{justifyContent: 'flex-start', flexDirection: 'row'}}>
-                  <Image
-                    style={styles.iconOnList}
-                    source={require('../../images/icons8-address-24.png')}
-                  />
-                  <Text style={styles.textStyle}>{item.address}</Text>
-                </View>
-              )}
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate('Geno', {id: item._id});
+                }}
+                style={{
+                  top: 4,
+                  borderRadius: 10,
+                  height: 25,
+                  width: 170,
+                  backgroundColor: '#FBBD00',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: 'black',
+                  shadowOffset: {
+                    width: 1,
+                    height: 12,
+                  },
+                  shadowOpacity: 1,
+                  shadowRadius: 5.0,
+                  elevation: 10,
+                }}>
+                <Text>Xem gia phả được chia sẻ</Text>
+              </TouchableOpacity>
+              <Image
+                style={{
+                  top: 5,
+                  width: 22,
+                  height: 22,
+                  left: 10,
+                }}
+                source={require('../../images/icons8-share-64.png')}
+              />
             </View>
           </View>
         </View>
-        <Svg height="10" width="100%">
-          <Line
-            x1="15%"
-            y1="0%"
-            x2="85%"
-            y2="0%"
-            stroke="black"
-            strokeWidth="3"
-          />
-        </Svg>
       </View>
-    </TouchableOpacity>
+      <Svg height="10" width="100%">
+        <Line
+          x1="15%"
+          y1="0%"
+          x2="85%"
+          y2="0%"
+          stroke="black"
+          strokeWidth="3"
+        />
+      </Svg>
+    </View>
   );
   render() {
     return (
@@ -499,10 +524,7 @@ export default class FamilyScreen extends Component {
                     this.props.navigation.navigate('AddFamilyScreen', {id: 0})
                   }
                   style={styles.buttonContainer}>
-                  <Image
-                    style={{}}
-                    source={require('../../images/icons8-add-40.png')}
-                  />
+                  <Image source={require('../../images/icons8-add-40.png')} />
                   <Text
                     style={{
                       left: 15,
@@ -520,7 +542,11 @@ export default class FamilyScreen extends Component {
             <TouchableOpacity
               style={styles.button}
               onPress={() => this.toggleModal2()}>
-              <Text style={styles.buttonText}>XEM CHIA SẺ</Text>
+              <Image
+                style={{width: 30, height: 30, right: 10}}
+                source={require('../../images/icons8-family-100.png')}
+              />
+              <Text style={styles.buttonText}>Liên kết người thân</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -550,7 +576,7 @@ export default class FamilyScreen extends Component {
                 top: 10,
                 fontWeight: 'bold',
               }}>
-              Danh sách chia sẻ
+              Danh sách liên kết
             </Text>
             <Svg height="15" width="100%">
               <Line
@@ -750,9 +776,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
+    flexDirection: 'row',
     backgroundColor: '#FBBD00',
     width: '60%',
-    height: '60%',
+    height: '55%',
     borderRadius: 15,
     bottom: 5,
     justifyContent: 'center',

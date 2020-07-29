@@ -14,6 +14,7 @@ import {
   Picker,
 } from 'react-native';
 import * as nativeBase from 'native-base';
+import DatePicker from 'react-native-datepicker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {AsyncStorage} from 'react-native';
 import _RefreshToken from '../../components/refresh_Token';
@@ -28,7 +29,7 @@ export default class FixAccountScreen extends Component {
       email: '',
       refreshToken: '',
       id: '',
-      date: '',
+      date: this.props.route.params.date,
       name: '',
       time: '',
       type: '',
@@ -39,8 +40,8 @@ export default class FixAccountScreen extends Component {
       showTimePicker: false,
     };
   }
-  _postDataEvent = async () => {
-    if (this.state.name !== undefined && this.state.time !== undefined) {
+  _postDataEvent = async id => {
+    if (this.state.name && this.state.date) {
       _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
         var URL = url + '/api/user/eventupdate';
         console.log(this.state.bio);
@@ -52,7 +53,7 @@ export default class FixAccountScreen extends Component {
               Authorization: 'Bearer ' + data,
             },
             body: JSON.stringify({
-              id: this.state.id,
+              id: id,
               event: this.state.name,
               address: this.state.address,
               bio: this.state.bio,
@@ -64,7 +65,6 @@ export default class FixAccountScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              this.setState({event: json.event});
               this.props.navigation.navigate('Event');
             })
             .catch(error => {
@@ -133,34 +133,6 @@ export default class FixAccountScreen extends Component {
       }
     });
   };
-  _deleteEvent = async id => {
-    _RefreshToken(this.state.email, this.state.refreshToken).then(data => {
-      var URL = url + '/api/user/destroyevent';
-      if (data === null) {
-        console.log('ko the refresh token do token het han');
-      } else {
-        try {
-          fetch(URL, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              id: id,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {
-              console.log(json.message);
-            })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
   onChange = selectedDate => {
     var date = moment(new Date(selectedDate.nativeEvent.timestamp)).format(
       'HH:mm',
@@ -186,20 +158,40 @@ export default class FixAccountScreen extends Component {
     });
   }
   goBack() {
-    Alert.alert('Hủy tạo sự kiện', 'Bạn có muốn hủy tạo sự kiện ?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'OK',
-        onPress: () => {
-          this.props.navigation.navigate('Event');
-        },
-      },
-    ]);
+    this.props.navigation.navigate('Event');
   }
+  createEvent = async () => {
+    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
+    let userEmail = await AsyncStorage.getItem('email');
+    _RefreshToken(userEmail, refreshToken).then(data => {
+      var URL = url + '/api/user/event';
+      try {
+        fetch(URL, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + data,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: this.state.id,
+            event: this.state.name,
+            address: this.state.address,
+            bio: this.state.bio,
+            catelogy: this.state.cate,
+            date: this.state.date,
+            time: this.state.time,
+            eventImage: this.state.image,
+          }),
+        })
+          .then(response => response.json())
+          .then(json => {
+            this.props.navigation.navigate('Event');
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
   render() {
     return (
       <nativeBase.Root>
@@ -240,19 +232,36 @@ export default class FixAccountScreen extends Component {
                     {this.state.name}
                   </TextInput>
                   <Text style={styles.testTitle}>Ngày diễn ra </Text>
-                  <Text
+                  <DatePicker
                     style={{
                       width: '90%',
                       height: 40,
-                      fontSize: 16,
                       borderColor: 'darkgrey',
-                      paddingStart: 10,
-                      paddingTop: 10,
-                      borderRadius: 10,
-                      borderWidth: 1,
-                    }}>
-                    {this.state.date}
-                  </Text>
+                    }}
+                    date={this.state.date}
+                    mode="date"
+                    placeholder="select date"
+                    format="YYYY-MM-DD"
+                    minDate="1900-05-01"
+                    maxDate="2100-06-01"
+                    confirmBtnText="Confirm"
+                    cancelBtnText="Cancel"
+                    customStyles={{
+                      dateIcon: {
+                        position: 'absolute',
+                        left: 0,
+                        top: 4,
+                        marginLeft: 0,
+                      },
+                      dateInput: {
+                        marginLeft: 36,
+                      },
+                      // ... You can check the source to find the other keys.
+                    }}
+                    onDateChange={date => {
+                      this.setState({date: date});
+                    }}
+                  />
                   <Text style={styles.testTitle}>Thời gian diễn ra </Text>
                   <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity
@@ -322,7 +331,11 @@ export default class FixAccountScreen extends Component {
                 <TouchableOpacity
                   style={styles.Button2}
                   onPress={() => {
-                    this._postDataEvent();
+                    if (this.props.route.params.id) {
+                      this._postDataEvent(this.props.route.params.id);
+                    } else {
+                      this.createEvent();
+                    }
                   }}>
                   <Text style={styles.ButtonText2}>Cập nhật</Text>
                 </TouchableOpacity>
