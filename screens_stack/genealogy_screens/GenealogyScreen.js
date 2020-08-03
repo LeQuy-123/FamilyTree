@@ -2,6 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import Modal from 'react-native-modal';
+import ReactNativeZoomableView from '@dudigital/react-native-zoomable-view/src/ReactNativeZoomableView';
 
 import {
   View,
@@ -12,10 +13,10 @@ import {
   Image,
   AsyncStorage,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Svg, {Line} from 'react-native-svg';
-import {ScrollView} from 'react-native-gesture-handler';
 import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
 
@@ -105,11 +106,10 @@ export default class GenealogyScreen extends Component {
             .then(json => {
               const data = json.leaf.filter(x => x.isSpouse === false);
               const dataSpouse = json.leaf.filter(x => x.isSpouse === true);
-              var arr = this.state.data.concat(data);
-              var newItem = JSON.parse(JSON.stringify(arr)); // clone i team
+              var newItem = JSON.parse(JSON.stringify(data)); // clone
               var tree = this.list_to_tree(newItem);
               this.setState({
-                data: arr,
+                data: data,
                 tree: tree,
                 spouse: dataSpouse,
               });
@@ -159,232 +159,238 @@ export default class GenealogyScreen extends Component {
       }
     });
   };
+  _renderNode = ({item}) => (
+    <View style={styles.nodeStyle}>
+      <TouchableOpacity
+        onPress={() => {
+          this.loadOneLeaf(item._id);
+        }}>
+        {item.profileImage ? (
+          <Image
+            style={styles.imageStyle}
+            source={{
+              uri: item.profileImage,
+            }}
+          />
+        ) : (
+          <Image
+            style={styles.imageStyle}
+            source={require('../../images/icons8-user-96.png')}
+          />
+        )}
+      </TouchableOpacity>
+      <Text
+        style={{
+          ...this.props.nodeTitleStyle,
+          textAlign: 'center',
+          color: this.props.nodeTitleColor,
+        }}>
+        {item.firstname} {item.lastname}
+      </Text>
+    </View>
+  );
   renderTree(data, level) {
     return (
-      <FlatList
-        data={data}
-        horizontal={true}
-        contentContainerStyle={{padding: 50}}
-        keyExtractor={item => `${item.key}`}
-        listKey={item => `${item.key}`}
-        initialScrollIndex={0}
-        renderItem={({item}) => {
-          const {_id, firstname, lastname, profileImage} = item;
-          const info = {
-            _id,
-            firstname,
-            lastname,
-            profileImage,
-          };
-          return (
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingLeft: this.props.siblingGap / 2,
-                paddingRight: this.props.siblingGap / 2,
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                }}>
-                <View style={styles.nodeStyle}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.loadOneLeaf(item._id);
-                    }}>
-                    {info.profileImage ? (
-                      <Image
-                        style={styles.imageStyle}
-                        source={{
-                          uri: info.profileImage,
-                        }}
-                      />
-                    ) : (
-                      <Image
-                        style={styles.imageStyle}
-                        source={require('../../images/icons8-user-96.png')}
-                      />
-                    )}
-                  </TouchableOpacity>
-                  <Text
+      <ScrollView showsHorizontalScrollIndicator={false}>
+        <View>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            data={data}
+            horizontal={true}
+            contentContainerStyle={{padding: 50}}
+            keyExtractor={item => item._id}
+            listKey={item => item._id}
+            initialScrollIndex={0}
+            renderItem={({item}) => {
+              const {_id, firstname, lastname, profileImage} = item;
+              const info = {
+                _id,
+                firstname,
+                lastname,
+                profileImage,
+              };
+              return (
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingLeft: this.props.siblingGap / 2,
+                    paddingRight: this.props.siblingGap / 2,
+                  }}>
+                  <View
                     style={{
-                      ...this.props.nodeTitleStyle,
-                      textAlign: 'center',
-                      color: this.props.nodeTitleColor,
+                      flexDirection: 'row',
                     }}>
-                    {info.firstname} {info.lastname}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.navigate('FixInfoScreen', {
-                        leafId: item._id,
-                        authId: this.props.route.params.data,
-                      });
-                      this.setState({data: [], tree: []});
-                    }}>
-                    <Image
-                      style={{width: 25, height: 25}}
-                      source={require('../../images/icons8-add-40.png')}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.nodeStyle}>
-                  {this.findSpouse(info._id).length > 0 ? (
-                    <View
-                      style={{flex: 1, width: '100%', alignItems: 'center'}}>
-                      <Text style={{fontSize: 18}}>Vợ/Chồng</Text>
-                      <FlatList
-                        style={{flex: 1, width: '100%'}}
-                        keyExtractor={item => item._id}
-                        data={this.findSpouse(info._id)}
-                        renderItem={({item}) => (
-                          <TouchableOpacity
-                            style={{
-                              borderBottomWidth: 1,
-                              borderTopWidth: 1,
-                              width: '100%',
-                            }}
-                            key={item.key}
-                            onPress={() => this.loadOneLeaf(item._id)}>
-                            <Text style={{fontSize: 15}}>
-                              {item.firstname} {item.lastname}
-                            </Text>
-                          </TouchableOpacity>
-                        )}
-                      />
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.props.navigation.navigate('FixNode', {
-                            leafId: item._id,
-                            authId: this.props.route.params.data,
-                          });
-                          this.setState({data: [], tree: []});
-                        }}>
-                        <Image
-                          style={{width: 25, height: 25}}
-                          source={require('../../images/icons8-add-40.png')}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        flex: 1,
-                        width: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Text style={{textAlign: 'center', fontFamily: 'serif'}}>
-                        Bạn có thể nhấn vào nút (+) phía dưới để cập nhật thông
-                        tin vợ, chồng
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.props.navigation.navigate('FixNode', {
-                            leafId: item._id,
-                            authId: this.props.route.params.data,
-                          });
-                          this.setState({data: [], tree: []});
-                        }}>
-                        <Image
-                          style={{width: 25, height: 25}}
-                          source={require('../../images/icons8-add-40.png')}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              </View>
-              {this.hasChildren(item) && (
-                <Svg height="30" width="100%">
-                  <Line
-                    x1="50%"
-                    y1="0"
-                    x2="50%"
-                    y2="150"
-                    stroke={this.props.pathColor}
-                    strokeWidth={this.props.strokeWidth}
-                  />
-                </Svg>
-              )}
-              <View
-                style={{
-                  flexDirection: 'row',
-                }}>
-                {this.hasChildren(item) &&
-                  item.children.map((child, index) => {
-                    const {key} = child;
-                    const info = {key};
-                    return (
+                    <View style={styles.mainNodeStyle}>
                       <View
-                        key={info.key}
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'center',
+                          alignItems: 'center',
+                          right: 3,
                         }}>
-                        <View>
-                          <Svg height="30" width="100%">
-                            <Line
-                              x1="50%"
-                              y1="0"
-                              x2="50%"
-                              y2="100%"
-                              stroke={this.props.pathColor}
-                              strokeWidth={this.props.strokeWidth}
+                        <TouchableOpacity
+                          onPress={() => {
+                            this.loadOneLeaf(item._id);
+                          }}>
+                          {info.profileImage ? (
+                            <Image
+                              style={styles.mainImageStyle}
+                              source={{
+                                uri: info.profileImage,
+                              }}
                             />
-                            {/* Right side horizontal line */}
-                            {this.hasChildren(item) &&
-                              item.children.length !== 1 &&
-                              item.children.length - 1 !== index && (
-                                <Line
-                                  x1="100%"
-                                  y1={this.props.strokeWidth / 2}
-                                  x2="50%"
-                                  y2={this.props.strokeWidth / 2}
-                                  stroke={this.props.pathColor}
-                                  strokeWidth={this.props.strokeWidth}
-                                />
-                              )}
-                            {/* Left side horizontal line */}
-                            {this.hasChildren(item) &&
-                              item.children.length !== 1 &&
-                              index !== 0 && (
+                          ) : (
+                            <Image
+                              style={styles.mainImageStyle}
+                              source={require('../../images/icons8-user-96.png')}
+                            />
+                          )}
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            left: 4,
+                          }}
+                          onPress={() => {
+                            this.props.navigation.navigate('FixNode', {
+                              leafId: item._id,
+                              authId: this.props.route.params.data,
+                            });
+                            this.setState({data: [], tree: []});
+                          }}>
+                          <Image
+                            style={{width: 5, height: 5}}
+                            source={require('../../images/icons8-add-40.png')}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <Text
+                        style={{
+                          ...this.props.nodeTitleStyle,
+                          textAlign: 'center',
+                          color: this.props.nodeTitleColor,
+                          right: 2.4,
+                        }}>
+                        {info.firstname} {info.lastname}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          right: 2.4,
+                        }}
+                        onPress={() => {
+                          this.props.navigation.navigate('FixInfoScreen', {
+                            leafId: item._id,
+                            authId: this.props.route.params.data,
+                          });
+                          this.setState({data: [], tree: []});
+                        }}>
+                        <Image
+                          style={{width: 5, height: 5}}
+                          source={require('../../images/icons8-add-40.png')}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {this.findSpouse(info._id).length > 0 && (
+                      <FlatList
+                        style={{flexDirection: 'row'}}
+                        horizontal={true}
+                        keyExtractor={item => item._id}
+                        data={this.findSpouse(info._id)}
+                        renderItem={this._renderNode}
+                      />
+                    )}
+                  </View>
+                  {this.hasChildren(item) && (
+                    <Svg height="12" width="100%">
+                      <Line
+                        x1="50%"
+                        y1="0"
+                        x2="50%"
+                        y2="150"
+                        stroke={this.props.pathColor}
+                        strokeWidth={this.props.strokeWidth}
+                      />
+                    </Svg>
+                  )}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    {this.hasChildren(item) &&
+                      item.children.map((child, index) => {
+                        const {key} = child;
+                        const info = {key};
+                        return (
+                          <View
+                            key={info.key}
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                            }}>
+                            <View>
+                              <Svg height="6" width="100%">
                                 <Line
                                   x1="50%"
-                                  y1={this.props.strokeWidth / 2}
-                                  x2="0"
-                                  y2={this.props.strokeWidth / 2}
+                                  y1="0"
+                                  x2="50%"
+                                  y2="100%"
                                   stroke={this.props.pathColor}
                                   strokeWidth={this.props.strokeWidth}
                                 />
-                              )}
-                          </Svg>
-                          {this.renderTree([child], level + 1)}
-                        </View>
-                        <View
-                          style={{
-                            height: this.props.strokeWidth,
-                            backgroundColor:
-                              this.hasChildren(item) &&
-                              item.children.length - 1 !== index
-                                ? this.props.pathColor
-                                : 'transparent',
-                            width:
-                              this.hasChildren(child) &&
-                              child.children.length - 1 !== index
-                                ? level * this.props.familyGap
-                                : 0,
-                          }}
-                        />
-                      </View>
-                    );
-                  })}
-              </View>
-            </View>
-          );
-        }}
-      />
+                                {/* Right side horizontal line */}
+                                {this.hasChildren(item) &&
+                                  item.children.length !== 1 &&
+                                  item.children.length - 1 !== index && (
+                                    <Line
+                                      x1="100%"
+                                      y1={this.props.strokeWidth / 2}
+                                      x2="50%"
+                                      y2={this.props.strokeWidth / 2}
+                                      stroke={this.props.pathColor}
+                                      strokeWidth={this.props.strokeWidth}
+                                    />
+                                  )}
+                                {/* Left side horizontal line */}
+                                {this.hasChildren(item) &&
+                                  item.children.length !== 1 &&
+                                  index !== 0 && (
+                                    <Line
+                                      x1="50%"
+                                      y1={this.props.strokeWidth / 2}
+                                      x2="0"
+                                      y2={this.props.strokeWidth / 2}
+                                      stroke={this.props.pathColor}
+                                      strokeWidth={this.props.strokeWidth}
+                                    />
+                                  )}
+                              </Svg>
+                              {this.renderTree([child], level + 1)}
+                            </View>
+                            <View
+                              style={{
+                                height: this.props.strokeWidth,
+                                backgroundColor:
+                                  this.hasChildren(item) &&
+                                  item.children.length - 1 !== index
+                                    ? this.props.pathColor
+                                    : 'transparent',
+                                width:
+                                  this.hasChildren(child) &&
+                                  child.children.length - 1 !== index
+                                    ? level * this.props.familyGap
+                                    : 0,
+                              }}
+                            />
+                          </View>
+                        );
+                      })}
+                  </View>
+                </View>
+              );
+            }}
+          />
+        </View>
+      </ScrollView>
     );
   }
   clearView() {
@@ -415,11 +421,14 @@ export default class GenealogyScreen extends Component {
             </TouchableOpacity>
             <Text style={styles.title}>{this.props.route.params.name}</Text>
           </View>
-          <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}}>
-            <View style={styles.Genealogy} autoFocus="true">
-              {this.renderTree(this.state.tree, 1)}
-            </View>
-          </ScrollView>
+          <ReactNativeZoomableView
+            maxZoom={3}
+            minZoom={1}
+            style={{justifyContent: 'center', alignItems: 'center'}}
+            zoomStep={0.5}
+            initialZoom={1}>
+            {this.renderTree(this.state.tree, 1)}
+          </ReactNativeZoomableView>
         </View>
         <Modal
           backdropOpacity={0.6}
@@ -546,28 +555,49 @@ const styles = StyleSheet.create({
   nodeTitleStyle: {
     width: '150%',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 1.2,
     fontWeight: 'bold',
   },
   nodeStyle: {
     backgroundColor: 'white',
-    width: 100,
-    height: 150,
-    borderRadius: 10,
+    width: 20,
+    height: 28,
+    borderRadius: 3,
     alignItems: 'center',
-    padding: 5,
-    borderWidth: 1,
-    opacity: 0.8,
-    borderColor: 'black',
+    padding: 1,
+    borderWidth: 0.2,
+    borderColor: '#146AFF',
     justifyContent: 'space-between',
   },
+  mainNodeStyle: {
+    backgroundColor: '#FFE014',
+    width: 26,
+    height: 28,
+    borderRadius: 3,
+    alignItems: 'center',
+    padding: 1,
+    borderWidth: 0.6,
+    borderColor: 'red',
+  },
   imageStyle: {
-    width: 80,
-    height: 80,
+    width: 16,
+    height: 16,
     backgroundColor: 'white',
-    borderWidth: 1,
+    borderWidth: 0.2,
     borderColor: 'black',
     borderRadius: 50,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mainImageStyle: {
+    width: 16,
+    height: 16,
+    left: 3,
+    backgroundColor: 'white',
+    borderWidth: 0.2,
+    borderColor: 'black',
+    borderRadius: 10,
     resizeMode: 'cover',
     justifyContent: 'center',
     alignItems: 'center',
@@ -635,20 +665,14 @@ GenealogyScreen.defaultProps = {
   },
   titleColor: 'black',
   nodeTitleStyle: {
-    fontSize: 14,
+    fontSize: 2.8,
     fontWeight: 'bold',
   },
   pathColor: 'black',
-  siblingGap: 50,
-  imageStyle: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 50,
-    resizeMode: 'cover',
-  },
+  siblingGap: 10,
   nodeTitleColor: 'black',
-  familyGap: 30,
-  strokeWidth: 5,
+  familyGap: 6,
+  strokeWidth: 1,
 };
 
 GenealogyScreen.propTypes = {

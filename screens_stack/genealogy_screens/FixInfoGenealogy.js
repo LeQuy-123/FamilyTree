@@ -20,6 +20,7 @@ import _RefreshToken from '../../components/refresh_Token';
 import DatePicker from 'react-native-datepicker';
 import ImagePicker from 'react-native-image-crop-picker';
 import url from '../../components/MainURL';
+import PhoneInput from 'react-native-phone-input';
 
 export default class FixInfoGenealogy extends Component {
   constructor(props) {
@@ -235,12 +236,13 @@ export default class FixInfoGenealogy extends Component {
               dod: this.state.leafInfoEdit.dateDeath,
               burialplace: this.state.leafInfoEdit.dp,
               profileImage: this.state.leafInfoEdit.image,
+              numphone: this.state.leafInfoEdit.sdt,
             }),
           })
             .then(response => response.json())
             .then(json => {
-              //console.log(JSON.stringify(json));
-              this.props.navigation.goBack();
+              console.log(JSON.stringify(json));
+              //this.props.navigation.goBack();
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -310,6 +312,7 @@ export default class FixInfoGenealogy extends Component {
               domicile: this.state.leafInfoEdit.address,
               dod: this.state.leafInfoEdit.dateDeath,
               burialplace: this.state.leafInfoEdit.dp,
+              numphone: this.state.leafInfoEdit.sdt,
               profileImage: this.state.leafInfoEdit.image,
             }),
           })
@@ -356,6 +359,7 @@ export default class FixInfoGenealogy extends Component {
               domicile: this.state.LeafSpouseEdit.domicile,
               dod: this.state.LeafSpouseEdit.dod,
               burialplace: this.state.LeafSpouseEdit.dp,
+              numphone: this.state.LeafSpouseEdit.sdt,
               profileImage: this.state.LeafSpouseEdit.image,
             }),
           })
@@ -462,6 +466,25 @@ export default class FixInfoGenealogy extends Component {
                     }>
                     {this.state.LeafData.nickname}
                   </TextInput>
+                  <Text style={styles.inputTitle}>Số điện thoại </Text>
+                  <PhoneInput
+                    ref={input => {
+                      this.TextInput5 = input;
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    value={this.state.phone}
+                    initialCountry="vn"
+                    onChangePhoneNumber={number =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          sdt: number,
+                        },
+                      })
+                    }>
+                    {this.state.LeafData.sdt}
+                  </PhoneInput>
                   <Text style={styles.inputTitle}>Giới tính</Text>
                   <TextInput
                     style={styles.inputText}
@@ -681,6 +704,28 @@ export default class FixInfoGenealogy extends Component {
                     }>
                     {this.state.SpouseData.nickname}
                   </TextInput>
+                  <Text style={styles.inputTitle}>Số điện thoại* </Text>
+                  <PhoneInput
+                    ref={input => {
+                      this.TextInput5 = input;
+                    }}
+                    onSubmitEditing={() => {
+                      this.TextInput7.focus();
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    value={this.state.phone}
+                    initialCountry="vn"
+                    onChangePhoneNumber={number =>
+                      this.setState({
+                        LeafSpouseEdit: {
+                          ...this.state.LeafSpouseEdit,
+                          sdt: number,
+                        },
+                      })
+                    }>
+                    {this.state.SpouseData.sdt}
+                  </PhoneInput>
                   <Text style={styles.inputTitle}>Giới tính</Text>
                   <TextInput
                     style={styles.inputText}

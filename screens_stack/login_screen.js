@@ -78,20 +78,17 @@ class Login extends Component {
       })
         .then(response => response.json())
         .then(json => {
-          this.setState({
-            message: json.message,
-            accessToken: json.accessToken,
-            refreshToken: json.refreshToken,
-          });
-          //console.log('token refresh for user: ' + this.state.email);
-          AsyncStorage.setItem('accessToken', this.state.accessToken);
-          AsyncStorage.setItem('tokenRefresh', this.state.refreshToken);
-          AsyncStorage.setItem('email', this.state.email);
-          console.log(JSON.stringify(json));
-          if (json.msg !== undefined) {
+          //console.log(JSON.stringify(json));
+          if (json.accessToken) {
+            AsyncStorage.setItem('accessToken', json.accessToken);
+            AsyncStorage.setItem('tokenRefresh', json.refreshToken);
+            AsyncStorage.setItem('email', this.state.email);
+            this.props.navigation.navigate('App');
+          }
+          if (json.message) {
             Alert.alert(
               'Đăng nhập thất bại',
-              json.msg,
+              json.message,
               [
                 {
                   text: 'OK',
@@ -100,8 +97,6 @@ class Login extends Component {
               ],
               {cancelable: false},
             );
-          } else if (this.state.accessToken) {
-            this.props.navigation.navigate('App');
           }
         });
     } catch (error) {
@@ -163,10 +158,8 @@ class Login extends Component {
       if (accessToken) {
         _RefreshToken(userEmail, refreshToken).then(data => {
           if (data !== null) {
-            console.log('data: ' + data);
             this.props.navigation.navigate('App');
           } else {
-            console.log('clear');
             AsyncStorage.clear();
           }
         });

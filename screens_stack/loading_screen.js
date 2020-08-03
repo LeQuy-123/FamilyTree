@@ -19,15 +19,8 @@ export default class Loading extends Component {
     try {
       let refreshToken = await AsyncStorage.getItem('tokenRefresh');
       let userEmail = await AsyncStorage.getItem('email');
-      // console.log('access token : ' + accessToken);
-      // console.log('email: ' + userEmail);
-      // console.log('refresh toke: ' + refreshToken);
-
       if (refreshToken) {
-        console.log('goi refresh token');
         _RefreshToken(userEmail, refreshToken).catch(error => {
-          console.log('error: ' + error.toString());
-          AsyncStorage.clear();
           throw error;
         });
       }

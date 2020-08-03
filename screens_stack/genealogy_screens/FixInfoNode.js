@@ -19,6 +19,7 @@ import _RefreshToken from '../../components/refresh_Token';
 import DatePicker from 'react-native-datepicker';
 import ImagePicker from 'react-native-image-crop-picker';
 import url from '../../components/MainURL';
+import PhoneInput from 'react-native-phone-input';
 
 export default class FixInfoNode extends Component {
   constructor(props) {
@@ -125,6 +126,7 @@ export default class FixInfoNode extends Component {
               dob: this.state.LeafSpouseEdit.dob,
               domicile: this.state.LeafSpouseEdit.domicile,
               dod: this.state.LeafSpouseEdit.dod,
+              numphone: this.state.LeafSpouseEdit.sdt,
               burialplace: this.state.LeafSpouseEdit.dp,
               profileImage: this.state.LeafSpouseEdit.image,
             }),
@@ -225,6 +227,24 @@ export default class FixInfoNode extends Component {
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           nickname: data,
+                        },
+                      })
+                    }
+                  />
+                  <Text style={styles.inputTitle}>Số điện thoại </Text>
+                  <PhoneInput
+                    ref={input => {
+                      this.TextInput5 = input;
+                    }}
+                    blurOnSubmit={false}
+                    style={styles.inputText}
+                    value={this.state.phone}
+                    initialCountry="vn"
+                    onChangePhoneNumber={number =>
+                      this.setState({
+                        LeafSpouseEdit: {
+                          ...this.state.LeafSpouseEdit,
+                          sdt: number,
                         },
                       })
                     }
