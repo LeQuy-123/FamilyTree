@@ -13,12 +13,16 @@ import {
   Keyboard,
   AsyncStorage,
   Alert,
+  Picker,
 } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import url from '../../components/MainURL';
 import * as nativeBase from 'native-base';
 import ImagePicker from 'react-native-image-crop-picker';
 import _RefreshToken from '../../components/refresh_Token';
+const location = require('../../components/tinh.json');
+import ModalFilterPicker from 'react-native-modal-filter-picker';
+
 export default class AddGenealogyScreen extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +34,11 @@ export default class AddGenealogyScreen extends Component {
       data: '',
       genoInfo: '',
       dataRoot: '',
-      firstPerson: '',
+      firstPerson: {
+        sex: 'Nam',
+      },
+      visible: false,
+      choose: '',
     };
   }
   chosePhotoFromLibrary(i) {
@@ -259,6 +267,37 @@ export default class AddGenealogyScreen extends Component {
       this.loadOneAuthor(this.props.route.params.rootId);
     }
   }
+  onShow = () => {
+    this.setState({visible: true, choose: 1});
+  };
+  onShow2 = () => {
+    this.setState({visible: true, choose: 2});
+  };
+  onSelect = picked => {
+    if (this.state.choose === 1) {
+      this.setState({
+        firstPerson: {
+          ...this.state.firstPerson,
+          burialplace: picked.label,
+        },
+        visible: false,
+      });
+    } else {
+      this.setState({
+        firstPerson: {
+          ...this.state.firstPerson,
+          dp: picked.label,
+        },
+        visible: false,
+      });
+    }
+  };
+
+  onCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
   render() {
     return (
       <nativeBase.Root>
@@ -325,7 +364,10 @@ export default class AddGenealogyScreen extends Component {
                         style={styles.inputText}
                         onChangeText={data =>
                           this.setState({
-                            genoInfo: {...this.state.genoInfo, genoName: data},
+                            genoInfo: {
+                              ...this.state.genoInfo,
+                              genoName: data,
+                            },
                           })
                         }>
                         {this.state.genoInfo.genoName}
@@ -335,7 +377,10 @@ export default class AddGenealogyScreen extends Component {
                         style={styles.inputText}
                         onChangeText={data =>
                           this.setState({
-                            genoInfo: {...this.state.genoInfo, create: data},
+                            genoInfo: {
+                              ...this.state.genoInfo,
+                              create: data,
+                            },
                           })
                         }>
                         {this.state.genoInfo.create}
@@ -426,19 +471,45 @@ export default class AddGenealogyScreen extends Component {
                         }>
                         {this.state.dataRoot.nickname}
                       </TextInput>
-                      <Text style={styles.inputTitle}>Giới tính </Text>
+                      <Text style={styles.inputTitle}>
+                        Thứ bậc trong gia đình
+                      </Text>
                       <TextInput
                         style={styles.inputText}
-                        onChangeText={data =>
-                          this.setState({
-                            firstPerson: {
-                              ...this.state.firstPerson,
-                              sex: data,
-                            },
-                          })
-                        }>
-                        {this.state.dataRoot.sex}
+                        // onChangeText={data =>
+                        //   this.setState({
+                        //     firstPerson: {
+                        //       ...this.state.firstPerson,
+                        //       nickName: data,
+                        //     },
+                        //   })
+                        // }
+                      >
+                        {this.state.dataRoot.nickname}
                       </TextInput>
+                      <Text style={styles.inputTitle}>Giới tính </Text>
+                      <View style={styles.inputText}>
+                        <Picker
+                          style={{
+                            fontFamily: 'serif',
+                            width: '100%',
+                            height: 35,
+                            fontSize: 16,
+                          }}
+                          selectedValue={this.state.firstPerson.sex}
+                          onValueChange={(itemValue, itemIndex) =>
+                            this.setState({
+                              firstPerson: {
+                                ...this.state.firstPerson,
+                                sex: itemValue,
+                              },
+                            })
+                          }>
+                          <Picker.Item label="Nam" value="Nam" />
+                          <Picker.Item label="Nữ" value="Nữ" />
+                          <Picker.Item label="Khác" value="Khác" />
+                        </Picker>
+                      </View>
                       <Text style={styles.inputTitle}>Ngày sinh</Text>
                       <DatePicker
                         style={{width: '90%'}}
@@ -502,36 +573,39 @@ export default class AddGenealogyScreen extends Component {
                         }}
                       />
                       <Text style={styles.inputTitle}>Nơi sống </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
-                          this.setState({
-                            firstPerson: {
-                              ...this.state.firstPerson,
-                              address: data,
-                            },
-                          })
-                        }>
-                        {this.state.dataRoot.burialplace}
-                      </TextInput>
+                      <TouchableOpacity onPress={this.onShow}>
+                        {this.state.firstPerson.burialplace ? (
+                          <Text style={styles.inputText2}>
+                            {this.state.firstPerson.burialplace}
+                          </Text>
+                        ) : (
+                          <Text style={styles.inputText2}>Chọn tỉnh thành</Text>
+                        )}
+                      </TouchableOpacity>
+                      <ModalFilterPicker
+                        visible={this.state.visible}
+                        onSelect={this.onSelect}
+                        onCancel={this.onCancel}
+                        options={location}
+                      />
                       <Text style={styles.inputTitle}>Mộ tang </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
-                          this.setState({
-                            firstPerson: {...this.state.firstPerson, dp: data},
-                          })
-                        }>
-                        {this.state.dataRoot.burialplace}
-                      </TextInput>
+                      <TouchableOpacity onPress={this.onShow2}>
+                        {this.state.firstPerson.dp ? (
+                          <Text style={styles.inputText2}>
+                            {this.state.firstPerson.dp}
+                          </Text>
+                        ) : (
+                          <Text style={styles.inputText2}>Chọn tỉnh thành</Text>
+                        )}
+                      </TouchableOpacity>
                     </View>
                   </View>
-
                   <View style={styles.buttonAdd}>
                     <TouchableOpacity
                       style={styles.button}
                       onPress={() => {
                         this.onPressHandel();
+                        //console.log(this.state.firstPerson.sex);
                       }}>
                       <Text
                         style={{
@@ -614,7 +688,10 @@ export default class AddGenealogyScreen extends Component {
                       style={styles.inputText}
                       onChangeText={data =>
                         this.setState({
-                          genoInfo: {...this.state.genoInfo, genoName: data},
+                          genoInfo: {
+                            ...this.state.genoInfo,
+                            genoName: data,
+                          },
                         })
                       }>
                       {this.state.genoInfo.genoName}
@@ -667,7 +744,7 @@ export default class AddGenealogyScreen extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    height: 1200,
+    height: 1250,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#FBBD00',
@@ -718,7 +795,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   infoFirstGeneration: {
-    height: '93%',
+    height: '95%',
     backgroundColor: 'white',
     width: '100%',
     justifyContent: 'space-around',
@@ -748,6 +825,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: -10,
     borderWidth: 1,
+  },
+  inputText2: {
+    fontFamily: 'serif',
+    left: 20,
+    width: '86%',
+    height: 35,
+    fontSize: 16,
+    borderColor: 'darkgrey',
+    paddingStart: 10,
+    borderRadius: 10,
+    padding: -10,
+    borderWidth: 1,
+    margin: 5,
+    paddingTop: 5,
   },
   buttonAdd: {
     width: '100%',

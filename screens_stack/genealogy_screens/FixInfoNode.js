@@ -9,9 +9,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  UIManager,
-  Platform,
-  LayoutAnimation,
+  Picker,
 } from 'react-native';
 import * as nativeBase from 'native-base';
 import {AsyncStorage} from 'react-native';
@@ -29,7 +27,9 @@ export default class FixInfoNode extends Component {
       leafId: this.props.route.params.leafId,
       refreshToken: '',
       email: '',
-      LeafSpouseEdit: '',
+      LeafSpouseEdit: {
+        sex: 'Nữ',
+      },
     };
   }
   chosePhotoFromLibrary(i) {
@@ -164,7 +164,7 @@ export default class FixInfoNode extends Component {
                     source={require('../../images/icons8-back-to-100.png')}
                   />
                 </TouchableOpacity>
-                <Text style={styles.title}>Sửa thông tin</Text>
+                <Text style={styles.title}>Tạo vợ, chồng</Text>
               </View>
               <View style={styles.infoGroup}>
                 <Text style={styles.titleGr}>
@@ -231,6 +231,8 @@ export default class FixInfoNode extends Component {
                       })
                     }
                   />
+                  <Text style={styles.inputTitle}>Thứ bậc trong gia đình</Text>
+                  <TextInput style={styles.inputText} />
                   <Text style={styles.inputTitle}>Số điện thoại </Text>
                   <PhoneInput
                     ref={input => {
@@ -250,17 +252,28 @@ export default class FixInfoNode extends Component {
                     }
                   />
                   <Text style={styles.inputTitle}>Giới tính</Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          sex: data,
-                        },
-                      })
-                    }
-                  />
+                  <View style={styles.inputText}>
+                    <Picker
+                      style={{
+                        fontFamily: 'serif',
+                        width: '100%',
+                        height: 35,
+                        fontSize: 16,
+                      }}
+                      selectedValue={this.state.LeafSpouseEdit.sex}
+                      onValueChange={(itemValue, itemIndex) =>
+                        this.setState({
+                          LeafSpouseEdit: {
+                            ...this.state.LeafSpouseEdit,
+                            sex: itemValue,
+                          },
+                        })
+                      }>
+                      <Picker.Item label="Nữ" value="Nữ" />
+                      <Picker.Item label="Nam" value="Nam" />
+                      <Picker.Item label="Khác" value="Khác" />
+                    </Picker>
+                  </View>
                   <Text style={styles.inputTitle}>Nguyên quán</Text>
                   <TextInput
                     style={styles.inputText}
@@ -355,7 +368,10 @@ export default class FixInfoNode extends Component {
             <View style={styles.buttonAdd}>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => this.createSpouse(this.state.leafId)}>
+                onPress={() => {
+                  this.createSpouse(this.state.leafId);
+                  //console.log(this.state.LeafSpouseEdit.sex);
+                }}>
                 <Text
                   style={{
                     fontSize: 18,

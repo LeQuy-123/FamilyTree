@@ -160,7 +160,10 @@ export default class GenealogyScreen extends Component {
     });
   };
   _renderNode = ({item}) => (
-    <View style={styles.nodeStyle}>
+    <View
+      style={
+        item.sex === 'Nam' ? styles.nodeMaleStyle : styles.nodeFemaleStyle
+      }>
       <TouchableOpacity
         onPress={() => {
           this.loadOneLeaf(item._id);
@@ -202,7 +205,7 @@ export default class GenealogyScreen extends Component {
             listKey={item => item._id}
             initialScrollIndex={0}
             renderItem={({item}) => {
-              const {_id, firstname, lastname, profileImage} = item;
+              const {_id, firstname, lastname, profileImage, sex} = item;
               const info = {
                 _id,
                 firstname,
@@ -221,7 +224,31 @@ export default class GenealogyScreen extends Component {
                     style={{
                       flexDirection: 'row',
                     }}>
-                    <View style={styles.mainNodeStyle}>
+                    <View
+                      style={{
+                        backgroundColor: 'white',
+                        borderColor: 'red',
+                        borderRadius: 20,
+                        width: 9,
+                        height: 9,
+                        borderWidth: 0.8,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text
+                        style={{
+                          ...this.props.nodeTitleStyle,
+                          textAlign: 'center',
+                        }}>
+                        1
+                      </Text>
+                    </View>
+                    <View
+                      style={
+                        item.sex === 'Nam'
+                          ? styles.mainNodeMaleStyle
+                          : styles.mainNodeFeMaleStyle
+                      }>
                       <View
                         style={{
                           flexDirection: 'row',
@@ -259,7 +286,7 @@ export default class GenealogyScreen extends Component {
                             this.setState({data: [], tree: []});
                           }}>
                           <Image
-                            style={{width: 5, height: 5}}
+                            style={{width: 7, height: 7}}
                             source={require('../../images/icons8-add-40.png')}
                           />
                         </TouchableOpacity>
@@ -285,7 +312,7 @@ export default class GenealogyScreen extends Component {
                           this.setState({data: [], tree: []});
                         }}>
                         <Image
-                          style={{width: 5, height: 5}}
+                          style={{width: 7, height: 7, bottom: 1}}
                           source={require('../../images/icons8-add-40.png')}
                         />
                       </TouchableOpacity>
@@ -404,29 +431,27 @@ export default class GenealogyScreen extends Component {
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
+        <View style={styles.titleGr}>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('DisplayGenealogy')}>
+            <Image
+              style={{
+                height: 40,
+                width: 40,
+                top: 2,
+              }}
+              source={require('../../images/icons8-back-to-100.png')}
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}>{this.props.route.params.name}</Text>
+        </View>
         <View style={styles.container}>
-          <View style={styles.titleGr}>
-            <TouchableOpacity
-              onPress={() =>
-                this.props.navigation.navigate('DisplayGenealogy')
-              }>
-              <Image
-                style={{
-                  height: 40,
-                  width: 40,
-                  top: 2,
-                }}
-                source={require('../../images/icons8-back-to-100.png')}
-              />
-            </TouchableOpacity>
-            <Text style={styles.title}>{this.props.route.params.name}</Text>
-          </View>
           <ReactNativeZoomableView
             maxZoom={3}
             minZoom={1}
-            style={{justifyContent: 'center', alignItems: 'center'}}
+            style={{top: 400, height: '100%'}}
             zoomStep={0.5}
-            initialZoom={1}>
+            initialZoom={1.5}>
             {this.renderTree(this.state.tree, 1)}
           </ReactNativeZoomableView>
         </View>
@@ -552,38 +577,53 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     left: 15,
   },
-  nodeTitleStyle: {
-    width: '150%',
-    textAlign: 'center',
-    fontSize: 1.2,
-    fontWeight: 'bold',
-  },
-  nodeStyle: {
-    backgroundColor: 'white',
-    width: 20,
-    height: 28,
+  nodeFemaleStyle: {
+    backgroundColor: '#FFCCE5',
+    width: 24,
+    height: 34,
     borderRadius: 3,
     alignItems: 'center',
     padding: 1,
-    borderWidth: 0.2,
+    borderWidth: 0.8,
     borderColor: '#146AFF',
     justifyContent: 'space-between',
   },
-  mainNodeStyle: {
+  nodeMaleStyle: {
     backgroundColor: '#FFE014',
-    width: 26,
-    height: 28,
+    width: 24,
+    height: 34,
     borderRadius: 3,
     alignItems: 'center',
     padding: 1,
-    borderWidth: 0.6,
+    borderWidth: 0.8,
+    borderColor: '#146AFF',
+    justifyContent: 'space-between',
+  },
+  mainNodeMaleStyle: {
+    backgroundColor: '#FFE014',
+    width: 30,
+    height: 34,
+    borderRadius: 3,
+    alignItems: 'center',
+    padding: 1,
+    borderWidth: 0.8,
+    borderColor: 'red',
+  },
+  mainNodeFeMaleStyle: {
+    backgroundColor: '#FFCCE5',
+    width: 30,
+    height: 34,
+    borderRadius: 3,
+    alignItems: 'center',
+    padding: 1,
+    borderWidth: 0.8,
     borderColor: 'red',
   },
   imageStyle: {
-    width: 16,
-    height: 16,
+    width: 18,
+    height: 18,
     backgroundColor: 'white',
-    borderWidth: 0.2,
+    borderWidth: 0.5,
     borderColor: 'black',
     borderRadius: 50,
     resizeMode: 'cover',
@@ -591,11 +631,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainImageStyle: {
-    width: 16,
-    height: 16,
+    width: 18,
+    height: 18,
     left: 3,
     backgroundColor: 'white',
-    borderWidth: 0.2,
+    borderWidth: 0.5,
     borderColor: 'black',
     borderRadius: 10,
     resizeMode: 'cover',
@@ -665,7 +705,7 @@ GenealogyScreen.defaultProps = {
   },
   titleColor: 'black',
   nodeTitleStyle: {
-    fontSize: 2.8,
+    fontSize: 4.5,
     fontWeight: 'bold',
   },
   pathColor: 'black',

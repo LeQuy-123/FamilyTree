@@ -13,6 +13,7 @@ import {
   Platform,
   LayoutAnimation,
   Alert,
+  Picker,
 } from 'react-native';
 import * as nativeBase from 'native-base';
 import {AsyncStorage} from 'react-native';
@@ -32,8 +33,12 @@ export default class FixInfoGenealogy extends Component {
       email: '',
       LeafData: '',
       SpouseData: '',
-      LeafSpouseEdit: '',
-      leafInfoEdit: '',
+      LeafSpouseEdit: {
+        sex: 'Nam',
+      },
+      leafInfoEdit: {
+        sex: 'Nam',
+      },
       expanded: false,
       heightView: 900,
     };
@@ -158,6 +163,7 @@ export default class FixInfoGenealogy extends Component {
                   image: json.leaf.profileImage,
                   dateBirth: json.leaf.dob,
                   dateDeath: json.leaf.dod,
+                  sex: json.leaf.sex,
                 },
               });
               //console.log(JSON.stringify(this.state.LeafData));
@@ -241,8 +247,8 @@ export default class FixInfoGenealogy extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              console.log(JSON.stringify(json));
-              //this.props.navigation.goBack();
+              //console.log(JSON.stringify(json));
+              this.props.navigation.goBack();
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -466,6 +472,8 @@ export default class FixInfoGenealogy extends Component {
                     }>
                     {this.state.LeafData.nickname}
                   </TextInput>
+                  <Text style={styles.inputTitle}>Thứ bậc trong gia đình</Text>
+                  <TextInput style={styles.inputText} />
                   <Text style={styles.inputTitle}>Số điện thoại </Text>
                   <PhoneInput
                     ref={input => {
@@ -486,18 +494,28 @@ export default class FixInfoGenealogy extends Component {
                     {this.state.LeafData.sdt}
                   </PhoneInput>
                   <Text style={styles.inputTitle}>Giới tính</Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
-                      this.setState({
-                        leafInfoEdit: {
-                          ...this.state.leafInfoEdit,
-                          sex: data,
-                        },
-                      })
-                    }>
-                    {this.state.LeafData.sex}
-                  </TextInput>
+                  <View style={styles.inputText}>
+                    <Picker
+                      style={{
+                        fontFamily: 'serif',
+                        width: '100%',
+                        height: 35,
+                        fontSize: 16,
+                      }}
+                      selectedValue={this.state.leafInfoEdit.sex}
+                      onValueChange={(itemValue, itemIndex) =>
+                        this.setState({
+                          leafInfoEdit: {
+                            ...this.state.leafInfoEdit,
+                            sex: itemValue,
+                          },
+                        })
+                      }>
+                      <Picker.Item label="Nam" value="Nam" />
+                      <Picker.Item label="Nữ" value="Nữ" />
+                      <Picker.Item label="Khác" value="Khác" />
+                    </Picker>
+                  </View>
                   <Text style={styles.inputTitle}>Nguyên quán</Text>
                   <TextInput
                     style={styles.inputText}
@@ -704,6 +722,8 @@ export default class FixInfoGenealogy extends Component {
                     }>
                     {this.state.SpouseData.nickname}
                   </TextInput>
+                  <Text style={styles.inputTitle}>Thứ bậc trong gia đình</Text>
+                  <TextInput style={styles.inputText} />
                   <Text style={styles.inputTitle}>Số điện thoại* </Text>
                   <PhoneInput
                     ref={input => {
@@ -727,18 +747,28 @@ export default class FixInfoGenealogy extends Component {
                     {this.state.SpouseData.sdt}
                   </PhoneInput>
                   <Text style={styles.inputTitle}>Giới tính</Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          sex: data,
-                        },
-                      })
-                    }>
-                    {this.state.SpouseData.sex}
-                  </TextInput>
+                  <View style={styles.inputText}>
+                    <Picker
+                      style={{
+                        fontFamily: 'serif',
+                        width: '100%',
+                        height: 35,
+                        fontSize: 16,
+                      }}
+                      selectedValue={this.state.LeafSpouseEdit.sex}
+                      onValueChange={(itemValue, itemIndex) =>
+                        this.setState({
+                          LeafSpouseEdit: {
+                            ...this.state.LeafSpouseEdit,
+                            sex: itemValue,
+                          },
+                        })
+                      }>
+                      <Picker.Item label="Nam" value="Nam" />
+                      <Picker.Item label="Nữ" value="Nữ" />
+                      <Picker.Item label="Khác" value="Khác" />
+                    </Picker>
+                  </View>
                   <Text style={styles.inputTitle}>Nguyên quán</Text>
                   <TextInput
                     style={styles.inputText}
@@ -862,7 +892,6 @@ export default class FixInfoGenealogy extends Component {
                 style={styles.button}
                 disabled={!this.props.route.params.isFinalLeaf}
                 onPress={() => {
-                  console.log(this.state.leafId);
                   this.deleteLeaf(this.state.leafId);
                 }}>
                 <Text

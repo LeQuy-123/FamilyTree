@@ -12,11 +12,12 @@ import {
   Image,
   AsyncStorage,
   FlatList,
+  Alert,
 } from 'react-native';
 import Svg, {Line} from 'react-native-svg';
 import url from '../../components/MainURL';
 import _RefreshToken from '../../components/refresh_Token';
-
+var sdt;
 export default class DisplayGenealogy extends Component {
   constructor(props) {
     super(props);
@@ -114,13 +115,14 @@ export default class DisplayGenealogy extends Component {
       })
         .then(response => response.json())
         .then(json => {
+          sdt = json.user.numphone;
           this.loadAllConnectionTree(json.user.numphone);
         });
     } catch (error) {
       console.error(error);
     }
   };
-  loadAllConnectionTree = async sdt => {
+  loadAllConnectionTree = async sd => {
     var URL = url + '/api/user/linktree';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
@@ -137,7 +139,7 @@ export default class DisplayGenealogy extends Component {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              numphone: sdt,
+              numphone: sd,
             }),
           })
             .then(response => response.json())
@@ -154,9 +156,16 @@ export default class DisplayGenealogy extends Component {
     });
   };
   toggleModal = () => {
-    this.setState({
-      isModalVisible: !this.state.isModalVisible,
-    });
+    if (sdt) {
+      this.setState({
+        isModalVisible: !this.state.isModalVisible,
+      });
+    } else {
+      Alert.alert(
+        'Thông báo',
+        'Vui lòng cập nhập số điện thoại để dùng chức năng này',
+      );
+    }
   };
   ShareTree = async id => {
     var URL = url + '/api/user/sharetree';
@@ -558,7 +567,7 @@ export default class DisplayGenealogy extends Component {
             justifyContent: 'center',
           }}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}> GIA PHẢ</Text>
+            <Text style={styles.title}>GIA PHẢ</Text>
             <TouchableOpacity
               onPress={() =>
                 this.props.navigation.navigate('AddGenealogy', {rootId: 0})
