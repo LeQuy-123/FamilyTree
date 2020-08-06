@@ -19,15 +19,16 @@ import ImagePicker from 'react-native-image-crop-picker';
 import url from '../../components/MainURL';
 import PhoneInput from 'react-native-phone-input';
 
-export default class FixInfoNode extends Component {
+export default class AddParentNote extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      leafId: this.props.route.params.leafId,
+      childID: this.props.route.params.childID,
+      authId: this.props.route.params.authId,
       refreshToken: '',
       email: '',
-      LeafSpouseEdit: {
-        sex: 'Nữ',
+      LeafParentEdit: {
+        sex: 'Nam',
       },
     };
   }
@@ -39,15 +40,15 @@ export default class FixInfoNode extends Component {
     }).then(image => {
       if (i === 1) {
         this.setState({
-          LeafSpouseEdit: {
-            ...this.state.LeafSpouseEdit,
+          LeafParentEdit: {
+            ...this.state.LeafParentEdit,
             image: image.path,
           },
         });
       } else {
         this.setState({
-          LeafSpouseEdit: {
-            ...this.state.LeafSpouseEdit,
+          LeafParentEdit: {
+            ...this.state.LeafParentEdit,
             image: image.path,
           },
         });
@@ -62,15 +63,15 @@ export default class FixInfoNode extends Component {
     }).then(image => {
       if (i === 1) {
         this.setState({
-          LeafSpouseEdit: {
-            ...this.state.LeafSpouseEdit,
+          LeafParentEdit: {
+            ...this.state.LeafParentEdit,
             image: image.path,
           },
         });
       } else {
         this.setState({
-          LeafSpouseEdit: {
-            ...this.state.LeafSpouseEdit,
+          LeafParentEdit: {
+            ...this.state.LeafParentEdit,
             image: image.path,
           },
         });
@@ -99,8 +100,8 @@ export default class FixInfoNode extends Component {
       },
     );
   }
-  createSpouse = async id => {
-    var URL = url + '/api/user/spouseleaf';
+  createParent = async id => {
+    var URL = url + '/api/user/parentleaf';
     let refreshToken = await AsyncStorage.getItem('tokenRefresh');
     let userEmail = await AsyncStorage.getItem('email');
     _RefreshToken(userEmail, refreshToken).then(data => {
@@ -115,22 +116,24 @@ export default class FixInfoNode extends Component {
               Authorization: 'Bearer ' + data,
             },
             body: JSON.stringify({
-              authId: this.props.route.params.authId,
-              spouseId: id,
-              firstname: this.state.LeafSpouseEdit.firstname,
-              lastname: this.state.LeafSpouseEdit.lastname,
-              nickname: this.state.LeafSpouseEdit.nickname,
-              sex: this.state.LeafSpouseEdit.sex,
-              dob: this.state.LeafSpouseEdit.dob,
-              domicile: this.state.LeafSpouseEdit.address,
-              dod: this.state.LeafSpouseEdit.dod,
-              numphone: this.state.LeafSpouseEdit.sdt,
-              burialplace: this.state.LeafSpouseEdit.dp,
-              profileImage: this.state.LeafSpouseEdit.image,
+              authId: this.state.authId,
+              childId: id,
+              firstname: this.state.LeafParentEdit.firstname,
+              lastname: this.state.LeafParentEdit.lastname,
+              nickname: this.state.LeafParentEdit.nickname,
+              sex: this.state.LeafParentEdit.sex,
+              dob: this.state.LeafParentEdit.dob,
+              domicile: this.state.LeafParentEdit.address,
+              dod: this.state.LeafParentEdit.dod,
+              numphone: this.state.LeafParentEdit.sdt,
+              burialplace: this.state.LeafParentEdit.dp,
+              profileImage: this.state.LeafParentEdit.image,
+              rank: this.state.LeafParentEdit.rank,
             }),
           })
             .then(response => response.json())
             .then(json => {
+              console.log('parent: ' + JSON.stringify(json));
               this.props.navigation.goBack();
             })
             .catch(error => console.log(error));
@@ -191,7 +194,7 @@ export default class FixInfoNode extends Component {
             <View style={styles.container}>
               <View style={styles.titleGroup}>
                 <TouchableOpacity
-                  onPress={() => this.props.navigation.navigate('Genealogy')}>
+                  onPress={() => this.props.navigation.goBack()}>
                   <Image
                     style={{
                       height: 40,
@@ -201,17 +204,15 @@ export default class FixInfoNode extends Component {
                     source={require('../../images/icons8-back-to-100.png')}
                   />
                 </TouchableOpacity>
-                <Text style={styles.title}>Tạo vợ, chồng</Text>
+                <Text style={styles.title}>Thêm đời đầu </Text>
               </View>
               <View style={styles.infoGroup}>
-                <Text style={styles.titleGr}>
-                  Thông tin vợ/chồng người thân
-                </Text>
+                <Text style={styles.titleGr}>Thông tin người thân</Text>
                 <View style={styles.info}>
                   <TouchableOpacity
                     style={styles.avatar}
                     onPress={() => this.onClickAddImages(1)}>
-                    {!this.state.LeafSpouseEdit.image ? (
+                    {!this.state.LeafParentEdit.image ? (
                       <Image
                         source={require('../../images/avatar_default.png')}
                         style={{
@@ -222,7 +223,7 @@ export default class FixInfoNode extends Component {
                       />
                     ) : (
                       <Image
-                        source={{uri: this.state.LeafSpouseEdit.image}}
+                        source={{uri: this.state.LeafParentEdit.image}}
                         style={{
                           width: 130,
                           height: 130,
@@ -236,8 +237,8 @@ export default class FixInfoNode extends Component {
                     title: 'Họ*',
                     onChangeText: data =>
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           firstname: data,
                         },
                       }),
@@ -246,8 +247,8 @@ export default class FixInfoNode extends Component {
                     title: 'Tên*',
                     onChangeText: data =>
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           lastname: data,
                         },
                       }),
@@ -256,9 +257,19 @@ export default class FixInfoNode extends Component {
                     title: 'Tên gợi nhớ*',
                     onChangeText: data =>
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           nickname: data,
+                        },
+                      }),
+                  })}
+                  {this.input({
+                    title: 'Thứ tự trong gia đình*',
+                    onChangeText: data =>
+                      this.setState({
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
+                          rank: data,
                         },
                       }),
                   })}
@@ -273,8 +284,8 @@ export default class FixInfoNode extends Component {
                     initialCountry="vn"
                     onChangePhoneNumber={number =>
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           sdt: number,
                         },
                       })
@@ -289,17 +300,17 @@ export default class FixInfoNode extends Component {
                         height: 35,
                         fontSize: 16,
                       }}
-                      selectedValue={this.state.LeafSpouseEdit.sex}
+                      selectedValue={this.state.LeafParentEdit.sex}
                       onValueChange={(itemValue, itemIndex) =>
                         this.setState({
-                          LeafSpouseEdit: {
-                            ...this.state.LeafSpouseEdit,
+                          LeafParentEdit: {
+                            ...this.state.LeafParentEdit,
                             sex: itemValue,
                           },
                         })
                       }>
-                      <Picker.Item label="Nữ" value="Nữ" />
                       <Picker.Item label="Nam" value="Nam" />
+                      <Picker.Item label="Nữ" value="Nữ" />
                       <Picker.Item label="Khác" value="Khác" />
                     </Picker>
                   </View>
@@ -307,8 +318,8 @@ export default class FixInfoNode extends Component {
                     title: 'Nguyên quán',
                     onChangeText: data =>
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           address: data,
                         },
                       }),
@@ -317,32 +328,32 @@ export default class FixInfoNode extends Component {
                     title: 'Ngày sinh',
                     onDateChange: date => {
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           dob: date,
                         },
                       });
                     },
-                    data: this.state.LeafSpouseEdit.dob,
+                    data: this.state.LeafParentEdit.dob,
                   })}
                   {this.dateInput({
                     title: 'Ngày giỗ',
                     onDateChange: date => {
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           dod: date,
                         },
                       });
                     },
-                    data: this.state.LeafSpouseEdit.dod,
+                    data: this.state.LeafParentEdit.dod,
                   })}
                   {this.input({
                     title: 'Nơi an táng',
                     onChangeText: data =>
                       this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
                           dp: data,
                         },
                       }),
@@ -354,8 +365,8 @@ export default class FixInfoNode extends Component {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  //console.log(JSON.stringify(this.state.LeafSpouseEdit));
-                  this.createSpouse(this.state.leafId);
+                  //console.log(JSON.stringify(this.state.LeafParentEdit));
+                  this.createParent(this.state.childID);
                 }}>
                 <Text
                   style={{

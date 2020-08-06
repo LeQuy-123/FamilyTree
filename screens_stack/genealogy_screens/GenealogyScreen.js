@@ -19,6 +19,24 @@ import PropTypes from 'prop-types';
 import Svg, {Line} from 'react-native-svg';
 import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
+import {FloatingAction} from 'react-native-floating-action';
+
+const actions = [
+  {
+    text: 'Chú thích',
+    icon: require('../../images/icons8-add-40.png'),
+    name: 'bt_note',
+    position: 2,
+  },
+  {
+    text: 'Thêm node cha cho Root',
+    icon: require('../../images/icons8-add-40.png'),
+    name: 'bt_addRootParent',
+    position: 1,
+  },
+];
+var chosenId = '';
+var name = '';
 
 export default class GenealogyScreen extends Component {
   constructor(props) {
@@ -26,6 +44,8 @@ export default class GenealogyScreen extends Component {
     this.state = {
       imageModal: '',
       isModalVisible: false,
+      choiceModalVisible: false,
+      noteModalVisible: false,
       refreshToken: '',
       email: '',
       onShowLeafData: '',
@@ -47,6 +67,16 @@ export default class GenealogyScreen extends Component {
   toggleModal = () => {
     this.setState({
       isModalVisible: !this.state.isModalVisible,
+    });
+  };
+  toggleChoiceModal = () => {
+    this.setState({
+      choiceModalVisible: !this.state.choiceModalVisible,
+    });
+  };
+  toggleNoteModal = () => {
+    this.setState({
+      noteModalVisible: !this.state.noteModalVisible,
     });
   };
   hasChildren(member) {
@@ -71,7 +101,6 @@ export default class GenealogyScreen extends Component {
       map[list[i]._id] = i; // initialize the map
       list[i].children = []; // initialize the children
     }
-
     for (i = 0; i < list.length; i += 1) {
       node = list[i];
       if (node.parentId !== this.props.route.params.data) {
@@ -205,7 +234,7 @@ export default class GenealogyScreen extends Component {
             listKey={item => item._id}
             initialScrollIndex={0}
             renderItem={({item}) => {
-              const {_id, firstname, lastname, profileImage, sex} = item;
+              const {_id, firstname, lastname, profileImage} = item;
               const info = {
                 _id,
                 firstname,
@@ -240,7 +269,7 @@ export default class GenealogyScreen extends Component {
                           ...this.props.nodeTitleStyle,
                           textAlign: 'center',
                         }}>
-                        1
+                        {item.rank}
                       </Text>
                     </View>
                     <View
@@ -274,45 +303,26 @@ export default class GenealogyScreen extends Component {
                             />
                           )}
                         </TouchableOpacity>
-                        <TouchableOpacity
-                          style={{
-                            left: 4,
-                          }}
-                          onPress={() => {
-                            this.props.navigation.navigate('FixNode', {
-                              leafId: item._id,
-                              authId: this.props.route.params.data,
-                            });
-                            this.setState({data: [], tree: []});
-                          }}>
-                          <Image
-                            style={{width: 7, height: 7}}
-                            source={require('../../images/icons8-add-40.png')}
-                          />
-                        </TouchableOpacity>
                       </View>
                       <Text
                         style={{
                           ...this.props.nodeTitleStyle,
                           textAlign: 'center',
                           color: this.props.nodeTitleColor,
-                          right: 2.4,
                         }}>
                         {info.firstname} {info.lastname}
                       </Text>
                       <TouchableOpacity
                         style={{
-                          right: 2.4,
+                          right: 0,
                         }}
                         onPress={() => {
-                          this.props.navigation.navigate('FixInfoScreen', {
-                            leafId: item._id,
-                            authId: this.props.route.params.data,
-                          });
-                          this.setState({data: [], tree: []});
+                          chosenId = item._id;
+                          name = info.firstname + ' ' + info.lastname;
+                          this.toggleChoiceModal();
                         }}>
                         <Image
-                          style={{width: 7, height: 7, bottom: 1}}
+                          style={{width: 8, height: 8, bottom: 1}}
                           source={require('../../images/icons8-add-40.png')}
                         />
                       </TouchableOpacity>
@@ -428,6 +438,160 @@ export default class GenealogyScreen extends Component {
     const dataSpouse = this.state.spouse.filter(x => x.spouseId === id);
     return dataSpouse;
   }
+  choiceModal() {
+    return (
+      <Modal
+        backdropOpacity={0.6}
+        coverScreen={false}
+        isVisible={this.state.choiceModalVisible}
+        onSwipeComplete={this.toggleChoiceModal}
+        onBackButtonPress={this.toggleChoiceModal}
+        swipeThreshold={200}
+        swipeDirection={['left', 'right', 'down']}
+        style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View
+          style={{
+            width: 250,
+            height: 130,
+            borderRadius: 30,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <TouchableOpacity
+            style={styles.btnChoiceModal}
+            onPress={() => {
+              this.props.navigation.navigate('FixInfoScreen', {
+                leafId: chosenId,
+                authId: this.props.route.params.data,
+              });
+              this.setState({data: [], tree: []});
+              this.toggleChoiceModal();
+            }}>
+            <Image
+              style={styles.imageChoiceModal}
+              source={require('../../images/icons8-add-user-male-50.png')}
+            />
+            <Text style={styles.textChoiceModal}>Thêm con cho {name} </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnChoiceModal}
+            onPress={() => {
+              this.props.navigation.navigate('FixNode', {
+                leafId: chosenId,
+                authId: this.props.route.params.data,
+              });
+              this.setState({data: [], tree: []});
+              this.toggleChoiceModal();
+            }}>
+            <Image
+              style={styles.imageChoiceModal}
+              source={require('../../images/icons8-couple-50.png')}
+            />
+            <Text style={styles.textChoiceModal}>Thêm Vợ/Chồng cho {name}</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  }
+  noteModal() {
+    return (
+      <Modal
+        backdropOpacity={0.6}
+        coverScreen={false}
+        isVisible={this.state.noteModalVisible}
+        onSwipeComplete={this.toggleNoteModal}
+        onBackButtonPress={this.toggleNoteModal}
+        swipeThreshold={200}
+        swipeDirection={['left', 'right', 'down']}
+        style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View
+          style={{
+            width: '80%',
+            height: '60%',
+            borderRadius: 30,
+            backgroundColor: 'white',
+            paddingLeft: 20,
+            paddingBottom: 30,
+            paddingTop: 10,
+            justifyContent: 'space-between',
+          }}>
+          <Text style={styles.title}>Chú thích</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                backgroundColor: '#FFCCE5',
+                width: 48,
+                height: 64,
+                borderRadius: 6,
+              }}
+            />
+            <Text> : Nữ</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                backgroundColor: '#FFE014',
+                width: 48,
+                height: 64,
+                borderRadius: 6,
+              }}
+            />
+            <Text> : Nam</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                borderWidth: 1.6,
+                borderColor: 'red',
+                width: 48,
+                height: 64,
+                borderRadius: 6,
+              }}
+            />
+            <Text> : Có quan hệ huyết thống</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                borderWidth: 1.6,
+                borderColor: 'blue',
+                width: 48,
+                height: 64,
+                borderRadius: 6,
+              }}
+            />
+            <Text> : Không quan hệ huyết thống</Text>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+  handelFloatButton(name) {
+    if (name === 'bt_note') {
+      this.toggleNoteModal();
+    } else {
+      this.props.navigation.navigate('AddParentNote', {
+        childID: this.state.data[0]._id,
+        authId: this.props.route.params.data,
+      });
+    }
+  }
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
@@ -455,6 +619,8 @@ export default class GenealogyScreen extends Component {
             {this.renderTree(this.state.tree, 1)}
           </ReactNativeZoomableView>
         </View>
+        {this.choiceModal()}
+        {this.noteModal()}
         <Modal
           backdropOpacity={0.6}
           coverScreen={false}
@@ -547,6 +713,12 @@ export default class GenealogyScreen extends Component {
             </View>
           </View>
         </Modal>
+        <FloatingAction
+          actions={actions}
+          onPressItem={name => {
+            this.handelFloatButton(name);
+          }}
+        />
       </SafeAreaView>
     );
   }
@@ -601,7 +773,7 @@ const styles = StyleSheet.create({
   },
   mainNodeMaleStyle: {
     backgroundColor: '#FFE014',
-    width: 30,
+    width: 24,
     height: 34,
     borderRadius: 3,
     alignItems: 'center',
@@ -611,7 +783,7 @@ const styles = StyleSheet.create({
   },
   mainNodeFeMaleStyle: {
     backgroundColor: '#FFCCE5',
-    width: 30,
+    width: 24,
     height: 34,
     borderRadius: 3,
     alignItems: 'center',
@@ -694,6 +866,28 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontSize: 17,
     fontWeight: 'bold',
+  },
+  textChoiceModal: {
+    fontFamily: 'serif',
+    fontSize: 14,
+    left: 15,
+  },
+  imageChoiceModal: {
+    left: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'white',
+  },
+  btnChoiceModal: {
+    flexDirection: 'row',
+    backgroundColor: '#AEECEF',
+    alignItems: 'center',
+    height: 50,
+    width: 350,
+    borderRadius: 20,
   },
 });
 GenealogyScreen.defaultProps = {

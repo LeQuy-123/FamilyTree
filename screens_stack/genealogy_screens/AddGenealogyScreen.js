@@ -148,7 +148,6 @@ export default class AddGenealogyScreen extends Component {
       refreshToken: refreshToken,
       email: userEmail,
     });
-    console.log(id);
     _RefreshToken(userEmail, refreshToken).then(data => {
       if (data === null) {
         this.props.navigation.navigate('Login');
@@ -166,7 +165,6 @@ export default class AddGenealogyScreen extends Component {
           })
             .then(response => response.json())
             .then(json => {
-              console.log(JSON.stringify(json.auth));
               this.setState({
                 genoInfo: {
                   genoName: json.auth.treename,
@@ -191,7 +189,6 @@ export default class AddGenealogyScreen extends Component {
       refreshToken: refreshToken,
       email: userEmail,
     });
-    console.log(id);
     _RefreshToken(userEmail, refreshToken).then(data => {
       if (data === null) {
         this.props.navigation.navigate('Login');
@@ -248,6 +245,7 @@ export default class AddGenealogyScreen extends Component {
               domicile: this.state.firstPerson.address,
               dod: this.state.firstPerson.dateDeath,
               burialplace: this.state.firstPerson.dp,
+              rank: this.state.firstPerson.rank,
               imgroot: this.state.firstPerson.image,
             }),
           })
@@ -292,7 +290,16 @@ export default class AddGenealogyScreen extends Component {
       });
     }
   };
-
+  input({title = '', onChangeText = () => {}, data = ''}) {
+    return (
+      <View>
+        <Text style={styles.inputTitle}>{title}</Text>
+        <TextInput style={styles.inputText} onChangeText={onChangeText}>
+          {data}
+        </TextInput>
+      </View>
+    );
+  }
   onCancel = () => {
     this.setState({
       visible: false,
@@ -359,42 +366,39 @@ export default class AddGenealogyScreen extends Component {
                           + Thêm ảnh hiển thị cho gia phả
                         </Text>
                       </TouchableOpacity>
-                      <Text style={styles.inputTitle}>Tên gia phả* </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
+                      {this.input({
+                        title: 'Tên gia phả*',
+                        onChangeText: data =>
                           this.setState({
                             genoInfo: {
                               ...this.state.genoInfo,
                               genoName: data,
                             },
-                          })
-                        }>
-                        {this.state.genoInfo.genoName}
-                      </TextInput>
-                      <Text style={styles.inputTitle}>Tên người tạo* </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
+                          }),
+                        data: this.state.genoInfo.genoName,
+                      })}
+                      {this.input({
+                        title: 'Tên người tạo*',
+                        onChangeText: data =>
                           this.setState({
                             genoInfo: {
                               ...this.state.genoInfo,
                               create: data,
                             },
-                          })
-                        }>
-                        {this.state.genoInfo.create}
-                      </TextInput>
-                      <Text style={styles.inputTitle}>Mô tả gia phả </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
+                          }),
+                        data: this.state.genoInfo.create,
+                      })}
+                      {this.input({
+                        title: 'Mô tả gia phả',
+                        onChangeText: data =>
                           this.setState({
-                            genoInfo: {...this.state.genoInfo, info: data},
-                          })
-                        }>
-                        {this.state.genoInfo.info}
-                      </TextInput>
+                            genoInfo: {
+                              ...this.state.genoInfo,
+                              info: data,
+                            },
+                          }),
+                        data: this.state.genoInfo.info,
+                      })}
                     </View>
                   </View>
                   <View style={styles.infoFirstGenerationGroup}>
@@ -432,61 +436,46 @@ export default class AddGenealogyScreen extends Component {
                           + Thêm ảnh đại diện
                         </Text>
                       </TouchableOpacity>
-                      <Text style={styles.inputTitle}>Họ* </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
+                      {this.input({
+                        title: 'Họ*',
+                        onChangeText: data =>
                           this.setState({
                             firstPerson: {
                               ...this.state.firstPerson,
                               firstName: data,
                             },
-                          })
-                        }>
-                        {this.state.dataRoot.firstname}
-                      </TextInput>
-                      <Text style={styles.inputTitle}>Tên* </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
+                          }),
+                      })}
+                      {this.input({
+                        title: 'Tên*',
+                        onChangeText: data =>
                           this.setState({
                             firstPerson: {
                               ...this.state.firstPerson,
                               lastName: data,
                             },
-                          })
-                        }>
-                        {this.state.dataRoot.lastname}
-                      </TextInput>
-                      <Text style={styles.inputTitle}>Tên gợi nhớ </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        onChangeText={data =>
+                          }),
+                      })}
+                      {this.input({
+                        title: 'Tên gợi nhớ*',
+                        onChangeText: data =>
                           this.setState({
                             firstPerson: {
                               ...this.state.firstPerson,
                               nickName: data,
                             },
-                          })
-                        }>
-                        {this.state.dataRoot.nickname}
-                      </TextInput>
-                      <Text style={styles.inputTitle}>
-                        Thứ bậc trong gia đình
-                      </Text>
-                      <TextInput
-                        style={styles.inputText}
-                        // onChangeText={data =>
-                        //   this.setState({
-                        //     firstPerson: {
-                        //       ...this.state.firstPerson,
-                        //       nickName: data,
-                        //     },
-                        //   })
-                        // }
-                      >
-                        {this.state.dataRoot.nickname}
-                      </TextInput>
+                          }),
+                      })}
+                      {this.input({
+                        title: 'Thứ bậc trong gia đình',
+                        onChangeText: data =>
+                          this.setState({
+                            firstPerson: {
+                              ...this.state.firstPerson,
+                              rank: data,
+                            },
+                          }),
+                      })}
                       <Text style={styles.inputTitle}>Giới tính </Text>
                       <View style={styles.inputText}>
                         <Picker
@@ -605,7 +594,7 @@ export default class AddGenealogyScreen extends Component {
                       style={styles.button}
                       onPress={() => {
                         this.onPressHandel();
-                        //console.log(this.state.firstPerson.sex);
+                        console.log(JSON.stringify(this.state.firstPerson));
                       }}>
                       <Text
                         style={{
@@ -722,7 +711,8 @@ export default class AddGenealogyScreen extends Component {
                   <TouchableOpacity
                     style={styles.button}
                     onPress={() => {
-                      this.onPressHandel();
+                      //this.onPressHandel();
+                      console.log(JSON.stringify(this.state.firstPerson));
                     }}>
                     <Text
                       style={{

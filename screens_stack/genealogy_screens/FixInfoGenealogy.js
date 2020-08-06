@@ -243,6 +243,7 @@ export default class FixInfoGenealogy extends Component {
               burialplace: this.state.leafInfoEdit.dp,
               profileImage: this.state.leafInfoEdit.image,
               numphone: this.state.leafInfoEdit.sdt,
+              rank: this.state.leafInfoEdit.rank,
             }),
           })
             .then(response => response.json())
@@ -320,6 +321,7 @@ export default class FixInfoGenealogy extends Component {
               burialplace: this.state.leafInfoEdit.dp,
               numphone: this.state.leafInfoEdit.sdt,
               profileImage: this.state.leafInfoEdit.image,
+              rank: this.state.leafInfoEdit.rank,
             }),
           })
             .then(response => response.json())
@@ -383,6 +385,46 @@ export default class FixInfoGenealogy extends Component {
       this.loadOneLeaf(this.state.leafId);
     }
   }
+  dateInput({title = '', onDateChange = () => {}, data = ''}) {
+    return (
+      <View>
+        <Text style={styles.inputTitle}>{title}</Text>
+        <DatePicker
+          style={{width: '90%', borderRadius: 50}}
+          date={data}
+          mode="date"
+          placeholder="select date"
+          format="YYYY-MM-DD"
+          minDate="1900-05-01"
+          maxDate="2100-06-01"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
+          customStyles={{
+            dateIcon: {
+              position: 'absolute',
+              left: 0,
+              top: 4,
+              marginLeft: 0,
+            },
+            dateInput: {
+              marginLeft: 36,
+            },
+          }}
+          onDateChange={onDateChange}
+        />
+      </View>
+    );
+  }
+  input({title = '', onChangeText = () => {}, data = ''}) {
+    return (
+      <View>
+        <Text style={styles.inputTitle}>{title}</Text>
+        <TextInput style={styles.inputText} onChangeText={onChangeText}>
+          {data}
+        </TextInput>
+      </View>
+    );
+  }
   render() {
     return (
       <nativeBase.Root>
@@ -433,47 +475,50 @@ export default class FixInfoGenealogy extends Component {
                     )}
                     <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
                   </TouchableOpacity>
-                  <Text style={styles.inputTitle}>Họ* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                  {this.input({
+                    title: 'Họ*',
+                    onChangeText: data =>
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           firstname: data,
                         },
-                      })
-                    }>
-                    {this.state.LeafData.firstname}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Tên* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                      }),
+                    data: this.state.LeafData.firstname,
+                  })}
+                  {this.input({
+                    title: 'Tên*',
+                    onChangeText: data =>
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           lastname: data,
                         },
-                      })
-                    }>
-                    {this.state.LeafData.lastname}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                      }),
+                    data: this.state.LeafData.lastname,
+                  })}
+                  {this.input({
+                    title: 'Tên gợi nhớ*',
+                    onChangeText: data =>
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           nickname: data,
                         },
-                      })
-                    }>
-                    {this.state.LeafData.nickname}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Thứ bậc trong gia đình</Text>
-                  <TextInput style={styles.inputText} />
+                      }),
+                    data: this.state.LeafData.nickname,
+                  })}
+                  {this.input({
+                    title: 'Thứ bậc trong gia đình',
+                    onChangeText: data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          rank: data,
+                        },
+                      }),
+                    data: this.state.LeafData.rank,
+                  })}
                   <Text style={styles.inputTitle}>Số điện thoại </Text>
                   <PhoneInput
                     ref={input => {
@@ -516,94 +561,52 @@ export default class FixInfoGenealogy extends Component {
                       <Picker.Item label="Khác" value="Khác" />
                     </Picker>
                   </View>
-                  <Text style={styles.inputTitle}>Nguyên quán</Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                  {this.input({
+                    title: 'Nguyên quán',
+                    onChangeText: data =>
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           address: data,
                         },
-                      })
-                    }>
-                    {this.state.LeafData.domicile}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Ngày sinh</Text>
-                  <DatePicker
-                    style={{width: '90%', borderRadius: 50}}
-                    date={this.state.leafInfoEdit.dateBirth}
-                    mode="date"
-                    placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="1900-05-01"
-                    maxDate="2100-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    customStyles={{
-                      dateIcon: {
-                        position: 'absolute',
-                        left: 0,
-                        top: 4,
-                        marginLeft: 0,
-                      },
-                      dateInput: {
-                        marginLeft: 36,
-                      },
-                    }}
-                    onDateChange={date => {
+                      }),
+                    data: this.state.LeafData.domicile,
+                  })}
+                  {this.dateInput({
+                    title: 'Ngày sinh',
+                    onDateChange: date => {
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           dateBirth: date,
                         },
                       });
-                    }}
-                  />
-                  <Text style={styles.inputTitle}>Ngày giỗ</Text>
-                  <DatePicker
-                    style={{width: '90%', borderRadius: 50}}
-                    date={this.state.leafInfoEdit.dateDeath}
-                    mode="date"
-                    placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="1900-05-01"
-                    maxDate="2100-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    customStyles={{
-                      dateIcon: {
-                        position: 'absolute',
-                        left: 0,
-                        top: 4,
-                        marginLeft: 0,
-                      },
-                      dateInput: {
-                        marginLeft: 36,
-                      },
-                    }}
-                    onDateChange={date => {
+                    },
+                    data: this.state.leafInfoEdit.dateBirth,
+                  })}
+                  {this.dateInput({
+                    title: 'Ngày giỗ',
+                    onDateChange: date => {
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           dateDeath: date,
                         },
                       });
-                    }}
-                  />
-                  <Text style={styles.inputTitle}>Mộ tang </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                    },
+                    data: this.state.leafInfoEdit.dateDeath,
+                  })}
+                  {this.input({
+                    title: 'Mộ tang',
+                    onChangeText: data =>
                       this.setState({
                         leafInfoEdit: {
                           ...this.state.leafInfoEdit,
                           dp: data,
                         },
-                      })
-                    }>
-                    {this.state.LeafData.burialplace}
-                  </TextInput>
+                      }),
+                    data: this.state.LeafData.burialplace,
+                  })}
                   <View
                     style={{
                       flexDirection: 'row',
@@ -616,7 +619,7 @@ export default class FixInfoGenealogy extends Component {
                         fontWeight: 'bold',
                         fontSize: 18,
                       }}>
-                      Có vợ hoặc chồng{' '}
+                      Thêm vợ hoặc chồng{' '}
                     </Text>
                     <TouchableOpacity onPress={this.changeLayout}>
                       {this.state.expanded ? (
@@ -683,47 +686,36 @@ export default class FixInfoGenealogy extends Component {
                     )}
                     <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
                   </TouchableOpacity>
-                  <Text style={styles.inputTitle}>Họ* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                  {this.input({
+                    title: 'Họ*',
+                    onChangeText: data =>
                       this.setState({
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           firstname: data,
                         },
-                      })
-                    }>
-                    {this.state.SpouseData.firstname}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Tên* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                      }),
+                  })}
+                  {this.input({
+                    title: 'Tên*',
+                    onChangeText: data =>
                       this.setState({
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           lastname: data,
                         },
-                      })
-                    }>
-                    {this.state.SpouseData.lastname}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Tên gợi nhớ* </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                      }),
+                  })}
+                  {this.input({
+                    title: 'Tên gợi nhớ*',
+                    onChangeText: data =>
                       this.setState({
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           nickname: data,
                         },
-                      })
-                    }>
-                    {this.state.SpouseData.nickname}
-                  </TextInput>
-                  <Text style={styles.inputTitle}>Thứ bậc trong gia đình</Text>
-                  <TextInput style={styles.inputText} />
+                      }),
+                  })}
                   <Text style={styles.inputTitle}>Số điện thoại* </Text>
                   <PhoneInput
                     ref={input => {
@@ -782,83 +774,40 @@ export default class FixInfoGenealogy extends Component {
                     }>
                     {this.state.SpouseData.domicile}
                   </TextInput>
-                  <Text style={styles.inputTitle}>Ngày sinh</Text>
-                  <DatePicker
-                    style={{width: '90%', borderRadius: 50}}
-                    date={this.state.LeafSpouseEdit.dob}
-                    mode="date"
-                    placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="1900-05-01"
-                    maxDate="2100-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    customStyles={{
-                      dateIcon: {
-                        position: 'absolute',
-                        left: 0,
-                        top: 4,
-                        marginLeft: 0,
-                      },
-                      dateInput: {
-                        marginLeft: 36,
-                      },
-                      // ... You can check the source to find the other keys.
-                    }}
-                    onDateChange={date => {
+                  {this.dateInput({
+                    title: 'Ngày sinh',
+                    onDateChange: date => {
                       this.setState({
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           dob: date,
                         },
                       });
-                    }}
-                  />
-                  <Text style={styles.inputTitle}>Ngày giỗ</Text>
-                  <DatePicker
-                    style={{width: '90%', borderRadius: 50}}
-                    date={this.state.LeafSpouseEdit.dod}
-                    mode="date"
-                    placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="1900-05-01"
-                    maxDate="2100-06-01"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    customStyles={{
-                      dateIcon: {
-                        position: 'absolute',
-                        left: 0,
-                        top: 4,
-                        marginLeft: 0,
-                      },
-                      dateInput: {
-                        marginLeft: 36,
-                      },
-                      // ... You can check the source to find the other keys.
-                    }}
-                    onDateChange={date => {
+                    },
+                    data: this.state.LeafSpouseEdit.dob,
+                  })}
+                  {this.dateInput({
+                    title: 'Ngày giỗ',
+                    onDateChange: date => {
                       this.setState({
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           dod: date,
                         },
                       });
-                    }}
-                  />
-                  <Text style={styles.inputTitle}>Mộ tang </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
+                    },
+                    data: this.state.LeafSpouseEdit.dod,
+                  })}
+                  {this.input({
+                    title: 'Mộ tang',
+                    onChangeText: data =>
                       this.setState({
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           dp: data,
                         },
-                      })
-                    }>
-                    {this.state.SpouseData.burialplace}
-                  </TextInput>
+                      }),
+                  })}
                 </View>
               </View>
             </View>
@@ -866,6 +815,8 @@ export default class FixInfoGenealogy extends Component {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
+                  // console.log(JSON.stringify(this.state.leafInfoEdit));
+                  // console.log(JSON.stringify(this.state.LeafSpouseEdit));
                   if (this.props.route.params.authId) {
                     if (this.checkdata(this.state.leafInfoEdit)) {
                       this.createLeaf(this.state.leafId);
