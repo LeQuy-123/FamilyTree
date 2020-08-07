@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import _RefreshToken from '../components/refresh_Token';
 import {Icon} from 'native-base';
+import Modal from 'react-native-modal';
 import {LoginButton, AccessToken} from 'react-native-fbsdk';
 
 class Login extends Component {
@@ -30,8 +31,10 @@ class Login extends Component {
       baseUrl: 'https://familytree1.herokuapp.com/api/auth/login',
       refreshToken: '',
       accessToken: null,
+      isModalVisible: false,
       icon: 'eye-off',
       showPassword: true,
+      emailReset: '',
     };
   }
   _changeIcon() {
@@ -40,6 +43,11 @@ class Login extends Component {
       showPassword: !prevState.showPassword,
     }));
   }
+  toggleModal = () => {
+    this.setState({
+      isModalVisible: !this.state.isModalVisible,
+    });
+  };
   //kiểm tra email
   validate = text => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -51,7 +59,7 @@ class Login extends Component {
       return true;
     }
   };
-  checkMail = text => {
+  checkMail = () => {
     if (this.state.email && this.state.password) {
       if (this.validate(this.state.email.trim())) {
         this._postData();
@@ -104,13 +112,14 @@ class Login extends Component {
     }
   };
   checkMailReset = text => {
-    if (this.validate(this.state.email.trim())) {
-      this._resetPassword();
+    if (this.validate(text.trim())) {
+      this._resetPassword(text.trim());
+      this.toggleModal();
     } else {
       Alert.alert('Vui lòng điền email mà bạn nhớ vào mục email và thử lại');
     }
   };
-  _resetPassword = async () => {
+  _resetPassword = async mail => {
     var url = 'https://familytree1.herokuapp.com/api/auth/recover';
     try {
       await fetch(url, {
@@ -120,7 +129,7 @@ class Login extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: this.state.email.trim().toLowerCase(),
+          email: mail.toLowerCase(),
         }),
       })
         .then(response => response.json())
@@ -128,9 +137,7 @@ class Login extends Component {
           this.setState({
             message: json.message,
           });
-          this.storeToken(this.state.accessToken, this.state.refreshToken);
           if (this.state.message !== undefined) {
-            console.log(this.state.message);
             Alert.alert(
               'Thông báo',
               this.state.message,
@@ -172,6 +179,53 @@ class Login extends Component {
   }
   componentDidMount() {
     this.checkToken();
+  }
+  choiceModal() {
+    return (
+      <Modal
+        backdropOpacity={0.6}
+        coverScreen={false}
+        isVisible={this.state.isModalVisible}
+        onSwipeComplete={this.toggleModal}
+        onBackButtonPress={this.toggleModal}
+        swipeThreshold={200}
+        swipeDirection={['left', 'right', 'down', 'up']}
+        style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View
+          style={{
+            width: 250,
+            height: 100,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            backgroundColor: 'white',
+          }}>
+          <Text>Nhập email của bạn</Text>
+          <TextInput
+            onChangeText={data => this.setState({emailReset: data})}
+            style={{
+              width: '90%',
+              height: 40,
+              borderRadius: 10,
+              alignItems: 'center',
+              borderWidth: 1,
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => this.checkMailReset(this.state.emailReset)}
+            style={{
+              width: '50%',
+              height: 30,
+              borderRadius: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#00B2BF',
+            }}>
+            <Text>Xác nhận</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
   }
   render() {
     return (
@@ -260,8 +314,7 @@ class Login extends Component {
                       onPress={() => this._changeIcon()}
                     />
                   </View>
-                  <TouchableOpacity
-                    onPress={() => this.checkMailReset(this.state.email)}>
+                  <TouchableOpacity onPress={() => this.toggleModal()}>
                     <Text
                       style={{
                         alignSelf: 'flex-end',
@@ -304,6 +357,7 @@ class Login extends Component {
                   </View>
                 </View>
               </View>
+              {this.choiceModal()}
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>

@@ -166,50 +166,6 @@ export default class FixInfoGenealogy extends Component {
                   sex: json.leaf.sex,
                 },
               });
-              //console.log(JSON.stringify(this.state.LeafData));
-            })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
-  loadOneSpouse = async id => {
-    var URL = url + '/api/user/leafspouseshow';
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    let userEmail = await AsyncStorage.getItem('email');
-    this.setState({
-      refreshToken: refreshToken,
-      email: userEmail,
-    });
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      if (data === null) {
-        this.props.navigation.navigate('Login');
-      } else {
-        try {
-          fetch(URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              spouseId: id,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {
-              this.setState({
-                SpouseData: json.leafspouse[0],
-                LeafSpouseEdit: {
-                  ...this.state.LeafSpouseEdit,
-                  image: json.leafspouse[0].profileImage,
-                  dateBirth: json.leafspouse[0].dob,
-                  dateDeath: json.leafspouse[0].dod,
-                },
-              });
-              //console.log(JSON.stringify(json.leafspouse));
             })
             .catch(error => console.log(error));
         } catch (error) {
@@ -234,6 +190,7 @@ export default class FixInfoGenealogy extends Component {
             body: JSON.stringify({
               leafId: this.state.leafId,
               firstname: this.state.leafInfoEdit.firstname,
+              middlename: this.state.leafInfoEdit.middlename,
               lastname: this.state.leafInfoEdit.lastname,
               nickname: this.state.leafInfoEdit.nickname,
               sex: this.state.leafInfoEdit.sex,
@@ -312,6 +269,7 @@ export default class FixInfoGenealogy extends Component {
               authId: this.props.route.params.authId,
               parentId: id,
               firstname: this.state.leafInfoEdit.firstname,
+              middlename: this.state.leafInfoEdit.middlename,
               lastname: this.state.leafInfoEdit.lastname,
               nickname: this.state.leafInfoEdit.nickname,
               sex: this.state.leafInfoEdit.sex,
@@ -333,46 +291,6 @@ export default class FixInfoGenealogy extends Component {
                 this.props.navigation.goBack();
               }
             })
-            .catch(error => console.log(error));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    });
-  };
-  createSpouse = async id => {
-    //console.log('id to create spuse : ' + id);
-    var URL = url + '/api/user/spouseleaf';
-    let refreshToken = await AsyncStorage.getItem('tokenRefresh');
-    let userEmail = await AsyncStorage.getItem('email');
-    _RefreshToken(userEmail, refreshToken).then(data => {
-      if (data === null) {
-        this.props.navigation.navigate('Login');
-      } else {
-        try {
-          fetch(URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + data,
-            },
-            body: JSON.stringify({
-              authId: this.props.route.params.authId,
-              spouseId: id,
-              firstname: this.state.LeafSpouseEdit.firstname,
-              lastname: this.state.LeafSpouseEdit.lastname,
-              nickname: this.state.LeafSpouseEdit.nickname,
-              sex: this.state.LeafSpouseEdit.sex,
-              dob: this.state.LeafSpouseEdit.dob,
-              domicile: this.state.LeafSpouseEdit.domicile,
-              dod: this.state.LeafSpouseEdit.dod,
-              burialplace: this.state.LeafSpouseEdit.dp,
-              numphone: this.state.LeafSpouseEdit.sdt,
-              profileImage: this.state.LeafSpouseEdit.image,
-            }),
-          })
-            .then(response => response.json())
-            .then(json => {})
             .catch(error => console.log(error));
         } catch (error) {
           console.error(error);
@@ -415,11 +333,14 @@ export default class FixInfoGenealogy extends Component {
       </View>
     );
   }
-  input({title = '', onChangeText = () => {}, data = ''}) {
+  input({title = '', onChangeText = () => {}, data = '', keyboardType = ''}) {
     return (
       <View>
         <Text style={styles.inputTitle}>{title}</Text>
-        <TextInput style={styles.inputText} onChangeText={onChangeText}>
+        <TextInput
+          style={styles.inputText}
+          onChangeText={onChangeText}
+          keyboardType={keyboardType}>
           {data}
         </TextInput>
       </View>
@@ -487,6 +408,17 @@ export default class FixInfoGenealogy extends Component {
                     data: this.state.LeafData.firstname,
                   })}
                   {this.input({
+                    title: 'Đệm',
+                    onChangeText: data =>
+                      this.setState({
+                        leafInfoEdit: {
+                          ...this.state.leafInfoEdit,
+                          middlename: data,
+                        },
+                      }),
+                    data: this.state.LeafData.middlename,
+                  })}
+                  {this.input({
                     title: 'Tên*',
                     onChangeText: data =>
                       this.setState({
@@ -518,6 +450,7 @@ export default class FixInfoGenealogy extends Component {
                         },
                       }),
                     data: this.state.LeafData.rank,
+                    keyboardType: 'number-pad',
                   })}
                   <Text style={styles.inputTitle}>Số điện thoại </Text>
                   <PhoneInput
@@ -606,207 +539,6 @@ export default class FixInfoGenealogy extends Component {
                         },
                       }),
                     data: this.state.LeafData.burialplace,
-                  })}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      paddingRight: 35,
-                    }}>
-                    <Text
-                      style={{
-                        left: 19,
-                        fontWeight: 'bold',
-                        fontSize: 18,
-                      }}>
-                      Thêm vợ hoặc chồng{' '}
-                    </Text>
-                    <TouchableOpacity onPress={this.changeLayout}>
-                      {this.state.expanded ? (
-                        <Image
-                          style={{width: 30, height: 30}}
-                          source={require('../../images/icons8-expand-arrow-64.png')}
-                        />
-                      ) : (
-                        <Image
-                          style={{width: 30, height: 30}}
-                          source={require('../../images/icons8-collapse-arrow-64.png')}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </View>
-            <View
-              style={{
-                height: this.state.expanded ? null : 0,
-                overflow: 'hidden',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: '#FBBD00',
-                width: '100%',
-                paddingHorizontal: 10,
-              }}>
-              <View
-                style={{
-                  top: 15,
-                  height: 740,
-                  width: '100%',
-                  backgroundColor: '#00B2BF',
-                  borderRadius: 30,
-                  marginBottom: 15,
-                  justifyContent: 'flex-end',
-                }}>
-                <Text style={styles.titleGr}>
-                  Thông tin vợ\chồng (cả) người thân
-                </Text>
-                <View style={styles.infoExpand}>
-                  <TouchableOpacity
-                    style={styles.avatar}
-                    onPress={() => this.onClickAddImages(2)}>
-                    {!this.state.LeafSpouseEdit.image ? (
-                      <Image
-                        source={require('../../images/avatar_default.png')}
-                        style={{
-                          width: 120,
-                          height: 120,
-                          borderRadius: 20,
-                        }}
-                      />
-                    ) : (
-                      <Image
-                        source={{uri: this.state.LeafSpouseEdit.image}}
-                        style={{
-                          width: 130,
-                          height: 130,
-                          borderRadius: 65,
-                        }}
-                      />
-                    )}
-                    <Text style={styles.textAva}>+ Thêm ảnh đại diện</Text>
-                  </TouchableOpacity>
-                  {this.input({
-                    title: 'Họ*',
-                    onChangeText: data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          firstname: data,
-                        },
-                      }),
-                  })}
-                  {this.input({
-                    title: 'Tên*',
-                    onChangeText: data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          lastname: data,
-                        },
-                      }),
-                  })}
-                  {this.input({
-                    title: 'Tên gợi nhớ*',
-                    onChangeText: data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          nickname: data,
-                        },
-                      }),
-                  })}
-                  <Text style={styles.inputTitle}>Số điện thoại* </Text>
-                  <PhoneInput
-                    ref={input => {
-                      this.TextInput5 = input;
-                    }}
-                    onSubmitEditing={() => {
-                      this.TextInput7.focus();
-                    }}
-                    blurOnSubmit={false}
-                    style={styles.inputText}
-                    value={this.state.phone}
-                    initialCountry="vn"
-                    onChangePhoneNumber={number =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          sdt: number,
-                        },
-                      })
-                    }>
-                    {this.state.SpouseData.sdt}
-                  </PhoneInput>
-                  <Text style={styles.inputTitle}>Giới tính</Text>
-                  <View style={styles.inputText}>
-                    <Picker
-                      style={{
-                        fontFamily: 'serif',
-                        width: '100%',
-                        height: 35,
-                        fontSize: 16,
-                      }}
-                      selectedValue={this.state.LeafSpouseEdit.sex}
-                      onValueChange={(itemValue, itemIndex) =>
-                        this.setState({
-                          LeafSpouseEdit: {
-                            ...this.state.LeafSpouseEdit,
-                            sex: itemValue,
-                          },
-                        })
-                      }>
-                      <Picker.Item label="Nam" value="Nam" />
-                      <Picker.Item label="Nữ" value="Nữ" />
-                      <Picker.Item label="Khác" value="Khác" />
-                    </Picker>
-                  </View>
-                  <Text style={styles.inputTitle}>Nguyên quán</Text>
-                  <TextInput
-                    style={styles.inputText}
-                    onChangeText={data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          address: data,
-                        },
-                      })
-                    }>
-                    {this.state.SpouseData.domicile}
-                  </TextInput>
-                  {this.dateInput({
-                    title: 'Ngày sinh',
-                    onDateChange: date => {
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          dob: date,
-                        },
-                      });
-                    },
-                    data: this.state.LeafSpouseEdit.dob,
-                  })}
-                  {this.dateInput({
-                    title: 'Ngày giỗ',
-                    onDateChange: date => {
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          dod: date,
-                        },
-                      });
-                    },
-                    data: this.state.LeafSpouseEdit.dod,
-                  })}
-                  {this.input({
-                    title: 'Mộ tang',
-                    onChangeText: data =>
-                      this.setState({
-                        LeafSpouseEdit: {
-                          ...this.state.LeafSpouseEdit,
-                          dp: data,
-                        },
-                      }),
                   })}
                 </View>
               </View>

@@ -18,7 +18,6 @@ import _RefreshToken from '../../components/refresh_Token';
 import url from '../../components/MainURL';
 import Modal from 'react-native-modal';
 import Svg, {Line} from 'react-native-svg';
-import {Icon} from 'native-base';
 
 export default class FamilyScreen extends Component {
   constructor(props) {

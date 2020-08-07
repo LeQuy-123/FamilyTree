@@ -238,6 +238,7 @@ export default class AddGenealogyScreen extends Component {
               address: this.state.genoInfo.info,
               imgauth: this.state.genoInfo.image,
               firstname: this.state.firstPerson.firstName,
+              middlename: this.state.firstPerson.middleName,
               lastname: this.state.firstPerson.lastName,
               nickname: this.state.firstPerson.nickName,
               sex: this.state.firstPerson.sex,
@@ -276,7 +277,7 @@ export default class AddGenealogyScreen extends Component {
       this.setState({
         firstPerson: {
           ...this.state.firstPerson,
-          burialplace: picked.label,
+          address: picked.label,
         },
         visible: false,
       });
@@ -290,11 +291,14 @@ export default class AddGenealogyScreen extends Component {
       });
     }
   };
-  input({title = '', onChangeText = () => {}, data = ''}) {
+  input({title = '', onChangeText = () => {}, data = '', keyboardType = ''}) {
     return (
       <View>
         <Text style={styles.inputTitle}>{title}</Text>
-        <TextInput style={styles.inputText} onChangeText={onChangeText}>
+        <TextInput
+          style={styles.inputText}
+          onChangeText={onChangeText}
+          keyboardType={keyboardType}>
           {data}
         </TextInput>
       </View>
@@ -447,6 +451,16 @@ export default class AddGenealogyScreen extends Component {
                           }),
                       })}
                       {this.input({
+                        title: 'Đệm',
+                        onChangeText: data =>
+                          this.setState({
+                            firstPerson: {
+                              ...this.state.firstPerson,
+                              middleName: data,
+                            },
+                          }),
+                      })}
+                      {this.input({
                         title: 'Tên*',
                         onChangeText: data =>
                           this.setState({
@@ -475,6 +489,7 @@ export default class AddGenealogyScreen extends Component {
                               rank: data,
                             },
                           }),
+                        keyboardType: 'number-pad',
                       })}
                       <Text style={styles.inputTitle}>Giới tính </Text>
                       <View style={styles.inputText}>
@@ -563,9 +578,9 @@ export default class AddGenealogyScreen extends Component {
                       />
                       <Text style={styles.inputTitle}>Nơi sống </Text>
                       <TouchableOpacity onPress={this.onShow}>
-                        {this.state.firstPerson.burialplace ? (
+                        {this.state.firstPerson.address ? (
                           <Text style={styles.inputText2}>
-                            {this.state.firstPerson.burialplace}
+                            {this.state.firstPerson.address}
                           </Text>
                         ) : (
                           <Text style={styles.inputText2}>Chọn tỉnh thành</Text>

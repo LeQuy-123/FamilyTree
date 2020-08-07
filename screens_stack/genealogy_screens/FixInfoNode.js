@@ -118,6 +118,7 @@ export default class FixInfoNode extends Component {
               authId: this.props.route.params.authId,
               spouseId: id,
               firstname: this.state.LeafSpouseEdit.firstname,
+              middlename: this.state.LeafSpouseEdit.middlename,
               lastname: this.state.LeafSpouseEdit.lastname,
               nickname: this.state.LeafSpouseEdit.nickname,
               sex: this.state.LeafSpouseEdit.sex,
@@ -239,6 +240,16 @@ export default class FixInfoNode extends Component {
                         LeafSpouseEdit: {
                           ...this.state.LeafSpouseEdit,
                           firstname: data,
+                        },
+                      }),
+                  })}
+                  {this.input({
+                    title: 'Đệm*',
+                    onChangeText: data =>
+                      this.setState({
+                        LeafSpouseEdit: {
+                          ...this.state.LeafSpouseEdit,
+                          middlename: data,
                         },
                       }),
                   })}

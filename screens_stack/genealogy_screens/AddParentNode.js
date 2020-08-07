@@ -119,6 +119,7 @@ export default class AddParentNote extends Component {
               authId: this.state.authId,
               childId: id,
               firstname: this.state.LeafParentEdit.firstname,
+              middlename: this.state.LeafParentEdit.middlename,
               lastname: this.state.LeafParentEdit.lastname,
               nickname: this.state.LeafParentEdit.nickname,
               sex: this.state.LeafParentEdit.sex,
@@ -143,11 +144,14 @@ export default class AddParentNote extends Component {
       }
     });
   };
-  input({title = '', onChangeText = () => {}, data = ''}) {
+  input({title = '', onChangeText = () => {}, data = '', keyboardType = ''}) {
     return (
       <View>
         <Text style={styles.inputTitle}>{title}</Text>
-        <TextInput style={styles.inputText} onChangeText={onChangeText}>
+        <TextInput
+          style={styles.inputText}
+          onChangeText={onChangeText}
+          keyboardType={keyboardType}>
           {data}
         </TextInput>
       </View>
@@ -244,6 +248,16 @@ export default class AddParentNote extends Component {
                       }),
                   })}
                   {this.input({
+                    title: 'Đệm*',
+                    onChangeText: data =>
+                      this.setState({
+                        LeafParentEdit: {
+                          ...this.state.LeafParentEdit,
+                          middlename: data,
+                        },
+                      }),
+                  })}
+                  {this.input({
                     title: 'Tên*',
                     onChangeText: data =>
                       this.setState({
@@ -264,7 +278,7 @@ export default class AddParentNote extends Component {
                       }),
                   })}
                   {this.input({
-                    title: 'Thứ tự trong gia đình*',
+                    title: 'Thứ bậc trong gia đình*',
                     onChangeText: data =>
                       this.setState({
                         LeafParentEdit: {
@@ -272,6 +286,7 @@ export default class AddParentNote extends Component {
                           rank: data,
                         },
                       }),
+                    keyboardType: 'number-pad',
                   })}
                   <Text style={styles.inputTitle}>Số điện thoại </Text>
                   <PhoneInput

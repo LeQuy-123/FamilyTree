@@ -24,13 +24,13 @@ import {FloatingAction} from 'react-native-floating-action';
 const actions = [
   {
     text: 'Chú thích',
-    icon: require('../../images/icons8-add-40.png'),
+    icon: require('../../images/icons8-about-50.png'),
     name: 'bt_note',
     position: 2,
   },
   {
     text: 'Thêm node cha cho Root',
-    icon: require('../../images/icons8-add-40.png'),
+    icon: require('../../images/icons8-add-user-male-50.png'),
     name: 'bt_addRootParent',
     position: 1,
   },
@@ -217,7 +217,7 @@ export default class GenealogyScreen extends Component {
           textAlign: 'center',
           color: this.props.nodeTitleColor,
         }}>
-        {item.firstname} {item.lastname}
+        {item.firstname} {item.middlename} {item.lastname}
       </Text>
     </View>
   );
@@ -234,12 +234,13 @@ export default class GenealogyScreen extends Component {
             listKey={item => item._id}
             initialScrollIndex={0}
             renderItem={({item}) => {
-              const {_id, firstname, lastname, profileImage} = item;
+              const {_id, firstname, lastname, profileImage, middlename} = item;
               const info = {
                 _id,
                 firstname,
                 lastname,
                 profileImage,
+                middlename,
               };
               return (
                 <View
@@ -254,78 +255,85 @@ export default class GenealogyScreen extends Component {
                       flexDirection: 'row',
                     }}>
                     <View
-                      style={{
-                        backgroundColor: 'white',
-                        borderColor: 'red',
-                        borderRadius: 20,
-                        width: 9,
-                        height: 9,
-                        borderWidth: 0.8,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Text
-                        style={{
-                          ...this.props.nodeTitleStyle,
-                          textAlign: 'center',
-                        }}>
-                        {item.rank}
-                      </Text>
-                    </View>
-                    <View
                       style={
                         item.sex === 'Nam'
                           ? styles.mainNodeMaleStyle
                           : styles.mainNodeFeMaleStyle
                       }>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          right: 3,
-                        }}>
+                      <View style={{bottom: 10, alignItems: 'center'}}>
+                        <View
+                          style={{
+                            backgroundColor: 'white',
+                            borderColor: 'red',
+                            borderRadius: 20,
+                            right: 15,
+                            top: 8,
+                            width: 9,
+                            height: 9,
+                            borderWidth: 0.8,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}>
+                          <Text
+                            style={{
+                              ...this.props.nodeTitleStyle,
+                              textAlign: 'center',
+                            }}>
+                            {item.rank}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            right: 3,
+                          }}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              this.loadOneLeaf(item._id);
+                            }}>
+                            {info.profileImage ? (
+                              <Image
+                                style={styles.mainImageStyle}
+                                source={{
+                                  uri: info.profileImage,
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                style={styles.mainImageStyle}
+                                source={require('../../images/icons8-user-96.png')}
+                              />
+                            )}
+                          </TouchableOpacity>
+                        </View>
+                        <Text
+                          style={{
+                            ...this.props.nodeTitleStyle,
+                            textAlign: 'center',
+                            width: '100%',
+                            color: this.props.nodeTitleColor,
+                          }}>
+                          {info.firstname} {info.middlename} {info.lastname}
+                        </Text>
                         <TouchableOpacity
                           onPress={() => {
-                            this.loadOneLeaf(item._id);
+                            chosenId = item._id;
+                            name =
+                              info.firstname +
+                              ' ' +
+                              info.middlename +
+                              ' ' +
+                              info.lastname;
+                            this.toggleChoiceModal();
                           }}>
-                          {info.profileImage ? (
-                            <Image
-                              style={styles.mainImageStyle}
-                              source={{
-                                uri: info.profileImage,
-                              }}
-                            />
-                          ) : (
-                            <Image
-                              style={styles.mainImageStyle}
-                              source={require('../../images/icons8-user-96.png')}
-                            />
-                          )}
+                          <Image
+                            style={{width: 8, height: 8, top: 1}}
+                            source={require('../../images/icons8-add-40.png')}
+                          />
                         </TouchableOpacity>
                       </View>
-                      <Text
-                        style={{
-                          ...this.props.nodeTitleStyle,
-                          textAlign: 'center',
-                          color: this.props.nodeTitleColor,
-                        }}>
-                        {info.firstname} {info.lastname}
-                      </Text>
-                      <TouchableOpacity
-                        style={{
-                          right: 0,
-                        }}
-                        onPress={() => {
-                          chosenId = item._id;
-                          name = info.firstname + ' ' + info.lastname;
-                          this.toggleChoiceModal();
-                        }}>
-                        <Image
-                          style={{width: 8, height: 8, bottom: 1}}
-                          source={require('../../images/icons8-add-40.png')}
-                        />
-                      </TouchableOpacity>
                     </View>
                     {this.findSpouse(info._id).length > 0 && (
                       <FlatList
@@ -341,9 +349,9 @@ export default class GenealogyScreen extends Component {
                     <Svg height="12" width="100%">
                       <Line
                         x1="50%"
-                        y1="0"
+                        y1="0%"
                         x2="50%"
-                        y2="150"
+                        y2="150%"
                         stroke={this.props.pathColor}
                         strokeWidth={this.props.strokeWidth}
                       />
@@ -560,7 +568,9 @@ export default class GenealogyScreen extends Component {
                 borderRadius: 6,
               }}
             />
-            <Text> : Có quan hệ huyết thống</Text>
+            <Text style={{width: '80%', left: 10}}>
+              : Có quan hệ huyết thống, trực thuộc gia phả
+            </Text>
           </View>
           <View
             style={{
@@ -576,7 +586,28 @@ export default class GenealogyScreen extends Component {
                 borderRadius: 6,
               }}
             />
-            <Text> : Không quan hệ huyết thống</Text>
+            <Text style={{width: '80%', left: 10}}>
+              : Không quan hệ huyết thống, không trực thuộc gia phả
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                backgroundColor: 'white',
+                borderColor: 'red',
+                borderRadius: 20,
+                width: 18,
+                height: 18,
+                borderWidth: 1,
+              }}
+            />
+            <Text style={{width: '80%', left: 10}}>
+              : vai vế trong gia đình theo thứ tự 1-2-3... từ anh cả đến em út
+            </Text>
           </View>
         </View>
       </Modal>
@@ -612,10 +643,10 @@ export default class GenealogyScreen extends Component {
         <View style={styles.container}>
           <ReactNativeZoomableView
             maxZoom={3}
-            minZoom={1}
-            style={{top: 400, height: '100%'}}
+            minZoom={1.2}
+            style={{top: 100, height: '100%'}}
             zoomStep={0.5}
-            initialZoom={1.5}>
+            initialZoom={1.2}>
             {this.renderTree(this.state.tree, 1)}
           </ReactNativeZoomableView>
         </View>
@@ -652,6 +683,7 @@ export default class GenealogyScreen extends Component {
                   left: 5,
                 }}>
                 {this.state.onShowLeafData.firstname}{' '}
+                {this.state.onShowLeafData.middlename}{' '}
                 {this.state.onShowLeafData.lastname}
               </Text>
             </View>
@@ -728,7 +760,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#AEECEF',
-    height: '100%',
+    height: '92%',
+    width: '100%',
   },
   Genealogy: {
     height: '100%',
@@ -736,7 +769,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleGr: {
-    height: 60,
+    height: '8%',
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
@@ -751,8 +784,8 @@ const styles = StyleSheet.create({
   },
   nodeFemaleStyle: {
     backgroundColor: '#FFCCE5',
-    width: 24,
-    height: 34,
+    width: 35,
+    height: 40,
     borderRadius: 3,
     alignItems: 'center',
     padding: 1,
@@ -762,8 +795,8 @@ const styles = StyleSheet.create({
   },
   nodeMaleStyle: {
     backgroundColor: '#FFE014',
-    width: 24,
-    height: 34,
+    width: 35,
+    height: 40,
     borderRadius: 3,
     alignItems: 'center',
     padding: 1,
@@ -773,27 +806,25 @@ const styles = StyleSheet.create({
   },
   mainNodeMaleStyle: {
     backgroundColor: '#FFE014',
-    width: 24,
-    height: 34,
+    width: 35,
+    height: 40,
     borderRadius: 3,
-    alignItems: 'center',
     padding: 1,
     borderWidth: 0.8,
     borderColor: 'red',
   },
   mainNodeFeMaleStyle: {
     backgroundColor: '#FFCCE5',
-    width: 24,
-    height: 34,
+    width: 35,
+    height: 40,
     borderRadius: 3,
-    alignItems: 'center',
     padding: 1,
     borderWidth: 0.8,
     borderColor: 'red',
   },
   imageStyle: {
-    width: 18,
-    height: 18,
+    width: 19,
+    height: 19,
     backgroundColor: 'white',
     borderWidth: 0.5,
     borderColor: 'black',
@@ -803,8 +834,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainImageStyle: {
-    width: 18,
-    height: 18,
+    width: 19,
+    height: 19,
     left: 3,
     backgroundColor: 'white',
     borderWidth: 0.5,
@@ -899,13 +930,13 @@ GenealogyScreen.defaultProps = {
   },
   titleColor: 'black',
   nodeTitleStyle: {
-    fontSize: 4.5,
+    fontSize: 4,
     fontWeight: 'bold',
   },
   pathColor: 'black',
   siblingGap: 10,
   nodeTitleColor: 'black',
-  familyGap: 6,
+  familyGap: 0,
   strokeWidth: 1,
 };
 
