@@ -254,87 +254,91 @@ export default class GenealogyScreen extends Component {
                     style={{
                       flexDirection: 'row',
                     }}>
-                    <View
-                      style={
-                        item.sex === 'Nam'
-                          ? styles.mainNodeMaleStyle
-                          : styles.mainNodeFeMaleStyle
-                      }>
-                      <View style={{bottom: 10, alignItems: 'center'}}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        chosenId = item._id;
+                        if (info.middlename) {
+                          name =
+                            info.firstname +
+                            ' ' +
+                            info.middlename +
+                            ' ' +
+                            info.lastname;
+                        } else {
+                          name = info.firstname + ' ' + info.lastname;
+                        }
+                        this.toggleChoiceModal();
+                      }}>
+                      <View
+                        style={
+                          item.sex === 'Nam'
+                            ? styles.mainNodeMaleStyle
+                            : styles.mainNodeFeMaleStyle
+                        }>
                         <View
                           style={{
-                            backgroundColor: 'white',
-                            borderColor: 'red',
-                            borderRadius: 20,
-                            right: 15,
-                            top: 8,
-                            width: 9,
-                            height: 9,
-                            borderWidth: 0.8,
-                            justifyContent: 'center',
+                            width: '100%',
+                            height: '100%',
                             alignItems: 'center',
                           }}>
+                          <View
+                            style={{
+                              backgroundColor: 'white',
+                              borderColor: 'red',
+                              borderRadius: 20,
+                              right: 15,
+                              width: 9,
+                              height: 9,
+                              borderWidth: 0.8,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Text
+                              style={{
+                                ...this.props.nodeTitleStyle,
+                                textAlign: 'center',
+                              }}>
+                              {item.rank}
+                            </Text>
+                          </View>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              right: 3,
+                            }}>
+                            <TouchableOpacity
+                              onPress={() => {
+                                this.loadOneLeaf(item._id);
+                              }}>
+                              {info.profileImage ? (
+                                <Image
+                                  style={styles.mainImageStyle}
+                                  source={{
+                                    uri: info.profileImage,
+                                  }}
+                                />
+                              ) : (
+                                <Image
+                                  style={styles.mainImageStyle}
+                                  source={require('../../images/icons8-user-96.png')}
+                                />
+                              )}
+                            </TouchableOpacity>
+                          </View>
                           <Text
                             style={{
                               ...this.props.nodeTitleStyle,
                               textAlign: 'center',
+                              width: '100%',
+                              color: this.props.nodeTitleColor,
                             }}>
-                            {item.rank}
+                            {info.firstname} {info.middlename} {info.lastname}
                           </Text>
                         </View>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            right: 3,
-                          }}>
-                          <TouchableOpacity
-                            onPress={() => {
-                              this.loadOneLeaf(item._id);
-                            }}>
-                            {info.profileImage ? (
-                              <Image
-                                style={styles.mainImageStyle}
-                                source={{
-                                  uri: info.profileImage,
-                                }}
-                              />
-                            ) : (
-                              <Image
-                                style={styles.mainImageStyle}
-                                source={require('../../images/icons8-user-96.png')}
-                              />
-                            )}
-                          </TouchableOpacity>
-                        </View>
-                        <Text
-                          style={{
-                            ...this.props.nodeTitleStyle,
-                            textAlign: 'center',
-                            width: '100%',
-                            color: this.props.nodeTitleColor,
-                          }}>
-                          {info.firstname} {info.middlename} {info.lastname}
-                        </Text>
-                        <TouchableOpacity
-                          onPress={() => {
-                            chosenId = item._id;
-                            name =
-                              info.firstname +
-                              ' ' +
-                              info.middlename +
-                              ' ' +
-                              info.lastname;
-                            this.toggleChoiceModal();
-                          }}>
-                          <Image
-                            style={{width: 8, height: 8, top: 1}}
-                            source={require('../../images/icons8-add-40.png')}
-                          />
-                        </TouchableOpacity>
                       </View>
-                    </View>
+                    </TouchableOpacity>
                     {this.findSpouse(info._id).length > 0 && (
                       <FlatList
                         style={{flexDirection: 'row'}}
@@ -460,11 +464,20 @@ export default class GenealogyScreen extends Component {
         <View
           style={{
             width: 250,
-            height: 130,
+            height: 180,
             borderRadius: 30,
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
+          <TouchableOpacity
+            style={styles.btnChoiceModal}
+            onPress={() => {
+              this.loadOneLeaf(chosenId);
+            }}>
+            <Text style={styles.textChoiceModal}>
+              Xem thông tin chi tiết {name}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.btnChoiceModal}
             onPress={() => {
@@ -475,10 +488,6 @@ export default class GenealogyScreen extends Component {
               this.setState({data: [], tree: []});
               this.toggleChoiceModal();
             }}>
-            <Image
-              style={styles.imageChoiceModal}
-              source={require('../../images/icons8-add-user-male-50.png')}
-            />
             <Text style={styles.textChoiceModal}>Thêm con cho {name} </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -491,10 +500,6 @@ export default class GenealogyScreen extends Component {
               this.setState({data: [], tree: []});
               this.toggleChoiceModal();
             }}>
-            <Image
-              style={styles.imageChoiceModal}
-              source={require('../../images/icons8-couple-50.png')}
-            />
             <Text style={styles.textChoiceModal}>Thêm Vợ/Chồng cho {name}</Text>
           </TouchableOpacity>
         </View>
@@ -788,10 +793,10 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 3,
     alignItems: 'center',
+    justifyContent: 'space-around',
     padding: 1,
     borderWidth: 0.8,
     borderColor: '#146AFF',
-    justifyContent: 'space-between',
   },
   nodeMaleStyle: {
     backgroundColor: '#FFE014',
@@ -800,9 +805,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignItems: 'center',
     padding: 1,
+    justifyContent: 'space-around',
     borderWidth: 0.8,
     borderColor: '#146AFF',
-    justifyContent: 'space-between',
   },
   mainNodeMaleStyle: {
     backgroundColor: '#FFE014',
@@ -837,6 +842,7 @@ const styles = StyleSheet.create({
     width: 19,
     height: 19,
     left: 3,
+    bottom: 5.5,
     backgroundColor: 'white',
     borderWidth: 0.5,
     borderColor: 'black',
@@ -900,25 +906,22 @@ const styles = StyleSheet.create({
   },
   textChoiceModal: {
     fontFamily: 'serif',
-    fontSize: 14,
-    left: 15,
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   imageChoiceModal: {
     left: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: 'white',
   },
   btnChoiceModal: {
     flexDirection: 'row',
-    backgroundColor: '#AEECEF',
+    backgroundColor: '#FFE014',
     alignItems: 'center',
+    justifyContent: 'center',
     height: 50,
     width: 350,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'red',
   },
 });
 GenealogyScreen.defaultProps = {
